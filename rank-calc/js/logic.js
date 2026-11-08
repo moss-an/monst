@@ -113,8 +113,10 @@ export function getLastStepExp() {
 export function calculateTotalMultiplier(multipliers) {
   const { manabi, spot, event, expUpMonster, luckBonus, multi, custom } =
     multipliers;
+  const validCustom =
+    custom === "" || isNaN(custom) || Number(custom) < 1 ? 1.0 : Number(custom);
   return (
-    manabi * spot * event * expUpMonster * luckBonus * multi * (custom || 1.0)
+    manabi * spot * event * expUpMonster * luckBonus * multi * validCustom
   );
 }
 

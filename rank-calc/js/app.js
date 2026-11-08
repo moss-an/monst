@@ -110,7 +110,13 @@ createApp({
     };
 
     const validateCustomMultiplier = () => {
-      if (customMultiplier.value > maxCustomMultiplier) {
+      if (
+        customMultiplier.value === "" ||
+        isNaN(customMultiplier.value) ||
+        Number(customMultiplier.value) < 1
+      ) {
+        customMultiplier.value = 1;
+      } else if (customMultiplier.value > maxCustomMultiplier) {
         customMultiplier.value = maxCustomMultiplier;
       }
     };
