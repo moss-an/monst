@@ -360,8 +360,8 @@
     </div>
 
     <!-- 外部ファイルの読み込み -->
-    <script src="./constants.js"></script>
-    <script src="./logic.js"></script>
+    <script src="./js/constants.js"></script>
+    <script src="./js/logic.js"></script>
 
     <!-- Vue3 アプリケーションロジック -->
     <script>
@@ -387,15 +387,24 @@
 
           onMounted(async () => {
             try {
-              const response = await fetch("./rank_table_1_999.csv");
-              const text = await response.text();
+              const [resRankTable, resStepTable] = await Promise.all([
+                fetch("./csv/rank_table_1_999.csv"),
+                fetch("./csv/rank_step_table.csv"),
+              ]);
+              const textRankTable = await resRankTable.text();
+              const textStepTable = await resStepTable.text();
+
               if (typeof initRankTableFromCSV === "function") {
-                initRankTableFromCSV(text);
-                currentRank.value = Number(currentRank.value);
-                console.log("CSV読み込み・テーブル初期化完了");
+                initRankTableFromCSV(textRankTable);
               }
+              if (typeof initRankStepTableFromCSV === "function") {
+                initRankStepTableFromCSV(textStepTable);
+              }
+
+              currentRank.value = Number(currentRank.value);
+              console.log("CSV読み込み・テーブル初期化完了");
             } catch (e) {
-              console.warn("rank_table_1_999.csv の読み込みに失敗しました:", e);
+              console.warn("CSVの読み込みに失敗しました:", e);
             }
           });
 
