@@ -103,20 +103,36 @@ createApp({
     const selectedMulti = ref(CONSTANTS.DEFAULT_MULTI);
     const customMultiplier = ref("");
 
-    const onCustomMultiplierChange = () => {
-      if (customMultiplier.value > maxCustomMultiplier) {
-        customMultiplier.value = maxCustomMultiplier;
+    const handleCustomMultiplierInput = (e) => {
+      let val = e.target.value;
+
+      // 半角数字と小数点、空欄のみを許可する正規表現でフィルタリング
+      // (先頭のマイナスや指数表記の 'e' などを排除)
+      val = val.replace(/[^0-9.]/g, "");
+
+      // 小数点が複数入ってしまった場合は最初の1つ目だけを残す
+      const parts = val.split(".");
+      if (parts.length > 2) {
+        val = parts[0] + "." + parts.slice(1).join("");
       }
+
+      customMultiplier.value = val;
     };
 
     const validateCustomMultiplier = () => {
       if (customMultiplier.value === "" || customMultiplier.value === null) {
         return;
       }
-      if (isNaN(customMultiplier.value) || Number(customMultiplier.value) < 1) {
+      let num = Number(customMultiplier.value);
+      if (isNaN(num) || num < 1) {
         customMultiplier.value = 1;
-      } else if (customMultiplier.value > maxCustomMultiplier) {
+      } else if (num > maxCustomMultiplier) {
         customMultiplier.value = maxCustomMultiplier;
+      } else {
+        // 余分な先頭のゼロなどを整える（例: "01.5" -> "1.5"、ただし "1." のような入力中はそのまま保持）
+        if (!customMultiplier.value.endsWith(".")) {
+          customMultiplier.value = num.toString();
+        }
       }
     };
 
@@ -218,7 +234,7 @@ createApp({
       onTargetRankChange,
       validateCurrentRank,
       validateTargetRank,
-      onCustomMultiplierChange,
+      handleCustomMultiplierInput,
       validateCustomMultiplier,
       totalMultiplier,
       selectedManabi,
