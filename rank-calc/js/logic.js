@@ -113,15 +113,12 @@ export function getLastStepExp() {
 export function calculateTotalMultiplier(multipliers) {
   const { manabi, spot, event, expUpMonster, luckBonus, multi, custom } =
     multipliers;
-  // 空欄("")、null、undefined、NaN、または 1未満の値の場合は 1.0 倍として扱う
   const validCustom =
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
       : Number(custom);
 
-  return (
-    manabi * spot * event * expUpMonster * luckBonus * multi * validCustom
-  );
+  return manabi * spot * event * expUpMonster * luckBonus * multi * validCustom;
 }
 
 /**
