@@ -384,7 +384,7 @@
 
           const currentRank = ref(2500);
           const targetRank = ref(3000);
-
+          const isLoaded = ref(false); // ファイル読み込み状態管理フラグ
           onMounted(async () => {
             try {
               const [resRankTable, resStepTable] = await Promise.all([
@@ -401,6 +401,7 @@
                 initRankStepTableFromCSV(textStepTable);
               }
 
+              isLoaded.value = true;
               currentRank.value = Number(currentRank.value);
               console.log("CSV読み込み・テーブル初期化完了");
             } catch (e) {
@@ -446,10 +447,12 @@
 
           // ランクから累計経験値を純粋に算出（表示専用）
           const currentExp = computed(() => {
+            if (!isLoaded.value) return 0;
             return calculateExpFromRank1(currentRank.value);
           });
 
           const targetExp = computed(() => {
+            if (!isLoaded.value) return 0;
             return calculateExpFromRank1(targetRank.value);
           });
 
@@ -528,6 +531,7 @@
           });
 
           const requiredTotalExp = computed(() => {
+            if (!isLoaded.value) return 0;
             return calculateRequiredTotalExp(
               currentRank.value,
               targetRank.value,
@@ -565,6 +569,7 @@
             questPresets,
             currentRank,
             targetRank,
+            isLoaded,
             currentExp,
             targetExp,
             onCurrentRankChange,

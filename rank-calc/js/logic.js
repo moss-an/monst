@@ -2,6 +2,7 @@
 
 let RANK_EXP_TABLE = []; // 1〜999ランクの個別累計テーブル
 let RANK_STEP_TABLE = []; // 999以降の区間設定テーブル
+let isTableLoaded = false;
 
 /**
  * 1〜999ランク用の累計経験値CSVを初期化
@@ -15,6 +16,10 @@ function initRankTableFromCSV(csvText) {
       const parts = line.split(",");
       return parseInt(parts[1].trim(), 10);
     });
+
+  if (RANK_EXP_TABLE.length > 0) {
+    isTableLoaded = true;
+  }
 }
 
 /**
@@ -69,14 +74,15 @@ function getExpForNextRank(r) {
 function calculateExpFromRank1(targetR) {
   if (targetR <= 1) return 0;
 
+  if (!isTableLoaded || RANK_EXP_TABLE.length === 0) {
+    return 0;
+  }
+
   if (targetR <= RANK_EXP_TABLE.length) {
     return RANK_EXP_TABLE[targetR - 1];
   }
 
-  let total =
-    RANK_EXP_TABLE.length > 0
-      ? RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1]
-      : 533439543;
+  let total = RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1];
 
   for (let r = 999; r < targetR; r++) {
     total += getExpForNextRank(r);
