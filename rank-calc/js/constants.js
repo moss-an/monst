@@ -1,10 +1,21 @@
-// モンストランク計算ツール - マスタデータ定義
+/* マスタデータ */
 
+// UI上で指定できる上限値
 const MAX_RANK = 99999;
 const MAX_CUSTOM_MULTIPLIER = 9999;
 const MAX_BASE_EXP = 999999999;
 const MAX_CLEAR_SEC = 999999;
-const DEFAULT_CLEAR_SEC = 90;
+
+// UI上のデフォルト値
+const DEFAULT_CURRENT_RANK = 2500;
+const DEFAULT_TARGET_RANK = 3000;
+const DEFAULT_MANABI = 1.65;
+const DEFAULT_SPOT = 1.75;
+const DEFAULT_EVENT = 3.0;
+const DEFAULT_EXP_UP_MONSTER = 1.5;
+const DEFAULT_LUCK_BONUS = 1.05;
+const DEFAULT_MULTI = 1.0;
+const DEFAULT_CLEAR_SEC = 50;
 
 const MANABI_OPTIONS = [
   { label: "なし", value: 1.0 },

@@ -388,10 +388,10 @@
           const multiOptions = MULTI_OPTIONS;
           const questPresets = QUEST_PRESETS;
 
-          const currentRank = ref(2500);
-          const targetRank = ref(3000);
+          const currentRank = ref(DEFAULT_CURRENT_RANK);
+          const targetRank = ref(DEFAULT_TARGET_RANK);
           const isLoaded = ref(false); // ファイル読み込み状態管理フラグ
-          const lastStepExp = ref(0);
+          const lastStepExp = ref(0); // 上限を超えるランク帯の必要経験値
 
           onMounted(async () => {
             try {
@@ -465,12 +465,12 @@
             return calculateExpFromRank1(targetRank.value);
           });
 
-          const selectedManabi = ref(1.65);
-          const selectedSpot = ref(1.75);
-          const selectedEvent = ref(3.0);
-          const selectedExpUpMonster = ref(1.5);
-          const selectedLuckBonus = ref(1.05);
-          const selectedMulti = ref(1.0);
+          const selectedManabi = ref(DEFAULT_MANABI);
+          const selectedSpot = ref(DEFAULT_SPOT);
+          const selectedEvent = ref(DEFAULT_EVENT);
+          const selectedExpUpMonster = ref(DEFAULT_EXP_UP_MONSTER);
+          const selectedLuckBonus = ref(DEFAULT_LUCK_BONUS);
+          const selectedMulti = ref(DEFAULT_MULTI);
           const customMultiplier = ref("");
 
           const onCustomMultiplierChange = () => {
