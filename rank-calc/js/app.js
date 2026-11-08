@@ -52,13 +52,13 @@ createApp({
       }
     });
 
-    const onCurrentRankChange = () => {
+    const onCurrentRankInput = () => {
       if (currentRank.value > maxRank) {
         currentRank.value = maxRank;
       }
     };
 
-    const onTargetRankChange = () => {
+    const onTargetRankInput = () => {
       if (targetRank.value > maxRank) {
         targetRank.value = maxRank;
       }
@@ -106,8 +106,7 @@ createApp({
     const handleCustomMultiplierInput = (e) => {
       let val = e.target.value;
 
-      // 半角数字と小数点、空欄のみを許可する正規表現でフィルタリング
-      // (先頭のマイナスや指数表記の 'e' などを排除)
+      // 半角数字、小数点、空欄のみを許可
       val = val.replace(/[^0-9.]/g, "");
 
       // 小数点が複数入ってしまった場合は最初の1つ目だけを残す
@@ -129,7 +128,7 @@ createApp({
       } else if (num > maxCustomMultiplier) {
         customMultiplier.value = maxCustomMultiplier;
       } else {
-        // 余分な先頭のゼロなどを整える（例: "01.5" -> "1.5"、ただし "1." のような入力中はそのまま保持）
+        // 余分な先頭のゼロなどを整える
         if (!customMultiplier.value.endsWith(".")) {
           customMultiplier.value = num.toString();
         }
@@ -230,8 +229,8 @@ createApp({
       lastStepExp,
       currentExp,
       targetExp,
-      onCurrentRankChange,
-      onTargetRankChange,
+      onCurrentRankInput,
+      onTargetRankInput,
       validateCurrentRank,
       validateTargetRank,
       handleCustomMultiplierInput,

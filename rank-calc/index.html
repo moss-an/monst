@@ -40,7 +40,7 @@
               <input
                 type="number"
                 v-model.number="currentRank"
-                @input="onCurrentRankChange"
+                @input="onCurrentRankInput"
                 @blur="validateCurrentRank"
                 min="1"
                 :max="maxRank"
@@ -67,7 +67,7 @@
               <input
                 type="number"
                 v-model.number="targetRank"
-                @input="onTargetRankChange"
+                @input="onTargetRankInput"
                 @blur="validateTargetRank"
                 min="1"
                 :max="maxRank"
