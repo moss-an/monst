@@ -4,6 +4,7 @@ const MAX_RANK = 99999;
 const MAX_CUSTOM_MULTIPLIER = 9999;
 const MAX_BASE_EXP = 999999999;
 const MAX_CLEAR_SEC = 999999;
+const DEFAULT_CLEAR_SEC = 90;
 
 const MANABI_OPTIONS = [
   { label: "なし", value: 1.0 },
