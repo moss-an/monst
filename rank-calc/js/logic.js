@@ -97,3 +97,13 @@ function calculateRequiredTotalExp(currentRank, targetRank) {
   if (targetRank <= currentRank) return 0;
   return calculateExpFromRank1(targetRank) - calculateExpFromRank1(currentRank);
 }
+
+/**
+ * CSVの最後の区間における1ランクあたりの必要経験値を取得
+ */
+function getLastStepExp() {
+  if (RANK_STEP_TABLE.length > 0) {
+    return RANK_STEP_TABLE[RANK_STEP_TABLE.length - 1].expPerRank;
+  }
+  return 0;
+}

@@ -89,7 +89,8 @@
           <p
             class="text-xs text-slate-400 text-center pt-2 border-t border-amber-500/20"
           >
-            ※上限を超えるランクは、hogefugaを適用して計算します。
+            ※上限を超えるランク帯の必要経験値は、{{ lastStepExp.toLocaleString()
+            }} Expを適用して計算します。
           </p>
         </section>
 
@@ -390,6 +391,8 @@
           const currentRank = ref(2500);
           const targetRank = ref(3000);
           const isLoaded = ref(false); // ファイル読み込み状態管理フラグ
+          const lastStepExp = ref(0);
+
           onMounted(async () => {
             try {
               const [resRankTable, resStepTable] = await Promise.all([
@@ -407,6 +410,7 @@
               }
 
               isLoaded.value = true;
+              lastStepExp.value = getLastStepExp();
               currentRank.value = Number(currentRank.value);
               console.log("CSV読み込み・テーブル初期化完了");
             } catch (e) {
@@ -575,6 +579,7 @@
             currentRank,
             targetRank,
             isLoaded,
+            lastStepExp,
             currentExp,
             targetExp,
             onCurrentRankChange,
