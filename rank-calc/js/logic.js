@@ -1,4 +1,7 @@
-/* 計算ロジック */
+/**
+ * @file logic.js
+ * @description 計算ロジック
+ */
 
 let RANK_EXP_TABLE = []; // 1〜999ランクの個別累計テーブル
 let RANK_STEP_TABLE = []; // 999以降の区間設定テーブル
@@ -7,7 +10,7 @@ let isTableLoaded = false;
 /**
  * 1〜999ランク用の累計経験値CSVを初期化
  */
-function initRankTableFromCSV(csvText) {
+export function initRankTableFromCSV(csvText) {
   const lines = csvText.trim().split("\n");
   RANK_EXP_TABLE = lines
     .slice(1)
@@ -25,7 +28,7 @@ function initRankTableFromCSV(csvText) {
 /**
  * 999以降の区間定義CSVを初期化
  */
-function initRankStepTableFromCSV(csvText) {
+export function initRankStepTableFromCSV(csvText) {
   const lines = csvText.trim().split("\n");
   RANK_STEP_TABLE = lines
     .slice(1)
@@ -36,22 +39,19 @@ function initRankStepTableFromCSV(csvText) {
         .map((v) => parseInt(v.trim(), 10));
       return { minRank, maxRank, expPerRank };
     })
-    // ランク順で判定できるように昇順ソート
     .sort((a, b) => a.minRank - b.minRank);
 }
 
 /**
  * ランク r から r+1 に上げるために必要な経験値
  */
-function getExpForNextRank(r) {
+export function getExpForNextRank(r) {
   if (r < 1) return 0;
 
-  // 1〜998までは個別のテーブル差分から算出
   if (r < 999 && RANK_EXP_TABLE.length >= r + 1) {
     return RANK_EXP_TABLE[r] - RANK_EXP_TABLE[r - 1];
   }
 
-  // 999以降は CSVから読み込んだ区間設定テーブルを検索
   const step = RANK_STEP_TABLE.find(
     (item) => r >= item.minRank && (item.maxRank ? r <= item.maxRank : true),
   );
@@ -60,7 +60,6 @@ function getExpForNextRank(r) {
     return step.expPerRank;
   }
 
-  // テーブルに定義がない場合のフォールバック値
   if (RANK_STEP_TABLE.length > 0) {
     return RANK_STEP_TABLE[RANK_STEP_TABLE.length - 1].expPerRank;
   }
@@ -71,7 +70,7 @@ function getExpForNextRank(r) {
 /**
  * ランク1を基準(0)とした指定ランクまでの累計経験値を算出
  */
-function calculateExpFromRank1(targetR) {
+export function calculateExpFromRank1(targetR) {
   if (targetR <= 1) return 0;
 
   if (!isTableLoaded || RANK_EXP_TABLE.length === 0) {
@@ -93,7 +92,7 @@ function calculateExpFromRank1(targetR) {
 /**
  * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
  */
-function calculateRequiredTotalExp(currentRank, targetRank) {
+export function calculateRequiredTotalExp(currentRank, targetRank) {
   if (targetRank <= currentRank) return 0;
   return calculateExpFromRank1(targetRank) - calculateExpFromRank1(currentRank);
 }
@@ -101,9 +100,48 @@ function calculateRequiredTotalExp(currentRank, targetRank) {
 /**
  * CSVの最後の区間における1ランクあたりの必要経験値を取得
  */
-function getLastStepExp() {
+export function getLastStepExp() {
   if (RANK_STEP_TABLE.length > 0) {
     return RANK_STEP_TABLE[RANK_STEP_TABLE.length - 1].expPerRank;
   }
   return 0;
+}
+
+/**
+ * 合計倍率の算出
+ */
+export function calculateTotalMultiplier(multipliers) {
+  const { manabi, spot, event, expUpMonster, luckBonus, multi, custom } =
+    multipliers;
+  return (
+    manabi * spot * event * expUpMonster * luckBonus * multi * (custom || 1.0)
+  );
+}
+
+/**
+ * 1周あたりの獲得経験値を算出
+ */
+export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
+  return Math.floor(baseExp * totalMultiplier);
+}
+
+/**
+ * 必要周回数を算出
+ */
+export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
+  if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
+  return Math.ceil(requiredTotalExp / earnedExpPerRun);
+}
+
+/**
+ * 秒数からフォーマットされた所要時間を取得
+ */
+export function formatTime(totalSeconds) {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  if (hours > 0) {
+    return `${hours}時間 ${minutes}分`;
+  }
+  return `${minutes}分`;
 }
