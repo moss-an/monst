@@ -108,7 +108,7 @@ createApp({
     const handleCustomMultiplierInput = (e) => {
       let val = e.target.value;
 
-      // 半角数字、小数点のみを許可
+      // 半角数字、小数点、空欄のみを許可
       val = val.replace(/[^0-9.]/g, "");
 
       //　小数点が複数入った場合は最初の1つ目のみ残す
