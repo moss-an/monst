@@ -110,11 +110,12 @@ createApp({
     };
 
     const validateCustomMultiplier = () => {
-      if (
-        customMultiplier.value === "" ||
-        isNaN(customMultiplier.value) ||
-        Number(customMultiplier.value) < 1
-      ) {
+      // 空欄("") または null の場合は空欄のまま保持
+      if (customMultiplier.value === "" || customMultiplier.value === null) {
+        return;
+      }
+      // 1未満の数値が入った場合のみ 1 に補正
+      if (isNaN(customMultiplier.value) || Number(customMultiplier.value) < 1) {
         customMultiplier.value = 1;
       } else if (customMultiplier.value > maxCustomMultiplier) {
         customMultiplier.value = maxCustomMultiplier;
