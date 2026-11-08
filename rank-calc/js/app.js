@@ -16,6 +16,8 @@ createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
+    const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
+    const maxCustomDecDigits = CONSTANTS.MAX_CUSTOM_DEC_DIGITS;
     const maxBaseExp = CONSTANTS.MAX_BASE_EXP;
     const maxClearSec = CONSTANTS.MAX_CLEAR_SEC;
 
@@ -106,13 +108,31 @@ createApp({
     const handleCustomMultiplierInput = (e) => {
       let val = e.target.value;
 
-      // 半角数字、小数点、空欄のみを許可
+      // 半角数字、小数点のみを許可
       val = val.replace(/[^0-9.]/g, "");
 
-      // 小数点が複数入ってしまった場合は最初の1つ目だけを残す
+      //　小数点が複数入った場合は最初の1つ目のみ残す
       const parts = val.split(".");
       if (parts.length > 2) {
         val = parts[0] + "." + parts.slice(1).join("");
+      }
+
+      // 整数部・小数部の桁数切り詰め処理
+      const splitVal = val.split(".");
+      let integerPart = splitVal[0];
+      let decimalPart = splitVal[1];
+      if (integerPart.length > maxCustomIntDigits) {
+        integerPart = integerPart.slice(0, maxCustomIntDigits);
+      }
+      if (decimalPart !== undefined) {
+        if (decimalPart.length > maxCustomDecDigits) {
+          decimalPart = decimalPart.slice(0, maxCustomDecDigits);
+        }
+        val = `${integerPart}.${decimalPart}`;
+      } else if (val.endsWith(".")) {
+        val = `${integerPart}.`;
+      } else {
+        val = integerPart;
       }
 
       customMultiplier.value = val;
@@ -214,6 +234,8 @@ createApp({
     return {
       maxRank,
       maxCustomMultiplier,
+      maxCustomIntDigits,
+      maxCustomDecDigits,
       maxBaseExp,
       maxClearSec,
       manabiOptions,
