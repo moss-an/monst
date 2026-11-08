@@ -40,12 +40,12 @@ export const EVENT_OPTIONS = [
 ];
 
 export const EXP_UP_MONSTER_OPTIONS = [
-  { label: "編成なし", value: 1.0 },
-  { label: "編成あり (1.5倍)", value: 1.5 },
+  { label: "なし", value: 1.0 },
+  { label: "あり (1.5倍)", value: 1.5 },
 ];
 
 export const LUCK_BONUS_OPTIONS = [
-  { label: "ボーナスなし", value: 1.0 },
+  { label: "なし", value: 1.0 },
   { label: "Lv1（1.01倍）", value: 1.01 },
   { label: "Lv2（1.02倍）", value: 1.02 },
   { label: "Lv3（1.03倍）", value: 1.03 },
