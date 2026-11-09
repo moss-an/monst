@@ -76,7 +76,7 @@ createApp({
 
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      // MAX_RANK の桁数 + 1 文字までを許容（マジックナンバー排除）
+      // MAX_RANK の桁数 + 1までを許容
       const maxRankInputLength = String(maxRank).length + 1;
       if (cleaned.length > maxRankInputLength) {
         cleaned = cleaned.slice(0, maxRankInputLength);
