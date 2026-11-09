@@ -56,7 +56,6 @@ createApp({
         isLoaded.value = true;
         lastStepExp.value = Logic.getLastStepExp();
 
-        // ランク99999到達時の累計経験値を上限値(maxExp)として動的に計算・設定
         const maxRankExp = Logic.calculateExpFromRank1(maxRank);
         if (maxRankExp > 0) {
           maxExp.value = maxRankExp;
@@ -77,8 +76,10 @@ createApp({
 
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      if (cleaned.length > 6) {
-        cleaned = cleaned.slice(0, 6);
+      // MAX_RANK の桁数 + 1 文字までを許容（マジックナンバー排除）
+      const maxRankInputLength = String(maxRank).length + 1;
+      if (cleaned.length > maxRankInputLength) {
+        cleaned = cleaned.slice(0, maxRankInputLength);
       }
       cleaned = cleaned.replace(/^0+/, "");
       if (cleaned === "") return "";
