@@ -5,7 +5,8 @@
 
 // UI上で指定できる上限値
 export const MAX_RANK = 99999;
-export const MAX_EXP = 999999999999999; // 9が15桁
+// CSV読み込み完了までのフォールバック上限（読み込み後は ランク99999の累計Exp に更新されます）
+export const FALLBACK_MAX_EXP = 999999999999999;
 export const MAX_CUSTOM_MULTIPLIER = 9999;
 export const MAX_CUSTOM_INT_DIGITS = 4; // カスタム倍率の整数部桁数上限
 export const MAX_CUSTOM_DEC_DIGITS = 4; // カスタム倍率の小数部桁数上限

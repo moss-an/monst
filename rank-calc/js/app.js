@@ -15,7 +15,7 @@ import * as Logic from "./logic.js";
 createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
-    const maxExp = CONSTANTS.MAX_EXP;
+    const maxExp = ref(CONSTANTS.FALLBACK_MAX_EXP);
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
     const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
     const maxCustomDecDigits = CONSTANTS.MAX_CUSTOM_DEC_DIGITS;
@@ -55,6 +55,12 @@ createApp({
 
         isLoaded.value = true;
         lastStepExp.value = Logic.getLastStepExp();
+
+        // ランク99999到達時の累計経験値を上限値(maxExp)として動的に計算・設定
+        const maxRankExp = Logic.calculateExpFromRank1(maxRank);
+        if (maxRankExp > 0) {
+          maxExp.value = maxRankExp;
+        }
       } catch (e) {
         console.warn("CSVの読み込みに失敗しました:", e);
       }
@@ -71,9 +77,8 @@ createApp({
 
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      const maxDigits = String(maxRank).length;
-      if (cleaned.length > maxDigits) {
-        cleaned = cleaned.slice(0, maxDigits);
+      if (cleaned.length > 6) {
+        cleaned = cleaned.slice(0, 6);
       }
       cleaned = cleaned.replace(/^0+/, "");
       if (cleaned === "") return "";
@@ -84,9 +89,9 @@ createApp({
 
     const parseExpInput = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      const maxDigits = String(maxExp).length;
-      if (cleaned.length > maxDigits) {
-        cleaned = cleaned.slice(0, maxDigits);
+      const limitDigits = String(maxExp.value).length + 2;
+      if (cleaned.length > limitDigits) {
+        cleaned = cleaned.slice(0, limitDigits);
       }
       if (cleaned.length > 1) {
         cleaned = cleaned.replace(/^0+/, "");
@@ -94,22 +99,20 @@ createApp({
       }
       if (cleaned === "") return "";
       let num = parseInt(cleaned, 10);
-      if (num > maxExp) num = maxExp;
+      if (num > maxExp.value) num = maxExp.value;
       return String(num);
     };
 
     const getEffectiveRank = (val) => {
       if (val === "" || val === null || val === undefined) return 1;
       const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
-      if (isNaN(num) || num < 1) return 1;
-      return Math.min(num, maxRank);
+      return isNaN(num) || num < 1 ? 1 : num;
     };
 
     const getEffectiveExp = (val) => {
       if (val === "" || val === null || val === undefined) return 0;
       const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
-      if (isNaN(num) || num < 0) return 0;
-      return Math.min(num, maxExp);
+      return isNaN(num) || num < 0 ? 0 : num;
     };
 
     // --- 現在のランク・経験値操作 ---
@@ -132,8 +135,11 @@ createApp({
         currentRank.value = "";
       } else if (isLoaded.value) {
         const exp = getEffectiveExp(currentExpInput.value);
-        const calculatedRank = Logic.calculateRankFromExp(exp);
-        currentRank.value = Math.min(calculatedRank, maxRank).toString();
+        let calculatedRank = Logic.calculateRankFromExp(exp);
+        if (calculatedRank > maxRank) {
+          calculatedRank = maxRank;
+        }
+        currentRank.value = calculatedRank.toString();
       }
     };
 
@@ -170,8 +176,7 @@ createApp({
           if (currNum > tgtNum) {
             currentExpInput.value = formatNumber(tgtNum);
             if (isLoaded.value) {
-              const calculatedRank = Logic.calculateRankFromExp(tgtNum);
-              currentRank.value = Math.min(calculatedRank, maxRank).toString();
+              currentRank.value = Logic.calculateRankFromExp(tgtNum).toString();
             }
           }
         }
@@ -204,8 +209,11 @@ createApp({
         targetRank.value = "";
       } else if (isLoaded.value) {
         const exp = getEffectiveExp(targetExpInput.value);
-        const calculatedRank = Logic.calculateRankFromExp(exp);
-        targetRank.value = Math.min(calculatedRank, maxRank).toString();
+        let calculatedRank = Logic.calculateRankFromExp(exp);
+        if (calculatedRank > maxRank) {
+          calculatedRank = maxRank;
+        }
+        targetRank.value = calculatedRank.toString();
       }
     };
 
@@ -242,8 +250,7 @@ createApp({
           if (tgtNum < currNum) {
             targetExpInput.value = formatNumber(currNum);
             if (isLoaded.value) {
-              const calculatedRank = Logic.calculateRankFromExp(currNum);
-              targetRank.value = Math.min(calculatedRank, maxRank).toString();
+              targetRank.value = Logic.calculateRankFromExp(currNum).toString();
             }
           }
         }
@@ -338,10 +345,12 @@ createApp({
 
     const handleBaseExpInput = (e) => {
       let raw = e.target.value.replace(/[^0-9]/g, "");
-      const maxDigits = String(maxBaseExp).length;
-      if (raw.length > maxDigits) {
-        raw = raw.slice(0, maxDigits);
+
+      const limitDigits = String(maxBaseExp).length + 2;
+      if (raw.length > limitDigits) {
+        raw = raw.slice(0, limitDigits);
       }
+
       if (raw.length > 1) {
         raw = raw.replace(/^0+/, "");
         if (raw === "") raw = "0";
