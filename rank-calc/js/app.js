@@ -60,6 +60,13 @@ createApp({
       }
     });
 
+    const formatNumber = (val) => {
+      if (val === "" || val === null || val === undefined) return "";
+      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
+      if (isNaN(num)) return "";
+      return num.toLocaleString();
+    };
+
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
       cleaned = cleaned.replace(/^0+/, "");
@@ -80,13 +87,13 @@ createApp({
 
     const getEffectiveRank = (val) => {
       if (val === "" || val === null || val === undefined) return 1;
-      const num = parseInt(val, 10);
+      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
       return isNaN(num) || num < 1 ? 1 : num;
     };
 
     const getEffectiveExp = (val) => {
       if (val === "" || val === null || val === undefined) return 0;
-      const num = parseInt(val, 10);
+      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
       return isNaN(num) || num < 0 ? 0 : num;
     };
 
@@ -94,16 +101,21 @@ createApp({
     const onCurrentRankInput = (e) => {
       activeCurrentMode.value = "rank";
       currentRank.value = parseNaturalRank(e.target.value);
-      if (isLoaded.value) {
+      if (currentRank.value === "") {
+        currentExpInput.value = "";
+      } else if (isLoaded.value) {
         const r = getEffectiveRank(currentRank.value);
-        currentExpInput.value = Logic.calculateExpFromRank1(r).toString();
+        currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
       }
     };
 
     const onCurrentExpInput = (e) => {
       activeCurrentMode.value = "exp";
-      currentExpInput.value = parseExpInput(e.target.value);
-      if (isLoaded.value) {
+      const raw = e.target.value.replace(/[^0-9]/g, "");
+      currentExpInput.value = parseExpInput(raw);
+      if (currentExpInput.value === "") {
+        currentRank.value = "";
+      } else if (isLoaded.value) {
         const exp = getEffectiveExp(currentExpInput.value);
         currentRank.value = Logic.calculateRankFromExp(exp).toString();
       }
@@ -112,35 +124,46 @@ createApp({
     const validateCurrentRank = () => {
       if (currentRank.value !== "") {
         currentRank.value = parseNaturalRank(currentRank.value);
-      }
-      // フォーカスが外れたタイミング（blur）でのみ目標値を超えないよう補正
-      if (currentRank.value !== "" && targetRank.value !== "") {
-        const currNum = parseInt(currentRank.value, 10);
-        const tgtNum = parseInt(targetRank.value, 10);
-        if (currNum > tgtNum) {
-          currentRank.value = String(tgtNum);
-          if (isLoaded.value) {
-            currentExpInput.value =
-              Logic.calculateExpFromRank1(tgtNum).toString();
+        if (currentRank.value !== "" && targetRank.value !== "") {
+          const currNum = parseInt(currentRank.value, 10);
+          const tgtNum = parseInt(targetRank.value, 10);
+          if (currNum > tgtNum) {
+            currentRank.value = String(tgtNum);
+            if (isLoaded.value) {
+              currentExpInput.value = formatNumber(
+                Logic.calculateExpFromRank1(tgtNum),
+              );
+            }
           }
         }
+        if (currentExpInput.value !== "") {
+          currentExpInput.value = formatNumber(currentExpInput.value);
+        }
+      } else {
+        currentExpInput.value = "";
       }
     };
 
     const validateCurrentExp = () => {
       if (currentExpInput.value !== "") {
-        currentExpInput.value = parseExpInput(currentExpInput.value);
-      }
-      // フォーカスが外れたタイミング（blur）でのみ目標値を超えないよう補正
-      if (currentExpInput.value !== "" && targetExpInput.value !== "") {
-        const currNum = parseInt(currentExpInput.value, 10);
-        const tgtNum = parseInt(targetExpInput.value, 10);
-        if (currNum > tgtNum) {
-          currentExpInput.value = String(tgtNum);
-          if (isLoaded.value) {
-            currentRank.value = Logic.calculateRankFromExp(tgtNum).toString();
+        const parsed = parseExpInput(currentExpInput.value);
+        currentExpInput.value = parsed;
+        if (currentExpInput.value !== "" && targetExpInput.value !== "") {
+          const currNum = getEffectiveExp(currentExpInput.value);
+          const tgtNum = getEffectiveExp(targetExpInput.value);
+          if (currNum > tgtNum) {
+            currentExpInput.value = formatNumber(tgtNum);
+            if (isLoaded.value) {
+              currentRank.value = Logic.calculateRankFromExp(tgtNum).toString();
+            }
           }
         }
+        if (currentExpInput.value !== "") {
+          currentExpInput.value = formatNumber(currentExpInput.value);
+        }
+      } else {
+        currentRank.value = "";
+        currentExpInput.value = "";
       }
     };
 
@@ -148,16 +171,21 @@ createApp({
     const onTargetRankInput = (e) => {
       activeTargetMode.value = "rank";
       targetRank.value = parseNaturalRank(e.target.value);
-      if (isLoaded.value) {
+      if (targetRank.value === "") {
+        targetExpInput.value = "";
+      } else if (isLoaded.value) {
         const r = getEffectiveRank(targetRank.value);
-        targetExpInput.value = Logic.calculateExpFromRank1(r).toString();
+        targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
       }
     };
 
     const onTargetExpInput = (e) => {
       activeTargetMode.value = "exp";
-      targetExpInput.value = parseExpInput(e.target.value);
-      if (isLoaded.value) {
+      const raw = e.target.value.replace(/[^0-9]/g, "");
+      targetExpInput.value = parseExpInput(raw);
+      if (targetExpInput.value === "") {
+        targetRank.value = "";
+      } else if (isLoaded.value) {
         const exp = getEffectiveExp(targetExpInput.value);
         targetRank.value = Logic.calculateRankFromExp(exp).toString();
       }
@@ -166,41 +194,53 @@ createApp({
     const validateTargetRank = () => {
       if (targetRank.value !== "") {
         targetRank.value = parseNaturalRank(targetRank.value);
-      }
-      // フォーカスが外れたタイミング（blur）でのみ現在値を下回らないよう補正
-      if (currentRank.value !== "" && targetRank.value !== "") {
-        const currNum = parseInt(currentRank.value, 10);
-        const tgtNum = parseInt(targetRank.value, 10);
-        if (tgtNum < currNum) {
-          targetRank.value = String(currNum);
-          if (isLoaded.value) {
-            targetExpInput.value =
-              Logic.calculateExpFromRank1(currNum).toString();
+        if (currentRank.value !== "" && targetRank.value !== "") {
+          const currNum = parseInt(currentRank.value, 10);
+          const tgtNum = parseInt(targetRank.value, 10);
+          if (tgtNum < currNum) {
+            targetRank.value = String(currNum);
+            if (isLoaded.value) {
+              targetExpInput.value = formatNumber(
+                Logic.calculateExpFromRank1(currNum),
+              );
+            }
           }
         }
+        if (targetExpInput.value !== "") {
+          targetExpInput.value = formatNumber(targetExpInput.value);
+        }
+      } else {
+        targetExpInput.value = "";
       }
     };
 
     const validateTargetExp = () => {
       if (targetExpInput.value !== "") {
-        targetExpInput.value = parseExpInput(targetExpInput.value);
-      }
-      // フォーカスが外れたタイミング（blur）でのみ現在値を下回らないよう補正
-      if (currentExpInput.value !== "" && targetExpInput.value !== "") {
-        const currNum = parseInt(currentExpInput.value, 10);
-        const tgtNum = parseInt(targetExpInput.value, 10);
-        if (tgtNum < currNum) {
-          targetExpInput.value = String(currNum);
-          if (isLoaded.value) {
-            targetRank.value = Logic.calculateRankFromExp(currNum).toString();
+        const parsed = parseExpInput(targetExpInput.value);
+        targetExpInput.value = parsed;
+        if (currentExpInput.value !== "" && targetExpInput.value !== "") {
+          const currNum = getEffectiveExp(currentExpInput.value);
+          const tgtNum = getEffectiveExp(targetExpInput.value);
+          if (tgtNum < currNum) {
+            targetExpInput.value = formatNumber(currNum);
+            if (isLoaded.value) {
+              targetRank.value = Logic.calculateRankFromExp(currNum).toString();
+            }
           }
         }
+        if (targetExpInput.value !== "") {
+          targetExpInput.value = formatNumber(targetExpInput.value);
+        }
+      } else {
+        targetRank.value = "";
+        targetExpInput.value = "";
       }
     };
 
     // 有効な現在の累計経験値
     const currentExp = computed(() => {
       if (!isLoaded.value) return 0;
+      if (currentRank.value === "" && currentExpInput.value === "") return 0;
       if (activeCurrentMode.value === "exp") {
         return getEffectiveExp(currentExpInput.value);
       } else {
@@ -211,6 +251,7 @@ createApp({
     // 有効な目標の累計経験値
     const targetExp = computed(() => {
       if (!isLoaded.value) return 0;
+      if (targetRank.value === "" && targetExpInput.value === "") return 0;
       if (activeTargetMode.value === "exp") {
         return getEffectiveExp(targetExpInput.value);
       } else {
@@ -273,21 +314,25 @@ createApp({
 
     const selectedPreset = ref(questPresets[0]);
     const baseExp = ref(questPresets[0].exp);
+    const baseExpInput = ref(formatNumber(questPresets[0].exp));
     const clearSec = ref(CONSTANTS.DEFAULT_CLEAR_SEC);
 
-    const handleBaseExpChange = (e) => {
-      const val = e.target.value;
-      if (val === "" || isNaN(val)) {
+    const handleBaseExpInput = (e) => {
+      const raw = e.target.value.replace(/[^0-9]/g, "");
+      baseExpInput.value = raw;
+      if (raw === "") {
         baseExp.value = 0;
-        e.target.value = 0;
       } else {
-        let numVal = Number(val);
+        let numVal = Number(raw);
         if (numVal > maxBaseExp) {
           numVal = maxBaseExp;
         }
         baseExp.value = numVal;
-        e.target.value = numVal;
       }
+    };
+
+    const handleBaseExpBlur = () => {
+      baseExpInput.value = formatNumber(baseExp.value);
     };
 
     const handleClearSecChange = (e) => {
@@ -307,6 +352,7 @@ createApp({
 
     const applyPreset = () => {
       baseExp.value = selectedPreset.value.exp;
+      baseExpInput.value = formatNumber(selectedPreset.value.exp);
     };
 
     const totalMultiplier = computed(() => {
@@ -390,8 +436,10 @@ createApp({
       customMultiplier,
       selectedPreset,
       baseExp,
+      baseExpInput,
       clearSec,
-      handleBaseExpChange,
+      handleBaseExpInput,
+      handleBaseExpBlur,
       handleClearSecChange,
       applyPreset,
       earnedExpPerRun,

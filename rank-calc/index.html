@@ -49,7 +49,7 @@
             </div>
             <div>
               <label class="block text-xs text-slate-400"
-                >現在の累計経験値 (Exp)</label
+                >現在の累計経験値</label
               >
               <input
                 type="text"
@@ -127,7 +127,7 @@
             <label class="block text-sm text-slate-400">学びの力</label>
             <select
               v-model.number="selectedManabi"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
             >
               <option
                 v-for="item in manabiOptions"
@@ -143,7 +143,7 @@
             <label class="block text-sm text-slate-400">モンスポット</label>
             <select
               v-model.number="selectedSpot"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
             >
               <option
                 v-for="item in spotOptions"
@@ -159,7 +159,7 @@
             <label class="block text-sm text-slate-400">キャンペーン</label>
             <select
               v-model.number="selectedEvent"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
             >
               <option
                 v-for="item in eventOptions"
@@ -192,7 +192,7 @@
                 >
                 <select
                   v-model.number="selectedExpUpMonster"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
                 >
                   <option
                     v-for="item in expUpMonsterOptions"
@@ -208,7 +208,7 @@
                 <label class="block text-sm text-slate-400">運極ボーナス</label>
                 <select
                   v-model.number="selectedLuckBonus"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
                 >
                   <option
                     v-for="item in luckBonusOptions"
@@ -224,7 +224,7 @@
                 <label class="block text-sm text-slate-400">マルチプレイ</label>
                 <select
                   v-model.number="selectedMulti"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
                 >
                   <option
                     v-for="item in multiOptions"
@@ -268,7 +268,7 @@
             <select
               v-model="selectedPreset"
               @change="applyPreset"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
             >
               <option
                 v-for="preset in questPresets"
@@ -284,15 +284,14 @@
               >基礎獲得経験値 (1周)</label
             >
             <input
-              type="number"
-              :value="baseExp"
-              @input="handleBaseExpChange"
-              @blur="handleBaseExpChange"
+              type="text"
+              inputmode="numeric"
+              v-model="baseExpInput"
+              @input="handleBaseExpInput"
+              @blur="handleBaseExpBlur"
               :disabled="!selectedPreset.isCustom"
               :class="{'opacity-50 cursor-not-allowed': !selectedPreset.isCustom}"
-              min="0"
-              :max="maxBaseExp"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono text-slate-300 focus:outline-none focus:border-amber-400"
             />
           </div>
           <div>
@@ -306,7 +305,7 @@
               @blur="handleClearSecChange"
               min="0"
               :max="maxClearSec"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
             />
           </div>
         </div>
@@ -325,10 +324,10 @@
           >
             <p class="text-xs text-slate-400">必要総経験値</p>
             <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 break-all"
+              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 font-mono break-all"
             >
               {{ requiredTotalExp.toLocaleString() }}
-              <span class="text-xs">Exp</span>
+              <span class="text-xs font-sans">Exp</span>
             </p>
           </div>
           <div
@@ -336,10 +335,10 @@
           >
             <p class="text-xs text-slate-400">1周の獲得経験値</p>
             <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 break-all"
+              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 font-mono break-all"
             >
               {{ earnedExpPerRun.toLocaleString() }}
-              <span class="text-xs">Exp</span>
+              <span class="text-xs font-sans">Exp</span>
             </p>
           </div>
           <div
