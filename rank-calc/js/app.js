@@ -117,8 +117,7 @@ createApp({
       return isNaN(num) || num < 0 ? 0 : num;
     };
 
-    // --- 現在のランク・経験値操作 ---
-    const onCurrentRankInput = (e) => {
+    const handleCurrentRankInput = (e) => {
       activeCurrentMode.value = "rank";
       currentRank.value = parseNaturalRank(e.target.value);
       if (currentRank.value === "") {
@@ -129,13 +128,13 @@ createApp({
       }
     };
 
-    const onCurrentExpFocus = () => {
+    const handleCurrentExpFocus = () => {
       if (currentExpInput.value !== "") {
         currentExpInput.value = currentExpInput.value.replace(/[^0-9]/g, "");
       }
     };
 
-    const onCurrentExpInput = (e) => {
+    const handleCurrentExpInput = (e) => {
       activeCurrentMode.value = "exp";
       const raw = e.target.value.replace(/[^0-9]/g, "");
       currentExpInput.value = parseExpInput(raw);
@@ -197,8 +196,7 @@ createApp({
       }
     };
 
-    // --- 目標のランク・経験値操作 ---
-    const onTargetRankInput = (e) => {
+    const handleTargetRankInput = (e) => {
       activeTargetMode.value = "rank";
       targetRank.value = parseNaturalRank(e.target.value);
       if (targetRank.value === "") {
@@ -209,13 +207,13 @@ createApp({
       }
     };
 
-    const onTargetExpFocus = () => {
+    const handleTargetExpFocus = () => {
       if (targetExpInput.value !== "") {
         targetExpInput.value = targetExpInput.value.replace(/[^0-9]/g, "");
       }
     };
 
-    const onTargetExpInput = (e) => {
+    const handleTargetExpInput = (e) => {
       activeTargetMode.value = "exp";
       const raw = e.target.value.replace(/[^0-9]/g, "");
       targetExpInput.value = parseExpInput(raw);
@@ -393,7 +391,7 @@ createApp({
       baseExpInput.value = formatNumber(baseExp.value);
     };
 
-    const handleClearSecChange = (e) => {
+    const handleClearSecInput = (e) => {
       const val = e.target.value;
       if (val === "" || isNaN(val) || Number(val) < 0) {
         clearSec.value = 0;
@@ -408,7 +406,7 @@ createApp({
       }
     };
 
-    const applyPreset = () => {
+    const handlePresetChange = () => {
       baseExp.value = selectedPreset.value.exp;
       baseExpInput.value = formatNumber(selectedPreset.value.exp);
     };
@@ -474,14 +472,14 @@ createApp({
       lastStepExp,
       currentExp,
       targetExp,
-      onCurrentRankInput,
-      onCurrentExpFocus,
-      onCurrentExpInput,
+      handleCurrentRankInput,
+      handleCurrentExpFocus,
+      handleCurrentExpInput,
       validateCurrentRank,
       validateCurrentExp,
-      onTargetRankInput,
-      onTargetExpFocus,
-      onTargetExpInput,
+      handleTargetRankInput,
+      handleTargetExpFocus,
+      handleTargetExpInput,
       validateTargetRank,
       validateTargetExp,
       handleCustomMultiplierInput,
@@ -501,8 +499,8 @@ createApp({
       handleBaseExpFocus,
       handleBaseExpInput,
       handleBaseExpBlur,
-      handleClearSecChange,
-      applyPreset,
+      handleClearSecInput,
+      handlePresetChange,
       earnedExpPerRun,
       requiredTotalExp,
       totalRuns,
