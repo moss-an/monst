@@ -184,7 +184,7 @@ export function calculateTotalMultiplier(multipliers) {
  * @returns {number}
  */
 export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
-  return Math.floor(baseExp * totalMultiplier);
+  return Math.ceil(baseExp * totalMultiplier);
 }
 
 /**
@@ -195,6 +195,7 @@ export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
+  // HACK: モンスト内部の丸め込み処理が不明のため、暫定的に切り上げしている
   return Math.ceil(requiredTotalExp / earnedExpPerRun);
 }
 
