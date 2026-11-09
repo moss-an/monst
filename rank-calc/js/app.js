@@ -129,6 +129,12 @@ createApp({
       }
     };
 
+    const onCurrentExpFocus = () => {
+      if (currentExpInput.value !== "") {
+        currentExpInput.value = currentExpInput.value.replace(/[^0-9]/g, "");
+      }
+    };
+
     const onCurrentExpInput = (e) => {
       activeCurrentMode.value = "exp";
       const raw = e.target.value.replace(/[^0-9]/g, "");
@@ -200,6 +206,12 @@ createApp({
       } else if (isLoaded.value) {
         const r = getEffectiveRank(targetRank.value);
         targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
+      }
+    };
+
+    const onTargetExpFocus = () => {
+      if (targetExpInput.value !== "") {
+        targetExpInput.value = targetExpInput.value.replace(/[^0-9]/g, "");
       }
     };
 
@@ -345,6 +357,12 @@ createApp({
     const baseExpInput = ref(formatNumber(questPresets[0].exp));
     const clearSec = ref(CONSTANTS.DEFAULT_CLEAR_SEC);
 
+    const handleBaseExpFocus = () => {
+      if (baseExpInput.value !== "") {
+        baseExpInput.value = baseExpInput.value.replace(/[^0-9]/g, "");
+      }
+    };
+
     const handleBaseExpInput = (e) => {
       let raw = e.target.value.replace(/[^0-9]/g, "");
 
@@ -457,10 +475,12 @@ createApp({
       currentExp,
       targetExp,
       onCurrentRankInput,
+      onCurrentExpFocus,
       onCurrentExpInput,
       validateCurrentRank,
       validateCurrentExp,
       onTargetRankInput,
+      onTargetExpFocus,
       onTargetExpInput,
       validateTargetRank,
       validateTargetExp,
@@ -478,6 +498,7 @@ createApp({
       baseExp,
       baseExpInput,
       clearSec,
+      handleBaseExpFocus,
       handleBaseExpInput,
       handleBaseExpBlur,
       handleClearSecChange,
