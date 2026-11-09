@@ -68,7 +68,7 @@ export function getExpForNextRank(r) {
 }
 
 /**
- * ランク1を基準(0)とした指定ランクまでの累計経験値を算出
+ * ランク1を基準(0)とした指定ランク到達時点（ちょうどランク到達時）の累計経験値を算出
  */
 export function calculateExpFromRank1(targetR) {
   if (targetR <= 1) return 0;
@@ -90,11 +90,44 @@ export function calculateExpFromRank1(targetR) {
 }
 
 /**
- * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
+ * 累計経験値から現在ランクを逆算判定
+ * ランク r と r+1 の中間のExpの場合は r を返す
  */
-export function calculateRequiredTotalExp(currentRank, targetRank) {
-  if (targetRank <= currentRank) return 0;
-  return calculateExpFromRank1(targetRank) - calculateExpFromRank1(currentRank);
+export function calculateRankFromExp(exp) {
+  if (exp <= 0 || !isTableLoaded || RANK_EXP_TABLE.length === 0) {
+    return 1;
+  }
+
+  // 1〜999の範囲内
+  const maxTableExp = RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1];
+  if (exp < maxTableExp) {
+    for (let i = 0; i < RANK_EXP_TABLE.length; i++) {
+      if (exp < RANK_EXP_TABLE[i]) {
+        return i + 1;
+      }
+    }
+  }
+
+  // 999以降の計算
+  let currentRankNum = 999;
+  let accumulatedExp = maxTableExp;
+
+  while (true) {
+    const nextStepExp = getExpForNextRank(currentRankNum);
+    if (exp < accumulatedExp + nextStepExp) {
+      return currentRankNum;
+    }
+    accumulatedExp += nextStepExp;
+    currentRankNum++;
+  }
+}
+
+/**
+ * 入力された生の累計経験値同士で必要総経験値を算出
+ */
+export function calculateRequiredTotalExpFromExp(currentExp, targetExp) {
+  if (targetExp <= currentExp) return 0;
+  return targetExp - currentExp;
 }
 
 /**

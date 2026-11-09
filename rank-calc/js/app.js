@@ -15,6 +15,7 @@ import * as Logic from "./logic.js";
 createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
+    const maxExp = CONSTANTS.MAX_EXP;
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
     const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
     const maxCustomDecDigits = CONSTANTS.MAX_CUSTOM_DEC_DIGITS;
@@ -31,6 +32,9 @@ createApp({
 
     const currentRank = ref("");
     const targetRank = ref("");
+    const currentExpInput = ref("");
+    const targetExpInput = ref("");
+
     const isLoaded = ref(false);
     const lastStepExp = ref(0);
 
@@ -53,6 +57,7 @@ createApp({
       }
     });
 
+    // 入力クレンジング関数
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
       cleaned = cleaned.replace(/^0+/, "");
@@ -62,55 +67,100 @@ createApp({
       return String(num);
     };
 
-    const getEffectiveRank = (val) => {
-      if (val === "" || val === null || val === undefined) return 1;
-      const num = parseInt(val, 10);
-      return isNaN(num) || num < 1 ? 1 : num;
+    const parseExpInput = (val) => {
+      let cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      let num = Number(cleaned);
+      if (num > maxExp) num = maxExp;
+      return String(num);
     };
 
+    const getEffectiveExp = (val) => {
+      if (val === "" || val === null || val === undefined) return 0;
+      const num = Number(val);
+      return isNaN(num) || num < 0 ? 0 : num;
+    };
+
+    // ランク入力イベント
     const onCurrentRankInput = (e) => {
-      currentRank.value = parseNaturalRank(e.target.value);
+      const parsed = parseNaturalRank(e.target.value);
+      currentRank.value = parsed;
+      if (isLoaded.value) {
+        const r = parsed === "" ? 1 : parseInt(parsed, 10);
+        currentExpInput.value = String(Logic.calculateExpFromRank1(r));
+      }
     };
 
     const onTargetRankInput = (e) => {
-      targetRank.value = parseNaturalRank(e.target.value);
+      const parsed = parseNaturalRank(e.target.value);
+      targetRank.value = parsed;
+      if (isLoaded.value) {
+        const r = parsed === "" ? 1 : parseInt(parsed, 10);
+        targetExpInput.value = String(Logic.calculateExpFromRank1(r));
+      }
     };
 
+    // 経験値入力イベント
+    const onCurrentExpInput = (e) => {
+      const parsed = parseExpInput(e.target.value);
+      currentExpInput.value = parsed;
+      if (isLoaded.value) {
+        const expVal = getEffectiveExp(parsed);
+        const r = Logic.calculateRankFromExp(expVal);
+        currentRank.value = String(r);
+      }
+    };
+
+    const onTargetExpInput = (e) => {
+      const parsed = parseExpInput(e.target.value);
+      targetExpInput.value = parsed;
+      if (isLoaded.value) {
+        const expVal = getEffectiveExp(parsed);
+        const r = Logic.calculateRankFromExp(expVal);
+        targetRank.value = String(r);
+      }
+    };
+
+    // バリデーション & 下限/逆転制御
     const validateCurrentRank = () => {
       if (currentRank.value !== "") {
         currentRank.value = parseNaturalRank(currentRank.value);
       }
-      if (currentRank.value !== "" && targetRank.value !== "") {
-        const curr = parseInt(currentRank.value, 10);
-        const tgt = parseInt(targetRank.value, 10);
-        if (tgt < curr) {
-          targetRank.value = currentRank.value;
-        }
-      }
+      validateRankExpSync();
     };
 
     const validateTargetRank = () => {
       if (targetRank.value !== "") {
         targetRank.value = parseNaturalRank(targetRank.value);
       }
-      if (currentRank.value !== "" && targetRank.value !== "") {
-        const curr = parseInt(currentRank.value, 10);
-        const tgt = parseInt(targetRank.value, 10);
-        if (tgt < curr) {
-          targetRank.value = currentRank.value;
+      validateRankExpSync();
+    };
+
+    const validateCurrentExp = () => {
+      if (currentExpInput.value !== "") {
+        currentExpInput.value = parseExpInput(currentExpInput.value);
+      }
+      validateRankExpSync();
+    };
+
+    const validateTargetExp = () => {
+      if (targetExpInput.value !== "") {
+        targetExpInput.value = parseExpInput(targetExpInput.value);
+      }
+      validateRankExpSync();
+    };
+
+    const validateRankExpSync = () => {
+      const currExp = getEffectiveExp(currentExpInput.value);
+      const tgtExp = getEffectiveExp(targetExpInput.value);
+
+      if (targetExpInput.value !== "" && tgtExp < currExp) {
+        targetExpInput.value = String(currExp);
+        if (isLoaded.value) {
+          targetRank.value = String(Logic.calculateRankFromExp(currExp));
         }
       }
     };
-
-    const currentExp = computed(() => {
-      if (!isLoaded.value) return 0;
-      return Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value));
-    });
-
-    const targetExp = computed(() => {
-      if (!isLoaded.value) return 0;
-      return Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value));
-    });
 
     const selectedManabi = ref(CONSTANTS.DEFAULT_MANABI);
     const selectedSpot = ref(CONSTANTS.DEFAULT_SPOT);
@@ -225,10 +275,9 @@ createApp({
 
     const requiredTotalExp = computed(() => {
       if (!isLoaded.value) return 0;
-      return Logic.calculateRequiredTotalExp(
-        getEffectiveRank(currentRank.value),
-        getEffectiveRank(targetRank.value),
-      );
+      const curr = getEffectiveExp(currentExpInput.value);
+      const tgt = getEffectiveExp(targetExpInput.value);
+      return Logic.calculateRequiredTotalExpFromExp(curr, tgt);
     });
 
     const totalRuns = computed(() => {
@@ -244,6 +293,7 @@ createApp({
 
     return {
       maxRank,
+      maxExp,
       maxCustomMultiplier,
       maxCustomIntDigits,
       maxCustomDecDigits,
@@ -258,14 +308,18 @@ createApp({
       questPresets,
       currentRank,
       targetRank,
+      currentExpInput,
+      targetExpInput,
       isLoaded,
       lastStepExp,
-      currentExp,
-      targetExp,
       onCurrentRankInput,
       onTargetRankInput,
+      onCurrentExpInput,
+      onTargetExpInput,
       validateCurrentRank,
       validateTargetRank,
+      validateCurrentExp,
+      validateTargetExp,
       handleCustomMultiplierInput,
       validateCustomMultiplier,
       totalMultiplier,
