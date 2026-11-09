@@ -71,6 +71,10 @@ createApp({
 
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
+      const maxDigits = String(maxRank).length;
+      if (cleaned.length > maxDigits) {
+        cleaned = cleaned.slice(0, maxDigits);
+      }
       cleaned = cleaned.replace(/^0+/, "");
       if (cleaned === "") return "";
       let num = parseInt(cleaned, 10);
@@ -80,6 +84,10 @@ createApp({
 
     const parseExpInput = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
+      const maxDigits = String(maxExp).length;
+      if (cleaned.length > maxDigits) {
+        cleaned = cleaned.slice(0, maxDigits);
+      }
       if (cleaned.length > 1) {
         cleaned = cleaned.replace(/^0+/, "");
         if (cleaned === "") cleaned = "0";
@@ -93,13 +101,15 @@ createApp({
     const getEffectiveRank = (val) => {
       if (val === "" || val === null || val === undefined) return 1;
       const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
-      return isNaN(num) || num < 1 ? 1 : num;
+      if (isNaN(num) || num < 1) return 1;
+      return Math.min(num, maxRank);
     };
 
     const getEffectiveExp = (val) => {
       if (val === "" || val === null || val === undefined) return 0;
       const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
-      return isNaN(num) || num < 0 ? 0 : num;
+      if (isNaN(num) || num < 0) return 0;
+      return Math.min(num, maxExp);
     };
 
     // --- 現在のランク・経験値操作 ---
@@ -122,7 +132,8 @@ createApp({
         currentRank.value = "";
       } else if (isLoaded.value) {
         const exp = getEffectiveExp(currentExpInput.value);
-        currentRank.value = Logic.calculateRankFromExp(exp).toString();
+        const calculatedRank = Logic.calculateRankFromExp(exp);
+        currentRank.value = Math.min(calculatedRank, maxRank).toString();
       }
     };
 
@@ -159,7 +170,8 @@ createApp({
           if (currNum > tgtNum) {
             currentExpInput.value = formatNumber(tgtNum);
             if (isLoaded.value) {
-              currentRank.value = Logic.calculateRankFromExp(tgtNum).toString();
+              const calculatedRank = Logic.calculateRankFromExp(tgtNum);
+              currentRank.value = Math.min(calculatedRank, maxRank).toString();
             }
           }
         }
@@ -192,7 +204,8 @@ createApp({
         targetRank.value = "";
       } else if (isLoaded.value) {
         const exp = getEffectiveExp(targetExpInput.value);
-        targetRank.value = Logic.calculateRankFromExp(exp).toString();
+        const calculatedRank = Logic.calculateRankFromExp(exp);
+        targetRank.value = Math.min(calculatedRank, maxRank).toString();
       }
     };
 
@@ -229,7 +242,8 @@ createApp({
           if (tgtNum < currNum) {
             targetExpInput.value = formatNumber(currNum);
             if (isLoaded.value) {
-              targetRank.value = Logic.calculateRankFromExp(currNum).toString();
+              const calculatedRank = Logic.calculateRankFromExp(currNum);
+              targetRank.value = Math.min(calculatedRank, maxRank).toString();
             }
           }
         }
@@ -323,9 +337,18 @@ createApp({
     const clearSec = ref(CONSTANTS.DEFAULT_CLEAR_SEC);
 
     const handleBaseExpInput = (e) => {
-      const raw = e.target.value.replace(/[^0-9]/g, "");
-      baseExpInput.value = raw;
+      let raw = e.target.value.replace(/[^0-9]/g, "");
+      const maxDigits = String(maxBaseExp).length;
+      if (raw.length > maxDigits) {
+        raw = raw.slice(0, maxDigits);
+      }
+      if (raw.length > 1) {
+        raw = raw.replace(/^0+/, "");
+        if (raw === "") raw = "0";
+      }
+
       if (raw === "") {
+        baseExpInput.value = "";
         baseExp.value = 0;
       } else {
         let numVal = Number(raw);
@@ -333,6 +356,7 @@ createApp({
           numVal = maxBaseExp;
         }
         baseExp.value = numVal;
+        baseExpInput.value = String(numVal);
       }
     };
 
