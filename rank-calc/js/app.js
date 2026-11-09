@@ -80,11 +80,25 @@ createApp({
       if (currentRank.value !== "") {
         currentRank.value = parseNaturalRank(currentRank.value);
       }
+      if (currentRank.value !== "" && targetRank.value !== "") {
+        const curr = parseInt(currentRank.value, 10);
+        const tgt = parseInt(targetRank.value, 10);
+        if (tgt < curr) {
+          targetRank.value = currentRank.value;
+        }
+      }
     };
 
     const validateTargetRank = () => {
       if (targetRank.value !== "") {
         targetRank.value = parseNaturalRank(targetRank.value);
+      }
+      if (currentRank.value !== "" && targetRank.value !== "") {
+        const curr = parseInt(currentRank.value, 10);
+        const tgt = parseInt(targetRank.value, 10);
+        if (tgt < curr) {
+          targetRank.value = currentRank.value;
+        }
       }
     };
 
