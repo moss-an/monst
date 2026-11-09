@@ -16,6 +16,8 @@ createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
+    const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
+    const maxCustomDecDigits = CONSTANTS.MAX_CUSTOM_DEC_DIGITS;
     const maxBaseExp = CONSTANTS.MAX_BASE_EXP;
     const maxClearSec = CONSTANTS.MAX_CLEAR_SEC;
 
@@ -52,13 +54,13 @@ createApp({
       }
     });
 
-    const onCurrentRankChange = () => {
+    const onCurrentRankInput = () => {
       if (currentRank.value > maxRank) {
         currentRank.value = maxRank;
       }
     };
 
-    const onTargetRankChange = () => {
+    const onTargetRankInput = () => {
       if (targetRank.value > maxRank) {
         targetRank.value = maxRank;
       }
@@ -103,20 +105,53 @@ createApp({
     const selectedMulti = ref(CONSTANTS.DEFAULT_MULTI);
     const customMultiplier = ref("");
 
-    const onCustomMultiplierChange = () => {
-      if (customMultiplier.value > maxCustomMultiplier) {
-        customMultiplier.value = maxCustomMultiplier;
+    const handleCustomMultiplierInput = (e) => {
+      let val = e.target.value;
+
+      // 半角数字、小数点、空欄のみを許可
+      val = val.replace(/[^0-9.]/g, "");
+
+      //　小数点が複数入った場合は最初の1つ目のみ残す
+      const parts = val.split(".");
+      if (parts.length > 2) {
+        val = parts[0] + "." + parts.slice(1).join("");
       }
+
+      // 整数部・小数部の桁数切り詰め処理
+      const splitVal = val.split(".");
+      let integerPart = splitVal[0];
+      let decimalPart = splitVal[1];
+      if (integerPart.length > maxCustomIntDigits) {
+        integerPart = integerPart.slice(0, maxCustomIntDigits);
+      }
+      if (decimalPart !== undefined) {
+        if (decimalPart.length > maxCustomDecDigits) {
+          decimalPart = decimalPart.slice(0, maxCustomDecDigits);
+        }
+        val = `${integerPart}.${decimalPart}`;
+      } else if (val.endsWith(".")) {
+        val = `${integerPart}.`;
+      } else {
+        val = integerPart;
+      }
+
+      customMultiplier.value = val;
     };
 
     const validateCustomMultiplier = () => {
       if (customMultiplier.value === "" || customMultiplier.value === null) {
         return;
       }
-      if (isNaN(customMultiplier.value) || Number(customMultiplier.value) < 1) {
+      let num = Number(customMultiplier.value);
+      if (isNaN(num) || num < 1) {
         customMultiplier.value = 1;
-      } else if (customMultiplier.value > maxCustomMultiplier) {
+      } else if (num > maxCustomMultiplier) {
         customMultiplier.value = maxCustomMultiplier;
+      } else {
+        // 余分な先頭のゼロなどを整える
+        if (!customMultiplier.value.endsWith(".")) {
+          customMultiplier.value = num.toString();
+        }
       }
     };
 
@@ -192,10 +227,6 @@ createApp({
       );
     });
 
-    const timeObj = computed(() => {
-      return Logic.calculateTimeUnits(totalRuns.value * clearSec.value);
-    });
-
     const formattedTime = computed(() => {
       return Logic.formatTime(totalRuns.value * clearSec.value);
     });
@@ -203,6 +234,8 @@ createApp({
     return {
       maxRank,
       maxCustomMultiplier,
+      maxCustomIntDigits,
+      maxCustomDecDigits,
       maxBaseExp,
       maxClearSec,
       manabiOptions,
@@ -218,11 +251,11 @@ createApp({
       lastStepExp,
       currentExp,
       targetExp,
-      onCurrentRankChange,
-      onTargetRankChange,
+      onCurrentRankInput,
+      onTargetRankInput,
       validateCurrentRank,
       validateTargetRank,
-      onCustomMultiplierChange,
+      handleCustomMultiplierInput,
       validateCustomMultiplier,
       totalMultiplier,
       selectedManabi,
@@ -241,7 +274,6 @@ createApp({
       earnedExpPerRun,
       requiredTotalExp,
       totalRuns,
-      timeObj,
       formattedTime,
     };
   },
