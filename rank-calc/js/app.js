@@ -111,7 +111,7 @@ createApp({
       // 半角数字、小数点、空欄のみを許可
       val = val.replace(/[^0-9.]/g, "");
 
-      //　小数点が複数入った場合は最初の1つ目のみ残す
+      // 小数点が複数入った場合は最初の1つ目のみ残す
       const parts = val.split(".");
       if (parts.length > 2) {
         val = parts[0] + "." + parts.slice(1).join("");
@@ -227,7 +227,7 @@ createApp({
       );
     });
 
-    const formattedTime = computed(() => {
+    const timeResult = computed(() => {
       return Logic.formatTime(totalRuns.value * clearSec.value);
     });
 
@@ -274,7 +274,7 @@ createApp({
       earnedExpPerRun,
       requiredTotalExp,
       totalRuns,
-      formattedTime,
+      timeResult,
     };
   },
 }).mount("#app");

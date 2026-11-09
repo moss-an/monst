@@ -137,14 +137,12 @@ export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
 }
 
 /**
- * 秒数からフォーマットされた所要時間を取得
+ * 秒数から「日・時間・分」のオブジェクトを取得
  */
 export function formatTime(totalSeconds) {
-  const hours = Math.floor(totalSeconds / 3600);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
 
-  if (hours > 0) {
-    return `${hours}時間 ${minutes}分`;
-  }
-  return `${minutes}分`;
+  return { days, hours, minutes };
 }

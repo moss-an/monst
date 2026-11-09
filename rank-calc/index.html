@@ -347,9 +347,30 @@
           >
             <p class="text-xs text-slate-400">推定所要時間</p>
             <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 break-all"
+              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5"
             >
-              {{ formattedTime }}
+              <template v-if="timeResult.days > 0">
+                <span
+                  >{{ timeResult.days.toLocaleString() }}<span
+                    class="text-xs font-normal ml-0.5"
+                    >日</span
+                  ></span
+                >
+              </template>
+              <template v-if="timeResult.days > 0 || timeResult.hours > 0">
+                <span
+                  >{{ timeResult.hours.toLocaleString() }}<span
+                    class="text-xs font-normal ml-0.5"
+                    >時間</span
+                  ></span
+                >
+              </template>
+              <span
+                >{{ timeResult.minutes.toLocaleString() }}<span
+                  class="text-xs font-normal ml-0.5"
+                  >分</span
+                ></span
+              >
             </p>
           </div>
         </div>
