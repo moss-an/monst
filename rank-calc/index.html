@@ -38,12 +38,12 @@
             <div>
               <label class="block text-sm text-slate-400">現在のランク</label>
               <input
-                type="number"
-                v-model.number="currentRank"
+                type="text"
+                inputmode="numeric"
+                v-model="currentRank"
                 @input="onCurrentRankInput"
                 @blur="validateCurrentRank"
-                min="1"
-                :max="maxRank"
+                placeholder="数値を入力"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
               />
             </div>
@@ -65,12 +65,12 @@
             <div>
               <label class="block text-sm text-slate-400">目標のランク</label>
               <input
-                type="number"
-                v-model.number="targetRank"
+                type="text"
+                inputmode="numeric"
+                v-model="targetRank"
                 @input="onTargetRankInput"
                 @blur="validateTargetRank"
-                min="1"
-                :max="maxRank"
+                placeholder="数値を入力"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
               />
             </div>

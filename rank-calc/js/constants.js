@@ -12,8 +12,6 @@ export const MAX_BASE_EXP = 999999999;
 export const MAX_CLEAR_SEC = 999999;
 
 // UI上のデフォルト値
-export const DEFAULT_CURRENT_RANK = 2500;
-export const DEFAULT_TARGET_RANK = 3000;
 export const DEFAULT_MANABI = 1.65;
 export const DEFAULT_SPOT = 1.75;
 export const DEFAULT_EVENT = 3.0;
