@@ -62,7 +62,9 @@ createApp({
 
     const formatNumber = (val) => {
       if (val === "" || val === null || val === undefined) return "";
-      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
+      const cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
       if (isNaN(num)) return "";
       return num.toLocaleString();
     };
@@ -78,7 +80,10 @@ createApp({
 
     const parseExpInput = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      cleaned = cleaned.replace(/^0+/, "");
+      if (cleaned.length > 1) {
+        cleaned = cleaned.replace(/^0+/, "");
+        if (cleaned === "") cleaned = "0";
+      }
       if (cleaned === "") return "";
       let num = parseInt(cleaned, 10);
       if (num > maxExp) num = maxExp;
