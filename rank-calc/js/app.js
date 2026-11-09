@@ -113,11 +113,34 @@ createApp({
       if (currentRank.value !== "") {
         currentRank.value = parseNaturalRank(currentRank.value);
       }
+      // フォーカスが外れたタイミング（blur）でのみ目標値を超えないよう補正
+      if (currentRank.value !== "" && targetRank.value !== "") {
+        const currNum = parseInt(currentRank.value, 10);
+        const tgtNum = parseInt(targetRank.value, 10);
+        if (currNum > tgtNum) {
+          currentRank.value = String(tgtNum);
+          if (isLoaded.value) {
+            currentExpInput.value =
+              Logic.calculateExpFromRank1(tgtNum).toString();
+          }
+        }
+      }
     };
 
     const validateCurrentExp = () => {
       if (currentExpInput.value !== "") {
         currentExpInput.value = parseExpInput(currentExpInput.value);
+      }
+      // フォーカスが外れたタイミング（blur）でのみ目標値を超えないよう補正
+      if (currentExpInput.value !== "" && targetExpInput.value !== "") {
+        const currNum = parseInt(currentExpInput.value, 10);
+        const tgtNum = parseInt(targetExpInput.value, 10);
+        if (currNum > tgtNum) {
+          currentExpInput.value = String(tgtNum);
+          if (isLoaded.value) {
+            currentRank.value = Logic.calculateRankFromExp(tgtNum).toString();
+          }
+        }
       }
     };
 
@@ -144,11 +167,34 @@ createApp({
       if (targetRank.value !== "") {
         targetRank.value = parseNaturalRank(targetRank.value);
       }
+      // フォーカスが外れたタイミング（blur）でのみ現在値を下回らないよう補正
+      if (currentRank.value !== "" && targetRank.value !== "") {
+        const currNum = parseInt(currentRank.value, 10);
+        const tgtNum = parseInt(targetRank.value, 10);
+        if (tgtNum < currNum) {
+          targetRank.value = String(currNum);
+          if (isLoaded.value) {
+            targetExpInput.value =
+              Logic.calculateExpFromRank1(currNum).toString();
+          }
+        }
+      }
     };
 
     const validateTargetExp = () => {
       if (targetExpInput.value !== "") {
         targetExpInput.value = parseExpInput(targetExpInput.value);
+      }
+      // フォーカスが外れたタイミング（blur）でのみ現在値を下回らないよう補正
+      if (currentExpInput.value !== "" && targetExpInput.value !== "") {
+        const currNum = parseInt(currentExpInput.value, 10);
+        const tgtNum = parseInt(targetExpInput.value, 10);
+        if (tgtNum < currNum) {
+          targetExpInput.value = String(currNum);
+          if (isLoaded.value) {
+            targetRank.value = Logic.calculateRankFromExp(currNum).toString();
+          }
+        }
       }
     };
 

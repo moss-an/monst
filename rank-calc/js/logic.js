@@ -91,15 +91,14 @@ export function calculateExpFromRank1(targetR) {
 
 /**
  * 累計経験値から相当するランクを逆引き
- * ランクr到達時点の累計ExpをE(r)としたとき、E(r) <= exp < E(r+1) であればランクrと判定する。
+ * ランク r 到達時点の累計Expを E(r) としたとき、E(r) <= exp < E(r+1) であれば ランク r と判定する。
  */
 export function calculateRankFromExp(exp) {
   if (exp <= 0 || !isTableLoaded || RANK_EXP_TABLE.length === 0) return 1;
 
-  // 1~999の範囲
+  // 1~999 の範囲
   const maxTableExp = RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1];
   if (exp < maxTableExp) {
-    // RANK_EXP_TABLE[i]は、ランクi+1到達時の累計経験値
     for (let i = 0; i < RANK_EXP_TABLE.length; i++) {
       if (exp < RANK_EXP_TABLE[i]) {
         return i;
@@ -121,7 +120,7 @@ export function calculateRankFromExp(exp) {
 }
 
 /**
- * 現在のランクから目標ランクに到達するまでに必要な累計経験値を算出
+ * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
  */
 export function calculateRequiredTotalExp(currentRank, targetRank) {
   if (targetRank <= currentRank) return 0;
