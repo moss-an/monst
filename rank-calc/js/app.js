@@ -29,8 +29,8 @@ createApp({
     const multiOptions = CONSTANTS.MULTI_OPTIONS;
     const questPresets = CONSTANTS.QUEST_PRESETS;
 
-    const currentRank = ref(CONSTANTS.DEFAULT_CURRENT_RANK);
-    const targetRank = ref(CONSTANTS.DEFAULT_TARGET_RANK);
+    const currentRank = ref("");
+    const targetRank = ref("");
     const isLoaded = ref(false);
     const lastStepExp = ref(0);
 
@@ -48,53 +48,54 @@ createApp({
 
         isLoaded.value = true;
         lastStepExp.value = Logic.getLastStepExp();
-        currentRank.value = Number(currentRank.value);
       } catch (e) {
         console.warn("CSVの読み込みに失敗しました:", e);
       }
     });
 
-    const onCurrentRankInput = () => {
-      if (currentRank.value > maxRank) {
-        currentRank.value = maxRank;
-      }
+    const parseNaturalRank = (val) => {
+      let cleaned = String(val).replace(/[^0-9]/g, "");
+      cleaned = cleaned.replace(/^0+/, "");
+      if (cleaned === "") return "";
+      let num = parseInt(cleaned, 10);
+      if (num > maxRank) num = maxRank;
+      return String(num);
     };
 
-    const onTargetRankInput = () => {
-      if (targetRank.value > maxRank) {
-        targetRank.value = maxRank;
-      }
+    const getEffectiveRank = (val) => {
+      if (val === "" || val === null || val === undefined) return 1;
+      const num = parseInt(val, 10);
+      return isNaN(num) || num < 1 ? 1 : num;
+    };
+
+    const onCurrentRankInput = (e) => {
+      currentRank.value = parseNaturalRank(e.target.value);
+    };
+
+    const onTargetRankInput = (e) => {
+      targetRank.value = parseNaturalRank(e.target.value);
     };
 
     const validateCurrentRank = () => {
-      if (isNaN(currentRank.value) || currentRank.value < 1) {
-        currentRank.value = 1;
-      }
-      if (currentRank.value > maxRank) {
-        currentRank.value = maxRank;
-      }
-      if (targetRank.value < currentRank.value) {
-        targetRank.value = currentRank.value;
+      if (currentRank.value !== "") {
+        currentRank.value = parseNaturalRank(currentRank.value);
       }
     };
 
     const validateTargetRank = () => {
-      if (isNaN(targetRank.value) || targetRank.value <= currentRank.value) {
-        targetRank.value = currentRank.value;
-      }
-      if (targetRank.value > maxRank) {
-        targetRank.value = maxRank;
+      if (targetRank.value !== "") {
+        targetRank.value = parseNaturalRank(targetRank.value);
       }
     };
 
     const currentExp = computed(() => {
       if (!isLoaded.value) return 0;
-      return Logic.calculateExpFromRank1(currentRank.value);
+      return Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value));
     });
 
     const targetExp = computed(() => {
       if (!isLoaded.value) return 0;
-      return Logic.calculateExpFromRank1(targetRank.value);
+      return Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value));
     });
 
     const selectedManabi = ref(CONSTANTS.DEFAULT_MANABI);
@@ -108,16 +109,13 @@ createApp({
     const handleCustomMultiplierInput = (e) => {
       let val = e.target.value;
 
-      // 半角数字、小数点、空欄のみを許可
       val = val.replace(/[^0-9.]/g, "");
 
-      // 小数点が複数入った場合は最初の1つ目のみ残す
       const parts = val.split(".");
       if (parts.length > 2) {
         val = parts[0] + "." + parts.slice(1).join("");
       }
 
-      // 整数部・小数部の桁数切り詰め処理
       const splitVal = val.split(".");
       let integerPart = splitVal[0];
       let decimalPart = splitVal[1];
@@ -148,7 +146,6 @@ createApp({
       } else if (num > maxCustomMultiplier) {
         customMultiplier.value = maxCustomMultiplier;
       } else {
-        // 余分な先頭のゼロなどを整える
         if (!customMultiplier.value.endsWith(".")) {
           customMultiplier.value = num.toString();
         }
@@ -215,8 +212,8 @@ createApp({
     const requiredTotalExp = computed(() => {
       if (!isLoaded.value) return 0;
       return Logic.calculateRequiredTotalExp(
-        currentRank.value,
-        targetRank.value,
+        getEffectiveRank(currentRank.value),
+        getEffectiveRank(targetRank.value),
       );
     });
 
