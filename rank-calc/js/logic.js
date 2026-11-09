@@ -68,7 +68,7 @@ export function getExpForNextRank(r) {
 }
 
 /**
- * ランク1を基準(0)とした指定ランク到達時点（ちょうどランク到達時）の累計経験値を算出
+ * ランク1を基準(0)とした指定ランク到達に必要な累計経験値を算出
  */
 export function calculateExpFromRank1(targetR) {
   if (targetR <= 1) return 0;
@@ -90,42 +90,48 @@ export function calculateExpFromRank1(targetR) {
 }
 
 /**
- * 累計経験値から現在ランクを逆算判定
- * ランク r と r+1 の中間のExpの場合は r を返す
+ * 累計経験値から相当するランクを逆引き
+ * ランクr到達時点の累計ExpをE(r)としたとき、E(r) <= exp < E(r+1) であればランクrと判定する。
  */
 export function calculateRankFromExp(exp) {
-  if (exp <= 0 || !isTableLoaded || RANK_EXP_TABLE.length === 0) {
-    return 1;
-  }
+  if (exp <= 0 || !isTableLoaded || RANK_EXP_TABLE.length === 0) return 1;
 
-  // 1〜999の範囲内
+  // 1~999の範囲
   const maxTableExp = RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1];
   if (exp < maxTableExp) {
+    // RANK_EXP_TABLE[i]は、ランクi+1到達時の累計経験値
     for (let i = 0; i < RANK_EXP_TABLE.length; i++) {
       if (exp < RANK_EXP_TABLE[i]) {
-        return i + 1;
+        return i;
       }
     }
   }
 
-  // 999以降の計算
-  let currentRankNum = 999;
-  let accumulatedExp = maxTableExp;
-
+  // 999以降の範囲
+  let currentTotal = maxTableExp;
+  let r = 999;
   while (true) {
-    const nextStepExp = getExpForNextRank(currentRankNum);
-    if (exp < accumulatedExp + nextStepExp) {
-      return currentRankNum;
+    const nextExp = getExpForNextRank(r);
+    if (exp < currentTotal + nextExp) {
+      return r;
     }
-    accumulatedExp += nextStepExp;
-    currentRankNum++;
+    currentTotal += nextExp;
+    r++;
   }
 }
 
 /**
- * 入力された生の累計経験値同士で必要総経験値を算出
+ * 現在のランクから目標ランクに到達するまでに必要な累計経験値を算出
  */
-export function calculateRequiredTotalExpFromExp(currentExp, targetExp) {
+export function calculateRequiredTotalExp(currentRank, targetRank) {
+  if (targetRank <= currentRank) return 0;
+  return calculateExpFromRank1(targetRank) - calculateExpFromRank1(currentRank);
+}
+
+/**
+ * 現在の累計経験値と目標の累計経験値の差分を算出
+ */
+export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
   if (targetExp <= currentExp) return 0;
   return targetExp - currentExp;
 }

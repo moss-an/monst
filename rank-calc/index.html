@@ -31,7 +31,7 @@
             1. ランク設定
           </h2>
 
-          <!-- 現在のランク & 累計経験値 -->
+          <!-- 現在のランク & 累計経験値（入力可能） -->
           <div
             class="space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
           >
@@ -57,13 +57,12 @@
                 v-model="currentExpInput"
                 @input="onCurrentExpInput"
                 @blur="validateCurrentExp"
-                placeholder="例: 100000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 mt-1 text-sm text-amber-300 font-mono focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 mt-1 text-sm font-mono text-slate-300 focus:outline-none focus:border-amber-400"
               />
             </div>
           </div>
 
-          <!-- 目標のランク & 累計経験値 -->
+          <!-- 目標のランク & 累計経験値（入力可能） -->
           <div
             class="space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
           >
@@ -89,8 +88,7 @@
                 v-model="targetExpInput"
                 @input="onTargetExpInput"
                 @blur="validateTargetExp"
-                placeholder="例: 1000000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 mt-1 text-sm text-amber-300 font-mono focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 mt-1 text-sm font-mono text-slate-300 focus:outline-none focus:border-amber-400"
               />
             </div>
           </div>
