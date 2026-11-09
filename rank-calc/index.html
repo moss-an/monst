@@ -40,7 +40,7 @@
               <input
                 type="number"
                 v-model.number="currentRank"
-                @input="onCurrentRankInput"
+                @input="onCurrentRankChange"
                 @blur="validateCurrentRank"
                 min="1"
                 :max="maxRank"
@@ -67,7 +67,7 @@
               <input
                 type="number"
                 v-model.number="targetRank"
-                @input="onTargetRankInput"
+                @input="onTargetRankChange"
                 @blur="validateTargetRank"
                 min="1"
                 :max="maxRank"
@@ -229,10 +229,12 @@
               <div>
                 <label class="block text-sm text-slate-400">カスタム倍率</label>
                 <input
-                  type="text"
-                  inputmode="decimal"
-                  v-model="customMultiplier"
-                  @input="handleCustomMultiplierInput"
+                  type="number"
+                  step="0.01"
+                  min="1"
+                  :max="maxCustomMultiplier"
+                  v-model.number="customMultiplier"
+                  @input="onCustomMultiplierChange"
                   @blur="validateCustomMultiplier"
                   placeholder="例: 1.05 (倍率なしは1)"
                   class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
@@ -349,7 +351,19 @@
             <p
               class="text-sm sm:text-base md:text-lg font-bold text-amber-300 break-all"
             >
-              {{ formattedTime }}
+              <template v-if="timeObj.days > 0">
+                {{ timeObj.days.toLocaleString() }}<span class="text-xs mr-1"
+                  >日</span
+                >
+              </template>
+              <template v-if="timeObj.hours > 0 || timeObj.days > 0">
+                {{ timeObj.hours.toLocaleString() }}<span class="text-xs mr-1"
+                  >時間</span
+                >
+              </template>
+              {{ timeObj.minutes.toLocaleString() }}<span class="text-xs"
+                >分</span
+              >
             </p>
           </div>
         </div>

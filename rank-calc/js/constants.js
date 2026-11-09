@@ -6,8 +6,6 @@
 // UI上で指定できる上限値
 export const MAX_RANK = 99999;
 export const MAX_CUSTOM_MULTIPLIER = 9999;
-export const MAX_CUSTOM_INT_DIGITS = 4; // カスタム倍率の整数部桁数上限
-export const MAX_CUSTOM_DEC_DIGITS = 4; // カスタム倍率の小数部桁数上限
 export const MAX_BASE_EXP = 999999999;
 export const MAX_CLEAR_SEC = 999999;
 
