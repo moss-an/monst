@@ -76,7 +76,7 @@ createApp({
 
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      // MAX_RANK の桁数 + 1までを許容
+      // maxRankの桁数 + 1まで一時的に入力許容 (UX向上)
       const maxRankInputLength = String(maxRank).length + 1;
       if (cleaned.length > maxRankInputLength) {
         cleaned = cleaned.slice(0, maxRankInputLength);
@@ -90,6 +90,7 @@ createApp({
 
     const parseExpInput = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
+      // maxExpの桁数 + 2まで一時的に入力許容 (UX向上)
       const limitDigits = String(maxExp.value).length + 2;
       if (cleaned.length > limitDigits) {
         cleaned = cleaned.slice(0, limitDigits);
