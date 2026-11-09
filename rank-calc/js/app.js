@@ -15,6 +15,7 @@ import * as Logic from "./logic.js";
 createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
+    const maxExp = CONSTANTS.MAX_EXP;
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
     const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
     const maxCustomDecDigits = CONSTANTS.MAX_CUSTOM_DEC_DIGITS;
@@ -31,6 +32,12 @@ createApp({
 
     const currentRank = ref("");
     const targetRank = ref("");
+    const currentExpInput = ref("");
+    const targetExpInput = ref("");
+
+    const activeCurrentMode = ref("rank"); // "rank" または "exp"
+    const activeTargetMode = ref("rank"); // "rank" または "exp"
+
     const isLoaded = ref(false);
     const lastStepExp = ref(0);
 
@@ -62,30 +69,97 @@ createApp({
       return String(num);
     };
 
+    const parseExpInput = (val) => {
+      let cleaned = String(val).replace(/[^0-9]/g, "");
+      cleaned = cleaned.replace(/^0+/, "");
+      if (cleaned === "") return "";
+      let num = parseInt(cleaned, 10);
+      if (num > maxExp) num = maxExp;
+      return String(num);
+    };
+
     const getEffectiveRank = (val) => {
       if (val === "" || val === null || val === undefined) return 1;
       const num = parseInt(val, 10);
       return isNaN(num) || num < 1 ? 1 : num;
     };
 
-    const onCurrentRankInput = (e) => {
-      currentRank.value = parseNaturalRank(e.target.value);
+    const getEffectiveExp = (val) => {
+      if (val === "" || val === null || val === undefined) return 0;
+      const num = parseInt(val, 10);
+      return isNaN(num) || num < 0 ? 0 : num;
     };
 
-    const onTargetRankInput = (e) => {
-      targetRank.value = parseNaturalRank(e.target.value);
+    // --- 現在のランク・経験値操作 ---
+    const onCurrentRankInput = (e) => {
+      activeCurrentMode.value = "rank";
+      currentRank.value = parseNaturalRank(e.target.value);
+      if (isLoaded.value) {
+        const r = getEffectiveRank(currentRank.value);
+        currentExpInput.value = Logic.calculateExpFromRank1(r).toString();
+      }
+    };
+
+    const onCurrentExpInput = (e) => {
+      activeCurrentMode.value = "exp";
+      currentExpInput.value = parseExpInput(e.target.value);
+      if (isLoaded.value) {
+        const exp = getEffectiveExp(currentExpInput.value);
+        currentRank.value = Logic.calculateRankFromExp(exp).toString();
+      }
     };
 
     const validateCurrentRank = () => {
       if (currentRank.value !== "") {
         currentRank.value = parseNaturalRank(currentRank.value);
       }
+      // フォーカスが外れたタイミング（blur）でのみ目標値を超えないよう補正
       if (currentRank.value !== "" && targetRank.value !== "") {
-        const curr = parseInt(currentRank.value, 10);
-        const tgt = parseInt(targetRank.value, 10);
-        if (tgt < curr) {
-          targetRank.value = currentRank.value;
+        const currNum = parseInt(currentRank.value, 10);
+        const tgtNum = parseInt(targetRank.value, 10);
+        if (currNum > tgtNum) {
+          currentRank.value = String(tgtNum);
+          if (isLoaded.value) {
+            currentExpInput.value =
+              Logic.calculateExpFromRank1(tgtNum).toString();
+          }
         }
+      }
+    };
+
+    const validateCurrentExp = () => {
+      if (currentExpInput.value !== "") {
+        currentExpInput.value = parseExpInput(currentExpInput.value);
+      }
+      // フォーカスが外れたタイミング（blur）でのみ目標値を超えないよう補正
+      if (currentExpInput.value !== "" && targetExpInput.value !== "") {
+        const currNum = parseInt(currentExpInput.value, 10);
+        const tgtNum = parseInt(targetExpInput.value, 10);
+        if (currNum > tgtNum) {
+          currentExpInput.value = String(tgtNum);
+          if (isLoaded.value) {
+            currentRank.value = Logic.calculateRankFromExp(tgtNum).toString();
+          }
+        }
+      }
+    };
+
+    // --- 目標のランク・経験値操作 ---
+    const onTargetRankInput = (e) => {
+      activeTargetMode.value = "rank";
+      targetRank.value = parseNaturalRank(e.target.value);
+      if (isLoaded.value) {
+        const r = getEffectiveRank(targetRank.value);
+        targetExpInput.value = Logic.calculateExpFromRank1(r).toString();
+      }
+    };
+
+    const onTargetExpInput = (e) => {
+      activeTargetMode.value = "exp";
+      targetExpInput.value = parseExpInput(e.target.value);
+      if (isLoaded.value) {
+        const exp = getEffectiveExp(targetExpInput.value);
+        targetRank.value = Logic.calculateRankFromExp(exp).toString();
       }
     };
 
@@ -93,23 +167,55 @@ createApp({
       if (targetRank.value !== "") {
         targetRank.value = parseNaturalRank(targetRank.value);
       }
+      // フォーカスが外れたタイミング（blur）でのみ現在値を下回らないよう補正
       if (currentRank.value !== "" && targetRank.value !== "") {
-        const curr = parseInt(currentRank.value, 10);
-        const tgt = parseInt(targetRank.value, 10);
-        if (tgt < curr) {
-          targetRank.value = currentRank.value;
+        const currNum = parseInt(currentRank.value, 10);
+        const tgtNum = parseInt(targetRank.value, 10);
+        if (tgtNum < currNum) {
+          targetRank.value = String(currNum);
+          if (isLoaded.value) {
+            targetExpInput.value =
+              Logic.calculateExpFromRank1(currNum).toString();
+          }
         }
       }
     };
 
+    const validateTargetExp = () => {
+      if (targetExpInput.value !== "") {
+        targetExpInput.value = parseExpInput(targetExpInput.value);
+      }
+      // フォーカスが外れたタイミング（blur）でのみ現在値を下回らないよう補正
+      if (currentExpInput.value !== "" && targetExpInput.value !== "") {
+        const currNum = parseInt(currentExpInput.value, 10);
+        const tgtNum = parseInt(targetExpInput.value, 10);
+        if (tgtNum < currNum) {
+          targetExpInput.value = String(currNum);
+          if (isLoaded.value) {
+            targetRank.value = Logic.calculateRankFromExp(currNum).toString();
+          }
+        }
+      }
+    };
+
+    // 有効な現在の累計経験値
     const currentExp = computed(() => {
       if (!isLoaded.value) return 0;
-      return Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value));
+      if (activeCurrentMode.value === "exp") {
+        return getEffectiveExp(currentExpInput.value);
+      } else {
+        return Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value));
+      }
     });
 
+    // 有効な目標の累計経験値
     const targetExp = computed(() => {
       if (!isLoaded.value) return 0;
-      return Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value));
+      if (activeTargetMode.value === "exp") {
+        return getEffectiveExp(targetExpInput.value);
+      } else {
+        return Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value));
+      }
     });
 
     const selectedManabi = ref(CONSTANTS.DEFAULT_MANABI);
@@ -122,7 +228,6 @@ createApp({
 
     const handleCustomMultiplierInput = (e) => {
       let val = e.target.value;
-
       val = val.replace(/[^0-9.]/g, "");
 
       const parts = val.split(".");
@@ -225,9 +330,9 @@ createApp({
 
     const requiredTotalExp = computed(() => {
       if (!isLoaded.value) return 0;
-      return Logic.calculateRequiredTotalExp(
-        getEffectiveRank(currentRank.value),
-        getEffectiveRank(targetRank.value),
+      return Logic.calculateRequiredTotalExpByValue(
+        currentExp.value,
+        targetExp.value,
       );
     });
 
@@ -244,6 +349,7 @@ createApp({
 
     return {
       maxRank,
+      maxExp,
       maxCustomMultiplier,
       maxCustomIntDigits,
       maxCustomDecDigits,
@@ -258,14 +364,20 @@ createApp({
       questPresets,
       currentRank,
       targetRank,
+      currentExpInput,
+      targetExpInput,
       isLoaded,
       lastStepExp,
       currentExp,
       targetExp,
       onCurrentRankInput,
-      onTargetRankInput,
+      onCurrentExpInput,
       validateCurrentRank,
+      validateCurrentExp,
+      onTargetRankInput,
+      onTargetExpInput,
       validateTargetRank,
+      validateTargetExp,
       handleCustomMultiplierInput,
       validateCustomMultiplier,
       totalMultiplier,
