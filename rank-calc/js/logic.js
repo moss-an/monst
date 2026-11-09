@@ -3,16 +3,17 @@
  * @description 計算ロジック
  */
 
-let RANK_EXP_TABLE = []; // 1〜999ランクの個別累計テーブル
-let RANK_STEP_TABLE = []; // 999以降の区間設定テーブル
+let rankExpTable = []; // 1〜999ランクの個別累計テーブル
+let rankStepTable = []; // 999以降の区間設定テーブル
 let isTableLoaded = false;
 
 /**
  * 1〜999ランク用の累計経験値CSVを初期化
+ * @param {string} csvText
  */
 export function initRankTableFromCSV(csvText) {
   const lines = csvText.trim().split("\n");
-  RANK_EXP_TABLE = lines
+  rankExpTable = lines
     .slice(1)
     .filter((line) => line.trim() !== "")
     .map((line) => {
@@ -20,17 +21,18 @@ export function initRankTableFromCSV(csvText) {
       return parseInt(parts[1].trim(), 10);
     });
 
-  if (RANK_EXP_TABLE.length > 0) {
+  if (rankExpTable.length > 0) {
     isTableLoaded = true;
   }
 }
 
 /**
  * 999以降の区間定義CSVを初期化
+ * @param {string} csvText
  */
 export function initRankStepTableFromCSV(csvText) {
   const lines = csvText.trim().split("\n");
-  RANK_STEP_TABLE = lines
+  rankStepTable = lines
     .slice(1)
     .filter((line) => line.trim() !== "")
     .map((line) => {
@@ -44,24 +46,27 @@ export function initRankStepTableFromCSV(csvText) {
 
 /**
  * ランク r から r+1 に上げるために必要な経験値
+ * @param {number} rank
+ * @returns {number}
  */
-export function getExpForNextRank(r) {
-  if (r < 1) return 0;
+export function getExpForNextRank(rank) {
+  if (rank < 1) return 0;
 
-  if (r < 999 && RANK_EXP_TABLE.length >= r + 1) {
-    return RANK_EXP_TABLE[r] - RANK_EXP_TABLE[r - 1];
+  if (rank < 999 && rankExpTable.length >= rank + 1) {
+    return rankExpTable[rank] - rankExpTable[rank - 1];
   }
 
-  const step = RANK_STEP_TABLE.find(
-    (item) => r >= item.minRank && (item.maxRank ? r <= item.maxRank : true),
+  const step = rankStepTable.find(
+    (item) =>
+      rank >= item.minRank && (item.maxRank ? rank <= item.maxRank : true),
   );
 
   if (step) {
     return step.expPerRank;
   }
 
-  if (RANK_STEP_TABLE.length > 0) {
-    return RANK_STEP_TABLE[RANK_STEP_TABLE.length - 1].expPerRank;
+  if (rankStepTable.length > 0) {
+    return rankStepTable[rankStepTable.length - 1].expPerRank;
   }
 
   return 0;
@@ -69,38 +74,42 @@ export function getExpForNextRank(r) {
 
 /**
  * ランク1を基準(0)とした指定ランク到達に必要な累計経験値を算出
+ * @param {number} targetRank
+ * @returns {number}
  */
-export function calculateExpFromRank1(targetR) {
-  if (targetR <= 1) return 0;
+export function calculateExpFromRank1(targetRank) {
+  if (targetRank <= 1) return 0;
 
-  if (!isTableLoaded || RANK_EXP_TABLE.length === 0) {
+  if (!isTableLoaded || rankExpTable.length === 0) {
     return 0;
   }
 
-  if (targetR <= RANK_EXP_TABLE.length) {
-    return RANK_EXP_TABLE[targetR - 1];
+  if (targetRank <= rankExpTable.length) {
+    return rankExpTable[targetRank - 1];
   }
 
-  let total = RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1];
+  let totalExp = rankExpTable[rankExpTable.length - 1];
 
-  for (let r = 999; r < targetR; r++) {
-    total += getExpForNextRank(r);
+  for (let r = 999; r < targetRank; r++) {
+    totalExp += getExpForNextRank(r);
   }
-  return total;
+  return totalExp;
 }
 
 /**
  * 累計経験値から相当するランクを逆引き
  * ランク r 到達時点の累計Expを E(r) としたとき、E(r) <= exp < E(r+1) であれば ランク r と判定する。
+ * @param {number} exp
+ * @returns {number}
  */
 export function calculateRankFromExp(exp) {
-  if (exp <= 0 || !isTableLoaded || RANK_EXP_TABLE.length === 0) return 1;
+  if (exp <= 0 || !isTableLoaded || rankExpTable.length === 0) return 1;
 
   // 1~999 の範囲
-  const maxTableExp = RANK_EXP_TABLE[RANK_EXP_TABLE.length - 1];
+  const maxTableExp = rankExpTable[rankExpTable.length - 1];
   if (exp < maxTableExp) {
-    for (let i = 0; i < RANK_EXP_TABLE.length; i++) {
-      if (exp < RANK_EXP_TABLE[i]) {
+    for (let i = 0; i < rankExpTable.length; i++) {
+      if (exp < rankExpTable[i]) {
         return i;
       }
     }
@@ -121,14 +130,20 @@ export function calculateRankFromExp(exp) {
 
 /**
  * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
+ * @param {number} currentRank
+ * @param {number} targetRank
+ * @returns {number}
  */
-export function calculateRequiredTotalExp(currentRank, targetRank) {
+export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
   if (targetRank <= currentRank) return 0;
   return calculateExpFromRank1(targetRank) - calculateExpFromRank1(currentRank);
 }
 
 /**
  * 現在の累計経験値と目標の累計経験値の差分を算出
+ * @param {number} currentExp
+ * @param {number} targetExp
+ * @returns {number}
  */
 export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
   if (targetExp <= currentExp) return 0;
@@ -137,16 +152,19 @@ export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
 
 /**
  * CSVの最後の区間における1ランクあたりの必要経験値を取得
+ * @returns {number}
  */
 export function getLastStepExp() {
-  if (RANK_STEP_TABLE.length > 0) {
-    return RANK_STEP_TABLE[RANK_STEP_TABLE.length - 1].expPerRank;
+  if (rankStepTable.length > 0) {
+    return rankStepTable[rankStepTable.length - 1].expPerRank;
   }
   return 0;
 }
 
 /**
  * 合計倍率の算出
+ * @param {Object} multipliers
+ * @returns {number}
  */
 export function calculateTotalMultiplier(multipliers) {
   const { manabi, spot, event, expUpMonster, luckBonus, multi, custom } =
@@ -161,6 +179,9 @@ export function calculateTotalMultiplier(multipliers) {
 
 /**
  * 1周あたりの獲得経験値を算出
+ * @param {number} baseExp
+ * @param {number} totalMultiplier
+ * @returns {number}
  */
 export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
   return Math.floor(baseExp * totalMultiplier);
@@ -168,6 +189,9 @@ export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
 
 /**
  * 必要周回数を算出
+ * @param {number} requiredTotalExp
+ * @param {number} earnedExpPerRun
+ * @returns {number}
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
@@ -176,6 +200,8 @@ export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
 
 /**
  * 秒数から「日・時間・分」のオブジェクトを取得
+ * @param {number} totalSeconds
+ * @returns {{days: number, hours: number, minutes: number}}
  */
 export function formatTime(totalSeconds) {
   const days = Math.floor(totalSeconds / 86400);
