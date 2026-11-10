@@ -87,7 +87,10 @@ export function getInitialCsvStepCount() {
 export function getExpForNextRank(rank) {
   if (rank < 1) return 0;
 
-  if (rank < 999 && rankExpTable.length >= rank + 1) {
+  if (
+    rank < CONSTANTS.DEFAULT_THRESHOLD_RANK &&
+    rankExpTable.length >= rank + 1
+  ) {
     return rankExpTable[rank] - rankExpTable[rank - 1];
   }
 
@@ -126,7 +129,7 @@ export function calculateExpFromRank1(targetRank) {
 
   let totalExp = rankExpTable[rankExpTable.length - 1];
 
-  for (let r = 999; r < targetRank; r++) {
+  for (let r = CONSTANTS.DEFAULT_THRESHOLD_RANK; r < targetRank; r++) {
     totalExp += getExpForNextRank(r);
   }
   return totalExp;
@@ -148,7 +151,7 @@ export function calculateRankFromExp(exp) {
   }
 
   let currentTotal = maxTableExp;
-  let r = 999;
+  let r = CONSTANTS.DEFAULT_THRESHOLD_RANK;
   while (true) {
     const nextExp = getExpForNextRank(r);
     if (exp < currentTotal + nextExp) {
@@ -192,7 +195,7 @@ export function getLastStepMinRank() {
   if (rankStepTable.length > 0) {
     return rankStepTable[rankStepTable.length - 1].minRank;
   }
-  return 999;
+  return CONSTANTS.DEFAULT_THRESHOLD_RANK;
 }
 
 /**
