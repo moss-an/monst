@@ -44,6 +44,7 @@ createApp({
 
     const defaultStepTableText = ref("");
     const allRankSteps = ref([]);
+    const initialDefaultParsedSteps = ref([]);
 
     onMounted(async () => {
       try {
@@ -58,11 +59,16 @@ createApp({
         Logic.initRankTableFromCSV(textRankTable);
         Logic.initRankStepTableFromCSV(textStepTable);
 
-        allRankSteps.value = Logic.getFullRankStepTable().map(item => ({
+        const loadedSteps = Logic.getFullRankStepTable().map((item) => ({
           minRank: item.minRank,
           maxRank: item.maxRank === null ? "" : item.maxRank,
-          expPerRank: item.expPerRank
+          expPerRank: item.expPerRank,
         }));
+
+        allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
+        initialDefaultParsedSteps.value = JSON.parse(
+          JSON.stringify(loadedSteps),
+        );
 
         isLoaded.value = true;
         updateStepInfo();
@@ -72,27 +78,74 @@ createApp({
     });
 
     const visibleRankSteps = computed(() => {
-      const len = allRankSteps.value.length;
-      const startIndex = Math.max(0, len - 3);
+      const steps = allRankSteps.value;
+      const len = steps.length;
       const initialCsvCount = Logic.getInitialCsvStepCount();
 
-      return allRankSteps.value.slice(startIndex).map((item, idx) => {
-        const originalIndex = startIndex + idx;
+      const csvRows = steps.slice(0, Math.min(initialCsvCount, len));
+      const customRows =
+        len > initialCsvCount ? steps.slice(initialCsvCount) : [];
+
+      const csvStartIndex = Math.max(0, csvRows.length - 3);
+      const visibleCsvRows = csvRows.slice(csvStartIndex);
+
+      const result = [];
+
+      visibleCsvRows.forEach((item, idx) => {
+        const originalIndex = csvStartIndex + idx;
         const isLast = originalIndex === len - 1;
-        const isCustomRow = originalIndex >= initialCsvCount;
-        return {
-          ...item,
+        result.push({
+          itemRef: item,
           originalIndex,
           isLast,
-          isCustomRow
-        };
+          isCustomRow: false,
+        });
       });
+
+      customRows.forEach((item, idx) => {
+        const originalIndex = initialCsvCount + idx;
+        const isLast = originalIndex === len - 1;
+        result.push({
+          itemRef: item,
+          originalIndex,
+          isLast,
+          isCustomRow: true,
+        });
+      });
+
+      return result;
     });
 
-    const isAddRowDisabled = computed(() => {
+    const hasUserEditedSteps = computed(() => {
+      const steps = allRankSteps.value;
+      const initialCount = Logic.getInitialCsvStepCount();
+      if (steps.length !== initialCount) return true;
+
+      for (let i = 0; i < initialCount; i++) {
+        const curr = steps[i];
+        const orig = initialDefaultParsedSteps.value[i];
+        if (!orig) return true;
+        if (
+          curr.minRank !== orig.minRank ||
+          curr.maxRank !== orig.maxRank ||
+          curr.expPerRank !== orig.expPerRank
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const isAddRowBlocked = computed(() => {
       if (allRankSteps.value.length === 0) return false;
       const lastRow = allRankSteps.value[allRankSteps.value.length - 1];
-      if (lastRow.maxRank === "" || lastRow.maxRank === null || lastRow.maxRank === undefined) {
+      const val = lastRow.maxRank;
+      if (
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        (typeof val === "number" && isNaN(val))
+      ) {
         return true;
       }
       return false;
@@ -105,12 +158,16 @@ createApp({
       if (maxRankExp > 0) {
         maxExp.value = maxRankExp;
       }
-      
+
       if (currentRank.value !== "" && activeCurrentMode.value === "rank") {
-        currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value)));
+        currentExpInput.value = formatNumber(
+          Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value)),
+        );
       }
       if (targetRank.value !== "" && activeTargetMode.value === "rank") {
-        targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value)));
+        targetExpInput.value = formatNumber(
+          Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value)),
+        );
       }
     };
 
@@ -120,12 +177,14 @@ createApp({
     };
 
     const addRankStepRow = () => {
-      if (isAddRowDisabled.value) return;
+      if (isAddRowBlocked.value) {
+        return;
+      }
 
       allRankSteps.value.push({
         minRank: "",
         maxRank: "",
-        expPerRank: ""
+        expPerRank: "",
       });
       updateRankSteps();
     };
@@ -140,11 +199,12 @@ createApp({
     const resetRankSteps = () => {
       if (defaultStepTableText.value) {
         Logic.initRankStepTableFromCSV(defaultStepTableText.value);
-        allRankSteps.value = Logic.getFullRankStepTable().map(item => ({
+        const loadedSteps = Logic.getFullRankStepTable().map((item) => ({
           minRank: item.minRank,
           maxRank: item.maxRank === null ? "" : item.maxRank,
-          expPerRank: item.expPerRank
+          expPerRank: item.expPerRank,
         }));
+        allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
         updateStepInfo();
       }
     };
@@ -339,7 +399,7 @@ createApp({
         const parsed = parseExpInput(targetExpInput.value);
         targetExpInput.value = parsed;
         if (currentExpInput.value !== "" && targetExpInput.value !== "") {
-          const currNum = getEffectiveExp(currentExpInput.value);
+          const currNum = getEffectiveExp(targetExpInput.value);
           const tgtNum = getEffectiveExp(targetExpInput.value);
           if (tgtNum < currNum) {
             targetExpInput.value = formatNumber(currNum);
@@ -557,7 +617,8 @@ createApp({
       lastStepExp,
       lastStepMinRank,
       visibleRankSteps,
-      isAddRowDisabled,
+      hasUserEditedSteps,
+      isAddRowBlocked,
       updateRankSteps,
       addRankStepRow,
       removeRankStepRow,
