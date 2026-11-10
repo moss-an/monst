@@ -8,7 +8,8 @@ export const FLOATING_POINT_EPSILON = 1e-9;
 
 // UI上で指定できる上限値
 export const MAX_RANK = 99999;
-export const FALLBACK_MAX_EXP = 999999999999999; // CSV読み込み完了までのフォールバック上限（読み込み後はMAX_RANKの累計Expに更新される）
+export const FALLBACK_MAX_EXP = 999999999999999; // CSV読み込み完了までのフォールバック上限
+export const MAX_STEP_EXP = 99999999999; // 1ランク必要経験値の上限（9を11桁）
 export const MAX_CUSTOM_MULTIPLIER = 9999;
 export const MAX_CUSTOM_INT_DIGITS = 4; // カスタム倍率の整数部桁数上限
 export const MAX_CUSTOM_DEC_DIGITS = 4; // カスタム倍率の小数部桁数上限

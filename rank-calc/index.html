@@ -149,6 +149,7 @@
                           type="number"
                           v-model.number="row.itemRef.maxRank"
                           @input="updateRankSteps"
+                          @blur="validateStepMaxRankBlur(row.itemRef)"
                           :disabled="!row.isLast"
                           placeholder="数値を入力"
                           :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"

@@ -138,14 +138,12 @@ export function calculateExpFromRank1(targetRank) {
 
 /**
  * 累計経験値から相当するランクを逆引き
- * ランク r 到達時点の累計Expを E(r) としたとき、E(r) <= exp < E(r+1) であれば ランク r と判定する。
  * @param {number} exp
  * @returns {number}
  */
 export function calculateRankFromExp(exp) {
   if (exp <= 0 || !isTableLoaded || rankExpTable.length === 0) return 1;
 
-  // 1~999 の範囲
   const maxTableExp = rankExpTable[rankExpTable.length - 1];
   if (exp < maxTableExp) {
     for (let i = 0; i < rankExpTable.length; i++) {
@@ -155,7 +153,6 @@ export function calculateRankFromExp(exp) {
     }
   }
 
-  // 999以降の範囲
   let currentTotal = maxTableExp;
   let r = 999;
   while (true) {
@@ -201,17 +198,19 @@ export function getLastStepExp() {
   return 0;
 }
 
+/**
+ * CSVの最後の区間における開始ランクを取得
+ * @returns {number}
+ */
 export function getLastStepMinRank() {
   if (rankStepTable.length > 0) {
     return rankStepTable[rankStepTable.length - 1].minRank;
   }
-  return 2500;
+  return 999;
 }
 
 /**
  * リザルト倍率を算出（UI表示用）
- * @param {Object} multipliers
- * @returns {number}
  */
 export function calculateBaseMultiplier(multipliers) {
   const {
@@ -225,8 +224,6 @@ export function calculateBaseMultiplier(multipliers) {
 
 /**
  * トータル倍率を算出（UI表示用）
- * @param {Object} multipliers
- * @returns {number}
  */
 export function calculateTotalMultiplier(multipliers) {
   const {
@@ -249,9 +246,6 @@ export function calculateTotalMultiplier(multipliers) {
 
 /**
  * 1周あたりの獲得経験値を算出
- * @param {number} baseExp
- * @param {Object} multipliers
- * @returns {number}
  */
 export function calculateEarnedExpPerRun(baseExp, multipliers) {
   const {
@@ -271,8 +265,6 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 
   let currentExp = baseExp;
 
-  //HACK: ゲーム内処理が不明のため、暫定ロジック
-  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
   currentExp = Math.ceil(
     currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
   );
@@ -293,9 +285,6 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 
 /**
  * 必要周回数を算出
- * @param {number} requiredTotalExp
- * @param {number} earnedExpPerRun
- * @returns {number}
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
@@ -304,8 +293,6 @@ export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
 
 /**
  * 秒数から「日・時間・分」のオブジェクトを取得
- * @param {number} totalSeconds
- * @returns {{days: number, hours: number, minutes: number}}
  */
 export function formatTime(totalSeconds) {
   const days = Math.floor(totalSeconds / 86400);

@@ -16,6 +16,7 @@ createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
     const maxExp = ref(CONSTANTS.FALLBACK_MAX_EXP);
+    const maxStepExp = CONSTANTS.MAX_STEP_EXP;
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
     const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
     const maxCustomDecDigits = CONSTANTS.MAX_CUSTOM_DEC_DIGITS;
@@ -40,11 +41,12 @@ createApp({
 
     const isLoaded = ref(false);
     const lastStepExp = ref(0);
-    const lastStepMinRank = ref(2500);
+    const lastStepMinRank = ref(999);
 
     const defaultStepTableText = ref("");
     const allRankSteps = ref([]);
     const initialDefaultParsedSteps = ref([]);
+    const tableVersion = ref(0);
 
     onMounted(async () => {
       try {
@@ -152,6 +154,7 @@ createApp({
     });
 
     const updateStepInfo = () => {
+      tableVersion.value++;
       lastStepExp.value = Logic.getLastStepExp();
       lastStepMinRank.value = Logic.getLastStepMinRank();
       const maxRankExp = Logic.calculateExpFromRank1(maxRank);
@@ -171,7 +174,73 @@ createApp({
       }
     };
 
+    const sanitizePositiveInt = (val, maxVal = null) => {
+      if (val === "" || val === null || val === undefined || isNaN(val))
+        return "";
+      let cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      cleaned = cleaned.replace(/^0+/, "");
+      if (cleaned === "") cleaned = "0";
+      let num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      if (num < 0) num = 0;
+      if (maxVal !== null && num > maxVal) num = maxVal;
+      return num;
+    };
+
+    // 入力（@input）時点でのクレンジング（※入力途中での minRank 比較による強制補正は行わない）
+    const validateAndSanitizeStepRow = (row) => {
+      if (
+        row.minRank !== "" &&
+        row.minRank !== null &&
+        row.minRank !== undefined
+      ) {
+        row.minRank = sanitizePositiveInt(row.minRank, maxRank);
+      }
+      if (
+        row.maxRank !== "" &&
+        row.maxRank !== null &&
+        row.maxRank !== undefined
+      ) {
+        row.maxRank = sanitizePositiveInt(row.maxRank, maxRank);
+      }
+      if (
+        row.expPerRank !== "" &&
+        row.expPerRank !== null &&
+        row.expPerRank !== undefined
+      ) {
+        row.expPerRank = sanitizePositiveInt(row.expPerRank, maxStepExp);
+      }
+    };
+
+    // フォーカスが外れた時（@blur）に終了ランクの相関判定を実施
+    const validateStepMaxRankBlur = (row) => {
+      if (
+        row.maxRank === "" ||
+        row.maxRank === null ||
+        row.maxRank === undefined ||
+        isNaN(row.maxRank)
+      ) {
+        row.maxRank = ""; // 空欄は許容
+      } else {
+        row.maxRank = sanitizePositiveInt(row.maxRank, maxRank);
+        if (
+          row.minRank !== "" &&
+          row.minRank !== null &&
+          !isNaN(row.minRank) &&
+          typeof row.maxRank === "number" &&
+          row.maxRank < Number(row.minRank)
+        ) {
+          row.maxRank = Number(row.minRank); // 開始ランク未満の場合は開始ランクに修正
+        }
+      }
+      updateRankSteps();
+    };
+
     const updateRankSteps = () => {
+      allRankSteps.value.forEach((row) => {
+        validateAndSanitizeStepRow(row);
+      });
       Logic.setFullRankStepTable(allRankSteps.value);
       updateStepInfo();
     };
@@ -181,8 +250,20 @@ createApp({
         return;
       }
 
+      let newMinRank = "";
+      if (allRankSteps.value.length > 0) {
+        const lastRow = allRankSteps.value[allRankSteps.value.length - 1];
+        if (
+          lastRow.maxRank !== "" &&
+          lastRow.maxRank !== null &&
+          !isNaN(lastRow.maxRank)
+        ) {
+          newMinRank = Math.min(parseInt(lastRow.maxRank, 10) + 1, maxRank);
+        }
+      }
+
       allRankSteps.value.push({
-        minRank: "",
+        minRank: newMinRank,
         maxRank: "",
         expPerRank: "",
       });
@@ -418,6 +499,7 @@ createApp({
     };
 
     const currentExp = computed(() => {
+      tableVersion.value;
       if (!isLoaded.value) return 0;
       if (currentRank.value === "" && currentExpInput.value === "") return 0;
       if (activeCurrentMode.value === "exp") {
@@ -428,6 +510,7 @@ createApp({
     });
 
     const targetExp = computed(() => {
+      tableVersion.value;
       if (!isLoaded.value) return 0;
       if (targetRank.value === "" && targetExpInput.value === "") return 0;
       if (activeTargetMode.value === "exp") {
@@ -576,6 +659,7 @@ createApp({
     });
 
     const requiredTotalExp = computed(() => {
+      tableVersion.value;
       if (!isLoaded.value) return 0;
       return Logic.calculateRequiredTotalExpByValue(
         currentExp.value,
@@ -597,6 +681,7 @@ createApp({
     return {
       maxRank,
       maxExp,
+      maxStepExp,
       maxCustomMultiplier,
       maxCustomIntDigits,
       maxCustomDecDigits,
@@ -620,6 +705,7 @@ createApp({
       hasUserEditedSteps,
       isAddRowBlocked,
       updateRankSteps,
+      validateStepMaxRankBlur,
       addRankStepRow,
       removeRankStepRow,
       resetRankSteps,
