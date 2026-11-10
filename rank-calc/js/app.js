@@ -188,7 +188,6 @@ createApp({
       return num;
     };
 
-    // 入力（@input）時点でのクレンジング（※入力途中での minRank 比較による強制補正は行わない）
     const validateAndSanitizeStepRow = (row) => {
       if (
         row.minRank !== "" &&
@@ -213,7 +212,6 @@ createApp({
       }
     };
 
-    // フォーカスが外れた時（@blur）に終了ランクの相関判定を実施
     const validateStepMaxRankBlur = (row) => {
       if (
         row.maxRank === "" ||
@@ -221,7 +219,7 @@ createApp({
         row.maxRank === undefined ||
         isNaN(row.maxRank)
       ) {
-        row.maxRank = ""; // 空欄は許容
+        row.maxRank = "";
       } else {
         row.maxRank = sanitizePositiveInt(row.maxRank, maxRank);
         if (
@@ -231,7 +229,7 @@ createApp({
           typeof row.maxRank === "number" &&
           row.maxRank < Number(row.minRank)
         ) {
-          row.maxRank = Number(row.minRank); // 開始ランク未満の場合は開始ランクに修正
+          row.maxRank = Number(row.minRank);
         }
       }
       updateRankSteps();

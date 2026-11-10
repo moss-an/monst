@@ -83,8 +83,6 @@ export function getInitialCsvStepCount() {
 
 /**
  * ランク r から r+1 に上げるために必要な経験値
- * @param {number} rank
- * @returns {number}
  */
 export function getExpForNextRank(rank) {
   if (rank < 1) return 0;
@@ -114,8 +112,6 @@ export function getExpForNextRank(rank) {
 
 /**
  * ランク1を基準(0)とした指定ランク到達に必要な累計経験値を算出
- * @param {number} targetRank
- * @returns {number}
  */
 export function calculateExpFromRank1(targetRank) {
   if (targetRank <= 1) return 0;
@@ -138,8 +134,6 @@ export function calculateExpFromRank1(targetRank) {
 
 /**
  * 累計経験値から相当するランクを逆引き
- * @param {number} exp
- * @returns {number}
  */
 export function calculateRankFromExp(exp) {
   if (exp <= 0 || !isTableLoaded || rankExpTable.length === 0) return 1;
@@ -167,9 +161,6 @@ export function calculateRankFromExp(exp) {
 
 /**
  * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
- * @param {number} currentRank
- * @param {number} targetRank
- * @returns {number}
  */
 export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
   if (targetRank <= currentRank) return 0;
@@ -178,9 +169,6 @@ export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
 
 /**
  * 現在の累計経験値と目標の累計経験値の差分を算出
- * @param {number} currentExp
- * @param {number} targetExp
- * @returns {number}
  */
 export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
   if (targetExp <= currentExp) return 0;
@@ -189,7 +177,6 @@ export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
 
 /**
  * CSVの最後の区間における1ランクあたりの必要経験値を取得
- * @returns {number}
  */
 export function getLastStepExp() {
   if (rankStepTable.length > 0) {
@@ -200,7 +187,6 @@ export function getLastStepExp() {
 
 /**
  * CSVの最後の区間における開始ランクを取得
- * @returns {number}
  */
 export function getLastStepMinRank() {
   if (rankStepTable.length > 0) {
