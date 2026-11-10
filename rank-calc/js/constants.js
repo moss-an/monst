@@ -29,20 +29,20 @@ export const MANABI_OPTIONS = [
 
 export const SPOT_OPTIONS = [
   { label: "なし", value: 1.0 },
-  { label: "サブスポット (1.25倍)", value: 1.25 },
-  { label: "メインスポット (1.5倍)", value: 1.5 },
-  { label: "メインスポット+ (1.75倍)", value: 1.75 },
+  { label: "サブスポット（1.25倍）", value: 1.25 },
+  { label: "メインスポット（1.5倍）", value: 1.5 },
+  { label: "メインスポット+（1.75倍）", value: 1.75 },
 ];
 
 export const EVENT_OPTIONS = [
   { label: "通常", value: 1.0 },
-  { label: "キャンペーン (2倍)", value: 2.0 },
-  { label: "エラベルベル (3倍)", value: 3.0 },
+  { label: "キャンペーン（2倍）", value: 2.0 },
+  { label: "エラベルベル（3倍）", value: 3.0 },
 ];
 
 export const EXP_UP_MONSTER_OPTIONS = [
   { label: "なし", value: 1.0 },
-  { label: "あり (1.5倍)", value: 1.5 },
+  { label: "あり（1.5倍）", value: 1.5 },
 ];
 
 export const LUCK_BONUS_OPTIONS = [
