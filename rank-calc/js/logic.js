@@ -3,6 +3,8 @@
  * @description 計算ロジック
  */
 
+import * as CONSTANTS from "./constants.js";
+
 let rankExpTable = []; // 1〜999ランクの個別累計テーブル
 let rankStepTable = []; // 999以降の区間設定テーブル
 let isTableLoaded = false;
@@ -129,7 +131,7 @@ export function calculateRankFromExp(exp) {
 }
 
 /**
- * 現在のランクから目標ランクに到達するまでに必要な累計経験値を算出
+ * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
  * @param {number} currentRank
  * @param {number} targetRank
  * @returns {number}
@@ -223,16 +225,25 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
       ? 1.0
       : Number(custom);
 
-  // HACK: ゲーム内処理が不明のため、暫定ロジック
-  // 要素を順次掛け合わせて切り上げ
   let currentExp = baseExp;
-  currentExp = Math.ceil(currentExp * manabi);
-  currentExp = Math.ceil(currentExp * spot);
-  currentExp = Math.ceil(currentExp * event);
-  currentExp = Math.ceil(currentExp * expUpMonster);
-  currentExp = Math.ceil(currentExp * luckBonus);
-  currentExp = Math.ceil(currentExp * multi);
-  currentExp = Math.ceil(currentExp * numericCustom);
+
+  //HACK: ゲーム内処理が不明のため、暫定ロジック
+  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
+  currentExp = Math.ceil(
+    currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
+  currentExp = Math.ceil(currentExp * spot - CONSTANTS.FLOATING_POINT_EPSILON);
+  currentExp = Math.ceil(currentExp * event - CONSTANTS.FLOATING_POINT_EPSILON);
+  currentExp = Math.ceil(
+    currentExp * expUpMonster - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
+  currentExp = Math.ceil(
+    currentExp * luckBonus - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
+  currentExp = Math.ceil(currentExp * multi - CONSTANTS.FLOATING_POINT_EPSILON);
+  currentExp = Math.ceil(
+    currentExp * numericCustom - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
 
   return currentExp;
 }
