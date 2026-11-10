@@ -7,6 +7,7 @@ import * as CONSTANTS from "./constants.js";
 
 let rankExpTable = []; // 1〜999ランクの個別累計テーブル
 let rankStepTable = []; // 999以降の区間設定テーブル
+let initialCsvStepCount = 0;
 let isTableLoaded = false;
 
 /**
@@ -38,12 +39,46 @@ export function initRankStepTableFromCSV(csvText) {
     .slice(1)
     .filter((line) => line.trim() !== "")
     .map((line) => {
-      const [minRank, maxRank, expPerRank] = line
-        .split(",")
-        .map((v) => parseInt(v.trim(), 10));
+      const parts = line.split(",");
+      const minRank = parseInt(parts[0].trim(), 10);
+      const maxRankStr = parts[1] ? parts[1].trim() : "";
+      const maxRank = maxRankStr === "" ? null : parseInt(maxRankStr, 10);
+      const expPerRank = parseInt(parts[2].trim(), 10);
       return { minRank, maxRank, expPerRank };
-    })
-    .sort((a, b) => a.minRank - b.minRank);
+    });
+
+  initialCsvStepCount = rankStepTable.length;
+}
+
+export function setFullRankStepTable(steps) {
+  rankStepTable = steps.map((item) => ({
+    minRank:
+      item.minRank === "" || item.minRank === null || isNaN(item.minRank)
+        ? 0
+        : parseInt(item.minRank, 10),
+    maxRank:
+      item.maxRank === "" ||
+      item.maxRank === null ||
+      item.maxRank === undefined ||
+      item.maxRank === "上限なし" ||
+      isNaN(item.maxRank)
+        ? null
+        : parseInt(item.maxRank, 10),
+    expPerRank:
+      item.expPerRank === "" ||
+      item.expPerRank === null ||
+      isNaN(item.expPerRank)
+        ? 0
+        : parseInt(item.expPerRank, 10),
+  }));
+}
+
+export function getFullRankStepTable() {
+  return rankStepTable;
+}
+
+export function getInitialCsvStepCount() {
+  return initialCsvStepCount;
 }
 
 /**
@@ -60,7 +95,10 @@ export function getExpForNextRank(rank) {
 
   const step = rankStepTable.find(
     (item) =>
-      rank >= item.minRank && (item.maxRank ? rank <= item.maxRank : true),
+      rank >= item.minRank &&
+      (item.maxRank !== null && item.maxRank !== undefined
+        ? rank <= item.maxRank
+        : true),
   );
 
   if (step) {
@@ -163,6 +201,13 @@ export function getLastStepExp() {
   return 0;
 }
 
+export function getLastStepMinRank() {
+  if (rankStepTable.length > 0) {
+    return rankStepTable[rankStepTable.length - 1].minRank;
+  }
+  return 2500;
+}
+
 /**
  * リザルト倍率を算出（UI表示用）
  * @param {Object} multipliers
@@ -197,7 +242,6 @@ export function calculateTotalMultiplier(multipliers) {
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
       : Number(custom);
-
   return (
     manabi * spot * event * expUpMonster * luckBonus * multi * numericCustom
   );
@@ -244,7 +288,6 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
   currentExp = Math.ceil(
     currentExp * numericCustom - CONSTANTS.FLOATING_POINT_EPSILON,
   );
-
   return currentExp;
 }
 
@@ -268,6 +311,5 @@ export function formatTime(totalSeconds) {
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
-
   return { days, hours, minutes };
 }
