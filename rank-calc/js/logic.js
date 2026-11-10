@@ -129,7 +129,7 @@ export function calculateRankFromExp(exp) {
 }
 
 /**
- * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
+ * 現在のランクから目標ランクに到達するまでに必要な累計経験値を算出
  * @param {number} currentRank
  * @param {number} targetRank
  * @returns {number}
@@ -191,17 +191,18 @@ export function calculateTotalMultiplier(multipliers) {
     multi = 1.0,
     custom = 1.0,
   } = multipliers;
-  const validCustom =
+  const numericCustom =
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
       : Number(custom);
 
-  return manabi * spot * event * expUpMonster * luckBonus * multi * validCustom;
+  return (
+    manabi * spot * event * expUpMonster * luckBonus * multi * numericCustom
+  );
 }
 
 /**
  * 1周あたりの獲得経験値を算出
- * HACK: ゲーム内処理が不明のため、暫定ロジック
  * @param {number} baseExp
  * @param {Object} multipliers
  * @returns {number}
@@ -217,24 +218,21 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
     custom = 1.0,
   } = multipliers;
 
-  // 1. リザルト倍率を掛け合わせて切り上げ
-  const baseMultiplier = manabi * spot * event * expUpMonster;
-  let currentExp = Math.ceil(baseExp * baseMultiplier);
-
-  // 2. 運極ボーナスを適用して切り上げ
-  const validLuckBonus = luckBonus > 0 ? luckBonus : 1.0;
-  currentExp = Math.ceil(currentExp * validLuckBonus);
-
-  // 3. マルチプレイを適用して切り上げ
-  const validMulti = multi > 0 ? multi : 1.0;
-  currentExp = Math.ceil(currentExp * validMulti);
-
-  // 4. カスタム倍率を適用して切り上げ
-  const validCustom =
+  const numericCustom =
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
       : Number(custom);
-  currentExp = Math.ceil(currentExp * validCustom);
+
+  // HACK: ゲーム内処理が不明のため、暫定ロジック
+  // 要素を順次掛け合わせて切り上げ
+  let currentExp = baseExp;
+  currentExp = Math.ceil(currentExp * manabi);
+  currentExp = Math.ceil(currentExp * spot);
+  currentExp = Math.ceil(currentExp * event);
+  currentExp = Math.ceil(currentExp * expUpMonster);
+  currentExp = Math.ceil(currentExp * luckBonus);
+  currentExp = Math.ceil(currentExp * multi);
+  currentExp = Math.ceil(currentExp * numericCustom);
 
   return currentExp;
 }
