@@ -399,7 +399,7 @@ createApp({
         const parsed = parseExpInput(targetExpInput.value);
         targetExpInput.value = parsed;
         if (currentExpInput.value !== "" && targetExpInput.value !== "") {
-          const currNum = getEffectiveExp(targetExpInput.value);
+          const currNum = getEffectiveExp(currentExpInput.value);
           const tgtNum = getEffectiveExp(targetExpInput.value);
           if (tgtNum < currNum) {
             targetExpInput.value = formatNumber(currNum);
