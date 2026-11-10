@@ -6,14 +6,17 @@
 // 切り上げ・切り捨て時の浮動小数点誤差吸収用の補正値
 export const FLOATING_POINT_EPSILON = 1e-9;
 
+// CSV読み込み完了までの間のフォールバック用定数
+export const FALLBACK_MAX_EXP = 999999999999999; // 累計経験値の上限フォールバック値
+
 // UI上で指定できる上限値
-export const MAX_RANK = 99999;
-export const FALLBACK_MAX_EXP = 999999999999999; // CSV読み込み完了までのフォールバック上限（読み込み後はMAX_RANKの累計Expに更新される）
-export const MAX_CUSTOM_MULTIPLIER = 9999;
+export const MAX_RANK = 99999; // ランクの上限
+export const MAX_STEP_EXP = 99999999999; // 必要経験値の上限
+export const MAX_CUSTOM_MULTIPLIER = 9999; // カスタム倍率の上限
 export const MAX_CUSTOM_INT_DIGITS = 4; // カスタム倍率の整数部桁数上限
 export const MAX_CUSTOM_DEC_DIGITS = 4; // カスタム倍率の小数部桁数上限
-export const MAX_BASE_EXP = 999999999;
-export const MAX_CLEAR_SEC = 999999;
+export const MAX_BASE_EXP = 999999999; // 基礎獲得経験値の上限
+export const MAX_CLEAR_SEC = 999999; // 1周の平均時間の上限
 
 // UI上のデフォルト値
 export const DEFAULT_MANABI = 1.65;

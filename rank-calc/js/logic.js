@@ -83,8 +83,6 @@ export function getInitialCsvStepCount() {
 
 /**
  * ランク r から r+1 に上げるために必要な経験値
- * @param {number} rank
- * @returns {number}
  */
 export function getExpForNextRank(rank) {
   if (rank < 1) return 0;
@@ -114,8 +112,6 @@ export function getExpForNextRank(rank) {
 
 /**
  * ランク1を基準(0)とした指定ランク到達に必要な累計経験値を算出
- * @param {number} targetRank
- * @returns {number}
  */
 export function calculateExpFromRank1(targetRank) {
   if (targetRank <= 1) return 0;
@@ -138,14 +134,10 @@ export function calculateExpFromRank1(targetRank) {
 
 /**
  * 累計経験値から相当するランクを逆引き
- * ランク r 到達時点の累計Expを E(r) としたとき、E(r) <= exp < E(r+1) であれば ランク r と判定する。
- * @param {number} exp
- * @returns {number}
  */
 export function calculateRankFromExp(exp) {
   if (exp <= 0 || !isTableLoaded || rankExpTable.length === 0) return 1;
 
-  // 1~999 の範囲
   const maxTableExp = rankExpTable[rankExpTable.length - 1];
   if (exp < maxTableExp) {
     for (let i = 0; i < rankExpTable.length; i++) {
@@ -155,7 +147,6 @@ export function calculateRankFromExp(exp) {
     }
   }
 
-  // 999以降の範囲
   let currentTotal = maxTableExp;
   let r = 999;
   while (true) {
@@ -170,9 +161,6 @@ export function calculateRankFromExp(exp) {
 
 /**
  * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
- * @param {number} currentRank
- * @param {number} targetRank
- * @returns {number}
  */
 export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
   if (targetRank <= currentRank) return 0;
@@ -181,9 +169,6 @@ export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
 
 /**
  * 現在の累計経験値と目標の累計経験値の差分を算出
- * @param {number} currentExp
- * @param {number} targetExp
- * @returns {number}
  */
 export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
   if (targetExp <= currentExp) return 0;
@@ -192,7 +177,6 @@ export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
 
 /**
  * CSVの最後の区間における1ランクあたりの必要経験値を取得
- * @returns {number}
  */
 export function getLastStepExp() {
   if (rankStepTable.length > 0) {
@@ -201,17 +185,18 @@ export function getLastStepExp() {
   return 0;
 }
 
+/**
+ * CSVの最後の区間における開始ランクを取得
+ */
 export function getLastStepMinRank() {
   if (rankStepTable.length > 0) {
     return rankStepTable[rankStepTable.length - 1].minRank;
   }
-  return 2500;
+  return 999;
 }
 
 /**
  * リザルト倍率を算出（UI表示用）
- * @param {Object} multipliers
- * @returns {number}
  */
 export function calculateBaseMultiplier(multipliers) {
   const {
@@ -225,8 +210,6 @@ export function calculateBaseMultiplier(multipliers) {
 
 /**
  * トータル倍率を算出（UI表示用）
- * @param {Object} multipliers
- * @returns {number}
  */
 export function calculateTotalMultiplier(multipliers) {
   const {
@@ -249,9 +232,6 @@ export function calculateTotalMultiplier(multipliers) {
 
 /**
  * 1周あたりの獲得経験値を算出
- * @param {number} baseExp
- * @param {Object} multipliers
- * @returns {number}
  */
 export function calculateEarnedExpPerRun(baseExp, multipliers) {
   const {
@@ -293,9 +273,6 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 
 /**
  * 必要周回数を算出
- * @param {number} requiredTotalExp
- * @param {number} earnedExpPerRun
- * @returns {number}
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
@@ -304,8 +281,6 @@ export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
 
 /**
  * 秒数から「日・時間・分」のオブジェクトを取得
- * @param {number} totalSeconds
- * @returns {{days: number, hours: number, minutes: number}}
  */
 export function formatTime(totalSeconds) {
   const days = Math.floor(totalSeconds / 86400);
