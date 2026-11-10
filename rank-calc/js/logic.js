@@ -162,13 +162,35 @@ export function getLastStepExp() {
 }
 
 /**
- * 合計倍率の算出
+ * リザルト倍率を算出（UI表示用）
+ * @param {Object} multipliers
+ * @returns {number}
+ */
+export function calculateBaseMultiplier(multipliers) {
+  const {
+    manabi = 1.0,
+    spot = 1.0,
+    event = 1.0,
+    expUpMonster = 1.0,
+  } = multipliers;
+  return manabi * spot * event * expUpMonster;
+}
+
+/**
+ * トータル倍率を算出（UI表示用）
  * @param {Object} multipliers
  * @returns {number}
  */
 export function calculateTotalMultiplier(multipliers) {
-  const { manabi, spot, event, expUpMonster, luckBonus, multi, custom } =
-    multipliers;
+  const {
+    manabi = 1.0,
+    spot = 1.0,
+    event = 1.0,
+    expUpMonster = 1.0,
+    luckBonus = 1.0,
+    multi = 1.0,
+    custom = 1.0,
+  } = multipliers;
   const validCustom =
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
@@ -179,12 +201,42 @@ export function calculateTotalMultiplier(multipliers) {
 
 /**
  * 1周あたりの獲得経験値を算出
+ * HACK: ゲーム内処理が不明のため、暫定ロジック
  * @param {number} baseExp
- * @param {number} totalMultiplier
+ * @param {Object} multipliers
  * @returns {number}
  */
-export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
-  return Math.ceil(baseExp * totalMultiplier);
+export function calculateEarnedExpPerRun(baseExp, multipliers) {
+  const {
+    manabi = 1.0,
+    spot = 1.0,
+    event = 1.0,
+    expUpMonster = 1.0,
+    luckBonus = 1.0,
+    multi = 1.0,
+    custom = 1.0,
+  } = multipliers;
+
+  // 1. リザルト倍率を掛け合わせて切り上げ
+  const baseMultiplier = manabi * spot * event * expUpMonster;
+  let currentExp = Math.ceil(baseExp * baseMultiplier);
+
+  // 2. 運極ボーナスを適用して切り上げ
+  const validLuckBonus = luckBonus > 0 ? luckBonus : 1.0;
+  currentExp = Math.ceil(currentExp * validLuckBonus);
+
+  // 3. マルチプレイを適用して切り上げ
+  const validMulti = multi > 0 ? multi : 1.0;
+  currentExp = Math.ceil(currentExp * validMulti);
+
+  // 4. カスタム倍率を適用して切り上げ
+  const validCustom =
+    custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
+      ? 1.0
+      : Number(custom);
+  currentExp = Math.ceil(currentExp * validCustom);
+
+  return currentExp;
 }
 
 /**
@@ -195,7 +247,6 @@ export function calculateEarnedExpPerRun(baseExp, totalMultiplier) {
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
-  // HACK: モンスト内部の丸め込み処理が不明のため、暫定的に切り上げしている
   return Math.ceil(requiredTotalExp / earnedExpPerRun);
 }
 

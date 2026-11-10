@@ -76,7 +76,6 @@ createApp({
 
     const parseNaturalRank = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      // maxRankの桁数 + 1まで一時的に入力許容 (UX向上)
       const maxRankInputLength = String(maxRank).length + 1;
       if (cleaned.length > maxRankInputLength) {
         cleaned = cleaned.slice(0, maxRankInputLength);
@@ -90,7 +89,6 @@ createApp({
 
     const parseExpInput = (val) => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
-      // maxExpの桁数 + 2まで一時的に入力許容 (UX向上)
       const limitDigits = String(maxExp.value).length + 2;
       if (cleaned.length > limitDigits) {
         cleaned = cleaned.slice(0, limitDigits);
@@ -275,7 +273,6 @@ createApp({
       }
     };
 
-    // 有効な現在の累計経験値
     const currentExp = computed(() => {
       if (!isLoaded.value) return 0;
       if (currentRank.value === "" && currentExpInput.value === "") return 0;
@@ -286,7 +283,6 @@ createApp({
       }
     });
 
-    // 有効な目標の累計経験値
     const targetExp = computed(() => {
       if (!isLoaded.value) return 0;
       if (targetRank.value === "" && targetExpInput.value === "") return 0;
@@ -411,8 +407,8 @@ createApp({
       baseExpInput.value = formatNumber(selectedPreset.value.exp);
     };
 
-    const totalMultiplier = computed(() => {
-      return Logic.calculateTotalMultiplier({
+    const multiplierObj = computed(() => {
+      return {
         manabi: selectedManabi.value,
         spot: selectedSpot.value,
         event: selectedEvent.value,
@@ -420,14 +416,19 @@ createApp({
         luckBonus: selectedLuckBonus.value,
         multi: selectedMulti.value,
         custom: customMultiplier.value,
-      });
+      };
+    });
+
+    const baseMultiplier = computed(() => {
+      return Logic.calculateBaseMultiplier(multiplierObj.value);
+    });
+
+    const totalMultiplier = computed(() => {
+      return Logic.calculateTotalMultiplier(multiplierObj.value);
     });
 
     const earnedExpPerRun = computed(() => {
-      return Logic.calculateEarnedExpPerRun(
-        baseExp.value,
-        totalMultiplier.value,
-      );
+      return Logic.calculateEarnedExpPerRun(baseExp.value, multiplierObj.value);
     });
 
     const requiredTotalExp = computed(() => {
@@ -484,6 +485,7 @@ createApp({
       validateTargetExp,
       handleCustomMultiplierInput,
       validateCustomMultiplier,
+      baseMultiplier,
       totalMultiplier,
       selectedManabi,
       selectedSpot,
