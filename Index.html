@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>monst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans"
+  >
+    <main class="max-w-2xl mx-auto px-4 py-12 w-full flex-grow">
+      <!-- ヘッダー -->
+      <header class="border-b border-slate-700 pb-6 mb-8">
+        <h1 class="text-2xl font-bold tracking-tight text-white">monst</h1>
+        <p class="text-slate-400 text-sm mt-1">
+          モンスターストライク関連ツール
+        </p>
+      </header>
+
+      <!-- ツール一覧 -->
+      <div class="space-y-4">
+        <a
+          href="./rank-calc/"
+          class="block p-5 bg-slate-800 hover:bg-slate-700/70 rounded-lg border border-slate-700 transition group"
+        >
+          <div class="flex items-center justify-between">
+            <h2
+              class="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors"
+            >
+              ランク計算ツール
+            </h2>
+            <span
+              class="text-slate-500 group-hover:translate-x-1 transition-transform"
+              >→</span
+            >
+          </div>
+          <p class="text-slate-400 text-sm mt-1">
+            目標ランクまでの必要経験値や周回数を計算します。
+          </p>
+        </a>
+      </div>
+    </main>
+
+    <!-- フッター（権利表記あり） -->
+    <footer
+      class="py-6 text-center text-slate-500 text-xs border-t border-slate-800/60"
+    >
+      <p>
+        &copy; 2026 moss-an /
+        <a
+          href="./LICENSE"
+          class="hover:text-slate-300 underline underline-offset-2"
+          >MIT License</a
+        >
+      </p>
+    </footer>
+  </body>
+</html>
