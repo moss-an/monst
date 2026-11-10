@@ -35,11 +35,15 @@ createApp({
     const currentExpInput = ref("");
     const targetExpInput = ref("");
 
-    const activeCurrentMode = ref("rank"); // "rank" または "exp"
-    const activeTargetMode = ref("rank"); // "rank" または "exp"
+    const activeCurrentMode = ref("rank");
+    const activeTargetMode = ref("rank");
 
     const isLoaded = ref(false);
     const lastStepExp = ref(0);
+    const lastStepMinRank = ref(2500);
+
+    const defaultStepTableText = ref("");
+    const allRankSteps = ref([]);
 
     onMounted(async () => {
       try {
@@ -49,21 +53,101 @@ createApp({
         ]);
         const textRankTable = await resRankTable.text();
         const textStepTable = await resStepTable.text();
+        defaultStepTableText.value = textStepTable;
 
         Logic.initRankTableFromCSV(textRankTable);
         Logic.initRankStepTableFromCSV(textStepTable);
 
-        isLoaded.value = true;
-        lastStepExp.value = Logic.getLastStepExp();
+        allRankSteps.value = Logic.getFullRankStepTable().map(item => ({
+          minRank: item.minRank,
+          maxRank: item.maxRank === null ? "" : item.maxRank,
+          expPerRank: item.expPerRank
+        }));
 
-        const maxRankExp = Logic.calculateExpFromRank1(maxRank);
-        if (maxRankExp > 0) {
-          maxExp.value = maxRankExp;
-        }
+        isLoaded.value = true;
+        updateStepInfo();
       } catch (e) {
         console.warn("CSVの読み込みに失敗しました:", e);
       }
     });
+
+    const visibleRankSteps = computed(() => {
+      const len = allRankSteps.value.length;
+      const startIndex = Math.max(0, len - 3);
+      const initialCsvCount = Logic.getInitialCsvStepCount();
+
+      return allRankSteps.value.slice(startIndex).map((item, idx) => {
+        const originalIndex = startIndex + idx;
+        const isLast = originalIndex === len - 1;
+        const isCustomRow = originalIndex >= initialCsvCount;
+        return {
+          ...item,
+          originalIndex,
+          isLast,
+          isCustomRow
+        };
+      });
+    });
+
+    const isAddRowDisabled = computed(() => {
+      if (allRankSteps.value.length === 0) return false;
+      const lastRow = allRankSteps.value[allRankSteps.value.length - 1];
+      if (lastRow.maxRank === "" || lastRow.maxRank === null || lastRow.maxRank === undefined) {
+        return true;
+      }
+      return false;
+    });
+
+    const updateStepInfo = () => {
+      lastStepExp.value = Logic.getLastStepExp();
+      lastStepMinRank.value = Logic.getLastStepMinRank();
+      const maxRankExp = Logic.calculateExpFromRank1(maxRank);
+      if (maxRankExp > 0) {
+        maxExp.value = maxRankExp;
+      }
+      
+      if (currentRank.value !== "" && activeCurrentMode.value === "rank") {
+        currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value)));
+      }
+      if (targetRank.value !== "" && activeTargetMode.value === "rank") {
+        targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value)));
+      }
+    };
+
+    const updateRankSteps = () => {
+      Logic.setFullRankStepTable(allRankSteps.value);
+      updateStepInfo();
+    };
+
+    const addRankStepRow = () => {
+      if (isAddRowDisabled.value) return;
+
+      allRankSteps.value.push({
+        minRank: "",
+        maxRank: "",
+        expPerRank: ""
+      });
+      updateRankSteps();
+    };
+
+    const removeRankStepRow = (originalIndex) => {
+      const initialCsvCount = Logic.getInitialCsvStepCount();
+      if (originalIndex < initialCsvCount) return;
+      allRankSteps.value.splice(originalIndex, 1);
+      updateRankSteps();
+    };
+
+    const resetRankSteps = () => {
+      if (defaultStepTableText.value) {
+        Logic.initRankStepTableFromCSV(defaultStepTableText.value);
+        allRankSteps.value = Logic.getFullRankStepTable().map(item => ({
+          minRank: item.minRank,
+          maxRank: item.maxRank === null ? "" : item.maxRank,
+          expPerRank: item.expPerRank
+        }));
+        updateStepInfo();
+      }
+    };
 
     const formatNumber = (val) => {
       if (val === "" || val === null || val === undefined) return "";
@@ -471,6 +555,13 @@ createApp({
       targetExpInput,
       isLoaded,
       lastStepExp,
+      lastStepMinRank,
+      visibleRankSteps,
+      isAddRowDisabled,
+      updateRankSteps,
+      addRankStepRow,
+      removeRankStepRow,
+      resetRankSteps,
       currentExp,
       targetExp,
       handleCurrentRankInput,

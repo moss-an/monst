@@ -96,10 +96,115 @@
               />
             </div>
           </div>
+
+          <!-- 詳細設定トグル（ランク上限解放・必要経験値設定） -->
+          <details
+            class="group bg-slate-900/40 border border-slate-700 rounded-lg p-3 space-y-3"
+          >
+            <summary
+              class="cursor-pointer text-sm text-slate-400 select-none flex items-center justify-between"
+            >
+              <span>詳細設定（ランク上限解放・必要経験値設定）</span>
+              <span
+                class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
+                >▼</span
+              >
+            </summary>
+
+            <div class="space-y-3 pt-2 border-t border-slate-700/60 text-xs">
+              <p class="text-slate-400 text-[11px] leading-relaxed">
+                ※下から3行分を表示しています。末尾行のみ編集・上限解放時の行追加が可能です。
+              </p>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="text-slate-400 border-b border-slate-700">
+                      <th class="py-1 px-1 font-medium">開始ランク</th>
+                      <th class="py-1 px-1 font-medium">終了ランク</th>
+                      <th class="py-1 px-1 font-medium">1ランク必要Exp</th>
+                      <th class="py-1 px-1 w-8"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(row, index) in visibleRankSteps"
+                      :key="row.originalIndex"
+                      class="border-b border-slate-800"
+                    >
+                      <td class="py-1 px-1">
+                        <input
+                          type="number"
+                          v-model.number="row.minRank"
+                          @input="updateRankSteps"
+                          :disabled="!row.isLast"
+                          :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                        />
+                      </td>
+                      <td class="py-1 px-1">
+                        <input
+                          type="number"
+                          v-model.number="row.maxRank"
+                          @input="updateRankSteps"
+                          :disabled="!row.isLast"
+                          placeholder="上限なし"
+                          :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                        />
+                      </td>
+                      <td class="py-1 px-1">
+                        <input
+                          type="number"
+                          v-model.number="row.expPerRank"
+                          @input="updateRankSteps"
+                          :disabled="!row.isLast"
+                          :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                        />
+                      </td>
+                      <td class="py-1 px-1 text-center">
+                        <button
+                          v-if="row.isCustomRow"
+                          @click="removeRankStepRow(row.originalIndex)"
+                          class="text-red-400 hover:text-red-300 font-bold px-1"
+                          title="削除"
+                        >
+                          ✕
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <!-- 画面上表示のメッセージ -->
+              <p v-if="isAddRowDisabled" class="text-amber-400 text-[11px] font-medium">
+                ※終了ランクが空欄の場合は行追加できません。
+              </p>
+
+              <div class="flex justify-between items-center pt-1">
+                <button
+                  @click="addRankStepRow"
+                  :disabled="isAddRowDisabled"
+                  :class="{'opacity-50 cursor-not-allowed hover:bg-slate-700': isAddRowDisabled}"
+                  class="bg-slate-700 hover:bg-slate-600 text-amber-300 font-medium px-2.5 py-1 rounded text-xs transition"
+                >
+                  + 行を追加
+                </button>
+                <button
+                  @click="resetRankSteps"
+                  class="text-slate-400 hover:text-slate-200 text-xs underline"
+                >
+                  初期設定に戻す
+                </button>
+              </div>
+            </div>
+          </details>
+
           <p
             class="text-xs text-slate-400 text-left pt-2 border-t border-slate-700"
           >
-            ※上限を超えるランク帯の必要経験値は、<span class="font-mono"
+            ※上限を超えるランク帯（ランク{{ lastStepMinRank }}以降）の必要経験値は、<span class="font-mono"
               >{{ lastStepExp.toLocaleString() }}</span
             >
             Expを適用して計算します。

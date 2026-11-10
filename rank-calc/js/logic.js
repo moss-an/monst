@@ -6,7 +6,8 @@
 import * as CONSTANTS from "./constants.js";
 
 let rankExpTable = []; // 1〜999ランクの個別累計テーブル
-let rankStepTable = []; // 999以降の区間設定テーブル
+let rankStepTable = []; // 区間設定テーブル（CSV初期値 + 画面での追加分）
+let initialCsvStepCount = 0; // CSVから読み込んだデフォルトの行数
 let isTableLoaded = false;
 
 /**
@@ -38,12 +39,43 @@ export function initRankStepTableFromCSV(csvText) {
     .slice(1)
     .filter((line) => line.trim() !== "")
     .map((line) => {
-      const [minRank, maxRank, expPerRank] = line
-        .split(",")
-        .map((v) => parseInt(v.trim(), 10));
+      const parts = line.split(",");
+      const minRank = parseInt(parts[0].trim(), 10);
+      const maxRankStr = parts[1] ? parts[1].trim() : "";
+      const maxRank = maxRankStr === "" ? null : parseInt(maxRankStr, 10);
+      const expPerRank = parseInt(parts[2].trim(), 10);
       return { minRank, maxRank, expPerRank };
-    })
-    .sort((a, b) => a.minRank - b.minRank);
+    });
+
+  initialCsvStepCount = rankStepTable.length;
+}
+
+/**
+ * 画面上のステップデータでステップテーブルを更新
+ * @param {Array} steps
+ */
+export function setFullRankStepTable(steps) {
+  rankStepTable = steps.map((item) => ({
+    minRank: item.minRank === "" || item.minRank === null || isNaN(item.minRank) ? 0 : parseInt(item.minRank, 10),
+    maxRank: item.maxRank === "" || item.maxRank === null || item.maxRank === undefined || item.maxRank === "上限なし" || isNaN(item.maxRank) ? null : parseInt(item.maxRank, 10),
+    expPerRank: item.expPerRank === "" || item.expPerRank === null || isNaN(item.expPerRank) ? 0 : parseInt(item.expPerRank, 10),
+  }));
+}
+
+/**
+ * 全ステップテーブルを取得
+ * @returns {Array}
+ */
+export function getFullRankStepTable() {
+  return rankStepTable;
+}
+
+/**
+ * CSV元データの行数を取得
+ * @returns {number}
+ */
+export function getInitialCsvStepCount() {
+  return initialCsvStepCount;
 }
 
 /**
@@ -60,7 +92,7 @@ export function getExpForNextRank(rank) {
 
   const step = rankStepTable.find(
     (item) =>
-      rank >= item.minRank && (item.maxRank ? rank <= item.maxRank : true),
+      rank >= item.minRank && (item.maxRank !== null && item.maxRank !== undefined ? rank <= item.maxRank : true),
   );
 
   if (step) {
@@ -100,14 +132,12 @@ export function calculateExpFromRank1(targetRank) {
 
 /**
  * 累計経験値から相当するランクを逆引き
- * ランク r 到達時点の累計Expを E(r) としたとき、E(r) <= exp < E(r+1) であれば ランク r と判定する。
  * @param {number} exp
  * @returns {number}
  */
 export function calculateRankFromExp(exp) {
   if (exp <= 0 || !isTableLoaded || rankExpTable.length === 0) return 1;
 
-  // 1~999 の範囲
   const maxTableExp = rankExpTable[rankExpTable.length - 1];
   if (exp < maxTableExp) {
     for (let i = 0; i < rankExpTable.length; i++) {
@@ -117,7 +147,6 @@ export function calculateRankFromExp(exp) {
     }
   }
 
-  // 999以降の範囲
   let currentTotal = maxTableExp;
   let r = 999;
   while (true) {
@@ -153,7 +182,7 @@ export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
 }
 
 /**
- * CSVの最後の区間における1ランクあたりの必要経験値を取得
+ * 有効な末尾区間における1ランクあたりの必要経験値を取得
  * @returns {number}
  */
 export function getLastStepExp() {
@@ -161,6 +190,17 @@ export function getLastStepExp() {
     return rankStepTable[rankStepTable.length - 1].expPerRank;
   }
   return 0;
+}
+
+/**
+ * 有効な末尾区間における開始ランクを取得
+ * @returns {number}
+ */
+export function getLastStepMinRank() {
+  if (rankStepTable.length > 0) {
+    return rankStepTable[rankStepTable.length - 1].minRank;
+  }
+  return 2500;
 }
 
 /**
@@ -227,8 +267,6 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 
   let currentExp = baseExp;
 
-  //HACK: ゲーム内処理が不明のため、暫定ロジック
-  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
   currentExp = Math.ceil(
     currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
   );
