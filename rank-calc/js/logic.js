@@ -3,6 +3,8 @@
  * @description 計算ロジック
  */
 
+import * as CONSTANTS from "./constants.js";
+
 let rankExpTable = []; // 1〜999ランクの個別累計テーブル
 let rankStepTable = []; // 999以降の区間設定テーブル
 let isTableLoaded = false;
@@ -191,17 +193,18 @@ export function calculateTotalMultiplier(multipliers) {
     multi = 1.0,
     custom = 1.0,
   } = multipliers;
-  const validCustom =
+  const numericCustom =
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
       : Number(custom);
 
-  return manabi * spot * event * expUpMonster * luckBonus * multi * validCustom;
+  return (
+    manabi * spot * event * expUpMonster * luckBonus * multi * numericCustom
+  );
 }
 
 /**
  * 1周あたりの獲得経験値を算出
- * HACK: ゲーム内処理が不明のため、暫定ロジック
  * @param {number} baseExp
  * @param {Object} multipliers
  * @returns {number}
@@ -217,24 +220,30 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
     custom = 1.0,
   } = multipliers;
 
-  // 1. リザルト倍率を掛け合わせて切り上げ
-  const baseMultiplier = manabi * spot * event * expUpMonster;
-  let currentExp = Math.ceil(baseExp * baseMultiplier);
-
-  // 2. 運極ボーナスを適用して切り上げ
-  const validLuckBonus = luckBonus > 0 ? luckBonus : 1.0;
-  currentExp = Math.ceil(currentExp * validLuckBonus);
-
-  // 3. マルチプレイを適用して切り上げ
-  const validMulti = multi > 0 ? multi : 1.0;
-  currentExp = Math.ceil(currentExp * validMulti);
-
-  // 4. カスタム倍率を適用して切り上げ
-  const validCustom =
+  const numericCustom =
     custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
       ? 1.0
       : Number(custom);
-  currentExp = Math.ceil(currentExp * validCustom);
+
+  let currentExp = baseExp;
+
+  //HACK: ゲーム内処理が不明のため、暫定ロジック
+  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
+  currentExp = Math.ceil(
+    currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
+  currentExp = Math.ceil(currentExp * spot - CONSTANTS.FLOATING_POINT_EPSILON);
+  currentExp = Math.ceil(currentExp * event - CONSTANTS.FLOATING_POINT_EPSILON);
+  currentExp = Math.ceil(
+    currentExp * expUpMonster - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
+  currentExp = Math.ceil(
+    currentExp * luckBonus - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
+  currentExp = Math.ceil(currentExp * multi - CONSTANTS.FLOATING_POINT_EPSILON);
+  currentExp = Math.ceil(
+    currentExp * numericCustom - CONSTANTS.FLOATING_POINT_EPSILON,
+  );
 
   return currentExp;
 }

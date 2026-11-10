@@ -3,6 +3,9 @@
  * @description マスタデータと定数定義
  */
 
+// 切り上げ・切り捨て時の浮動小数点誤差吸収用の補正値
+export const FLOATING_POINT_EPSILON = 1e-9;
+
 // UI上で指定できる上限値
 export const MAX_RANK = 99999;
 export const FALLBACK_MAX_EXP = 999999999999999; // CSV読み込み完了までのフォールバック上限（読み込み後はMAX_RANKの累計Expに更新される）
