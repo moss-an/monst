@@ -113,7 +113,7 @@
 
             <div class="space-y-3 pt-2 border-t border-slate-700/60 text-xs">
               <p class="text-slate-400 text-[11px] leading-relaxed">
-                ランク帯と、1ランク上げるのに必要な経験値を入力してください。
+                ランク帯と、1ランク上げるのに必要な経験値を設定してください。
               </p>
               <div class="overflow-x-auto max-h-60 overflow-y-auto">
                 <table class="w-full text-left border-collapse table-fixed">
@@ -140,20 +140,21 @@
                           :value="row.itemRef.minRank"
                           disabled
                           placeholder="自動計算"
-                          class="w-full bg-slate-950 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-400 opacity-60 cursor-not-allowed font-mono"
+                          class="w-full bg-slate-950 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-400 opacity-60 cursor-not-allowed"
                         />
                       </td>
                       <td class="py-1 px-1">
                         <input
                           type="text"
                           inputmode="numeric"
-                          :value="row.inputMaxRank"
+                          v-model="row.itemRef.inputMaxRankDisplay"
+                          @focus="handleStepMaxRankFocus(row)"
                           @input="e => handleStepMaxRankInput(row, e)"
-                          @blur="validateStepMaxRankBlur(row.itemRef)"
+                          @blur="validateStepMaxRankBlur(row)"
                           :disabled="!row.isLast"
                           placeholder="数値を入力"
                           :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-400"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
                         />
                       </td>
                       <td class="py-1 px-1">
@@ -167,7 +168,7 @@
                           :disabled="!row.isLast"
                           placeholder="数値を入力"
                           :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-400"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono text-slate-300 focus:outline-none focus:border-amber-400"
                         />
                       </td>
                       <td class="py-1 px-1 text-center">
@@ -190,16 +191,19 @@
                 v-if="isAddRowBlocked"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
-                ※終了ランクが空欄の場合は行追加できず、以降は{{
-                committedLastEffectiveExpFormatted }}Expを適用して計算します。
+                ※終了ランクが空欄の場合は行追加できず、以降は<span
+                  class="font-mono"
+                  >{{ committedLastEffectiveExpFormatted }}</span
+                >Expを適用して計算します。
               </p>
               <p
                 v-else
                 class="text-slate-400 text-[11px] font-medium leading-relaxed"
               >
                 ※{{ committedLastDefinedMaxRankFormatted
-                }}を超えるランク帯の必要経験値は、{{
-                committedLastEffectiveExpFormatted }}Expを適用して計算します。
+                }}を超えるランク帯の必要経験値は、<span class="font-mono"
+                  >{{ committedLastEffectiveExpFormatted }}</span
+                >Expを適用して計算します。
               </p>
 
               <div class="flex justify-between items-center pt-1">

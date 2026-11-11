@@ -175,7 +175,7 @@ export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
  */
 export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
   if (targetExp <= currentExp) return 0;
-  return targetExp - currentExp;
+  return Math.max(0, targetExp - currentExp);
 }
 
 /**
@@ -237,6 +237,8 @@ export function calculateTotalMultiplier(multipliers) {
  * 1周あたりの獲得経験値を算出
  */
 export function calculateEarnedExpPerRun(baseExp, multipliers) {
+  if (baseExp <= 0) return 0;
+
   const {
     manabi = 1.0,
     spot = 1.0,
@@ -254,8 +256,6 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 
   let currentExp = baseExp;
 
-  //HACK: ゲーム内処理が不明のため、暫定ロジック
-  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
   currentExp = Math.ceil(
     currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
   );
@@ -271,7 +271,7 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
   currentExp = Math.ceil(
     currentExp * numericCustom - CONSTANTS.FLOATING_POINT_EPSILON,
   );
-  return currentExp;
+  return Math.max(0, currentExp);
 }
 
 /**
@@ -279,15 +279,20 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
-  return Math.ceil(requiredTotalExp / earnedExpPerRun);
+  return Math.max(0, Math.ceil(requiredTotalExp / earnedExpPerRun));
 }
 
 /**
  * 秒数から「日・時間・分」のオブジェクトを取得
  */
 export function formatTime(totalSeconds) {
+  if (totalSeconds <= 0) return { days: 0, hours: 0, minutes: 0 };
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
-  return { days, hours, minutes };
+  return {
+    days: Math.max(0, days),
+    hours: Math.max(0, hours),
+    minutes: Math.max(0, minutes),
+  };
 }

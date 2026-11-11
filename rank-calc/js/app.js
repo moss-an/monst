@@ -89,6 +89,12 @@ createApp({
             item.expPerRank === 0 && item.expPerRank !== ""
               ? ""
               : item.expPerRank,
+          inputMaxRankDisplay:
+            item.maxRank !== "" &&
+            item.maxRank !== null &&
+            item.maxRank !== undefined
+              ? formatPlainNumber(item.maxRank)
+              : "",
           inputExpDisplay:
             item.expPerRank !== "" &&
             item.expPerRank !== null &&
@@ -132,7 +138,6 @@ createApp({
           originalIndex,
           isLast,
           isCustomRow: false,
-          inputMaxRank: formatPlainNumber(item.maxRank),
         });
       });
 
@@ -144,7 +149,6 @@ createApp({
           originalIndex,
           isLast,
           isCustomRow: true,
-          inputMaxRank: formatPlainNumber(item.maxRank),
         });
       });
 
@@ -305,43 +309,70 @@ createApp({
       }
     };
 
-    const handleStepMaxRankInput = (row, e) => {
-      let cleaned = e.target.value.replace(/[^0-9]/g, "");
-      const maxRankInputLength = String(maxRank).length + 1;
-      if (cleaned.length > maxRankInputLength) {
-        cleaned = cleaned.slice(0, maxRankInputLength);
-      }
-      cleaned = cleaned.replace(/^0+/, "");
-
-      if (cleaned === "") {
-        row.itemRef.maxRank = "";
+    const handleStepMaxRankFocus = (row) => {
+      if (
+        row.itemRef.maxRank !== "" &&
+        row.itemRef.maxRank !== null &&
+        row.itemRef.maxRank !== undefined
+      ) {
+        row.itemRef.inputMaxRankDisplay = String(row.itemRef.maxRank).replace(
+          /[^0-9]/g,
+          "",
+        );
       } else {
-        let num = parseInt(cleaned, 10);
-        if (num > maxRank) num = maxRank;
-        row.itemRef.maxRank = num;
+        row.itemRef.inputMaxRankDisplay = "";
+      }
+    };
+
+    const handleStepMaxRankInput = (row, e) => {
+      let raw = e.target.value.replace(/[^0-9]/g, "");
+      const maxRankInputLength = String(maxRank).length + 1;
+      if (raw.length > maxRankInputLength) {
+        raw = raw.slice(0, maxRankInputLength);
+      }
+      if (raw.length > 1) {
+        raw = raw.replace(/^0+/, "");
+        if (raw === "") raw = "0";
+      }
+
+      if (raw === "") {
+        row.itemRef.maxRank = "";
+        row.itemRef.inputMaxRankDisplay = "";
+      } else {
+        let numVal = Number(raw);
+        if (numVal > maxRank) {
+          numVal = maxRank;
+          raw = String(maxRank);
+        }
+        row.itemRef.maxRank = numVal;
+        row.itemRef.inputMaxRankDisplay = raw;
       }
       updateRankSteps();
     };
 
     const validateStepMaxRankBlur = (row) => {
       if (
-        row.maxRank === "" ||
-        row.maxRank === null ||
-        row.maxRank === undefined ||
-        isNaN(row.maxRank)
+        row.itemRef.maxRank === "" ||
+        row.itemRef.maxRank === null ||
+        row.itemRef.maxRank === undefined ||
+        isNaN(row.itemRef.maxRank)
       ) {
-        row.maxRank = "";
+        row.itemRef.maxRank = "";
+        row.itemRef.inputMaxRankDisplay = "";
       } else {
-        row.maxRank = sanitizePositiveInt(row.maxRank, maxRank);
+        row.itemRef.maxRank = sanitizePositiveInt(row.itemRef.maxRank, maxRank);
         if (
-          row.minRank !== "" &&
-          row.minRank !== null &&
-          !isNaN(row.minRank) &&
-          typeof row.maxRank === "number" &&
-          row.maxRank < Number(row.minRank)
+          row.itemRef.minRank !== "" &&
+          row.itemRef.minRank !== null &&
+          !isNaN(row.itemRef.minRank) &&
+          typeof row.itemRef.maxRank === "number" &&
+          row.itemRef.maxRank < Number(row.itemRef.minRank)
         ) {
-          row.maxRank = Number(row.minRank);
+          row.itemRef.maxRank = Number(row.itemRef.minRank);
         }
+        row.itemRef.inputMaxRankDisplay = formatPlainNumber(
+          row.itemRef.maxRank,
+        );
       }
       updateRankSteps();
       updateCommittedDisplayValues();
@@ -443,6 +474,7 @@ createApp({
         minRank: newMinRank,
         maxRank: "",
         expPerRank: "",
+        inputMaxRankDisplay: "",
         inputExpDisplay: "",
       });
       updateRankSteps();
@@ -467,6 +499,12 @@ createApp({
             item.expPerRank === 0 && item.expPerRank !== ""
               ? ""
               : item.expPerRank,
+          inputMaxRankDisplay:
+            item.maxRank !== "" &&
+            item.maxRank !== null &&
+            item.maxRank !== undefined
+              ? formatPlainNumber(item.maxRank)
+              : "",
           inputExpDisplay:
             item.expPerRank !== "" &&
             item.expPerRank !== null &&
@@ -888,6 +926,7 @@ createApp({
       committedLastEffectiveExpFormatted,
       committedLastDefinedMaxRankFormatted,
       updateRankSteps,
+      handleStepMaxRankFocus,
       handleStepMaxRankInput,
       validateStepMaxRankBlur,
       handleStepExpFocus,
