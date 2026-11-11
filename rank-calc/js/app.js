@@ -236,7 +236,6 @@ createApp({
         expVal === undefined ||
         isNaN(expVal)
       ) {
-        // fallback to previous row exp
         if (steps.length >= 2) {
           const prevExp = steps[steps.length - 2].expPerRank;
           return prevExp !== "" && prevExp !== null && !isNaN(prevExp)
