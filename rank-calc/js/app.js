@@ -48,7 +48,6 @@ createApp({
     const initialDefaultParsedSteps = ref([]);
     const tableVersion = ref(0);
 
-    // 確定値（Blur完了後に更新される値）を保持する ref
     const committedLastEffectiveExp = ref(0);
     const committedLastDefinedMaxRank = ref("");
 
@@ -322,7 +321,6 @@ createApp({
         row.itemRef.maxRank = num;
       }
       updateRankSteps();
-      // 入力中は連動させない（Blur完了時に更新）
     };
 
     const validateStepMaxRankBlur = (row) => {
@@ -388,7 +386,6 @@ createApp({
         row.itemRef.inputExpDisplay = raw;
       }
       updateRankSteps();
-      // 入力中は連動させない（Blur完了時に更新）
     };
 
     const handleStepExpBlur = (row) => {
