@@ -172,11 +172,6 @@ createApp({
       return false;
     });
 
-    // 4 patterns of message support:
-    // - 終了ランクのみが空欄: 'onlyMaxEmpty'
-    // - 必要経験値のみが空欄: 'onlyExpEmpty'
-    // - 終了ランクも必要経験値も空欄: 'bothEmpty'
-    // - 両方入力済み: 'normal'
     const lastRowPattern = computed(() => {
       tableVersion.value;
       const steps = allRankSteps.value;

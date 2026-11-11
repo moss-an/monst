@@ -186,8 +186,6 @@
                 </table>
               </div>
 
-              <!-- メッセージ表示 (4パターン) -->
-              <!-- 1. 終了ランクのみ空欄 -->
               <p
                 v-if="lastRowPattern === 'onlyMaxEmpty'"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
@@ -196,7 +194,7 @@
                 }}以降は<span class="font-mono">{{ lastRowExpFormatted }}</span
                 >Expを適用して計算します。
               </p>
-              <!-- 2. 必要経験値のみ空欄 -->
+
               <p
                 v-else-if="lastRowPattern === 'onlyExpEmpty'"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
@@ -206,7 +204,7 @@
                   >{{ prevRowExpFormatted }}</span
                 >Expを適用して計算します。
               </p>
-              <!-- 3. 両方空欄 -->
+
               <p
                 v-else-if="lastRowPattern === 'bothEmpty'"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
@@ -216,7 +214,7 @@
                   >{{ prevRowExpFormatted }}</span
                 >Expを適用して計算します。
               </p>
-              <!-- 4. 両方入力済み (通常) -->
+
               <p
                 v-else
                 class="text-slate-400 text-[11px] font-medium leading-relaxed"
