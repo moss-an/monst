@@ -48,6 +48,28 @@ createApp({
     const initialDefaultParsedSteps = ref([]);
     const tableVersion = ref(0);
 
+    // 確定値（Blur完了後に更新される値）を保持する ref
+    const committedLastEffectiveExp = ref(0);
+    const committedLastDefinedMaxRank = ref("");
+
+    const formatNumber = (val) => {
+      if (val === "" || val === null || val === undefined) return "";
+      const cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      return num.toLocaleString();
+    };
+
+    const formatPlainNumber = (val) => {
+      if (val === "" || val === null || val === undefined) return "";
+      const cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      return String(num);
+    };
+
     onMounted(async () => {
       try {
         const [resRankTable, resStepTable] = await Promise.all([
@@ -64,7 +86,16 @@ createApp({
         const loadedSteps = Logic.getFullRankStepTable().map((item) => ({
           minRank: item.minRank,
           maxRank: item.maxRank === null ? "" : item.maxRank,
-          expPerRank: item.expPerRank,
+          expPerRank:
+            item.expPerRank === 0 && item.expPerRank !== ""
+              ? ""
+              : item.expPerRank,
+          inputExpDisplay:
+            item.expPerRank !== "" &&
+            item.expPerRank !== null &&
+            item.expPerRank !== undefined
+              ? formatNumber(item.expPerRank)
+              : "",
         }));
 
         allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
@@ -74,28 +105,11 @@ createApp({
 
         isLoaded.value = true;
         updateStepInfo();
+        updateCommittedDisplayValues();
       } catch (e) {
         console.warn("CSVの読み込みに失敗しました:", e);
       }
     });
-
-    const formatNumber = (val) => {
-      if (val === "" || val === null || val === undefined) return "";
-      const cleaned = String(val).replace(/[^0-9]/g, "");
-      if (cleaned === "") return "";
-      const num = parseInt(cleaned, 10);
-      if (isNaN(num)) return "";
-      return num.toLocaleString();
-    };
-
-    const formatRankDisplay = (val) => {
-      if (val === "" || val === null || val === undefined) return "";
-      const cleaned = String(val).replace(/[^0-9]/g, "");
-      if (cleaned === "") return "";
-      const num = parseInt(cleaned, 10);
-      if (isNaN(num)) return "";
-      return num.toLocaleString();
-    };
 
     const visibleRankSteps = computed(() => {
       const steps = allRankSteps.value;
@@ -119,8 +133,7 @@ createApp({
           originalIndex,
           isLast,
           isCustomRow: false,
-          inputMaxRank: formatRankDisplay(item.maxRank),
-          inputExpPerRank: formatNumber(item.expPerRank),
+          inputMaxRank: formatPlainNumber(item.maxRank),
         });
       });
 
@@ -132,8 +145,7 @@ createApp({
           originalIndex,
           isLast,
           isCustomRow: true,
-          inputMaxRank: formatRankDisplay(item.maxRank),
-          inputExpPerRank: formatNumber(item.expPerRank),
+          inputMaxRank: formatPlainNumber(item.maxRank),
         });
       });
 
@@ -163,16 +175,76 @@ createApp({
     const isAddRowBlocked = computed(() => {
       if (allRankSteps.value.length === 0) return false;
       const lastRow = allRankSteps.value[allRankSteps.value.length - 1];
-      const val = lastRow.maxRank;
+      const maxVal = lastRow.maxRank;
+      const expVal = lastRow.expPerRank;
+
+      const isMaxRankEmpty =
+        maxVal === "" ||
+        maxVal === null ||
+        maxVal === undefined ||
+        (typeof maxVal === "number" && isNaN(maxVal));
+
+      const isExpEmpty =
+        expVal === "" ||
+        expVal === null ||
+        expVal === undefined ||
+        (typeof expVal === "number" && isNaN(expVal));
+
+      return isMaxRankEmpty || isExpEmpty;
+    });
+
+    const calcLastEffectiveExp = () => {
+      const steps = allRankSteps.value;
+      if (steps.length === 0) return 0;
+      const lastRow = steps[steps.length - 1];
       if (
-        val === "" ||
-        val === null ||
-        val === undefined ||
-        (typeof val === "number" && isNaN(val))
+        lastRow.expPerRank !== "" &&
+        lastRow.expPerRank !== null &&
+        lastRow.expPerRank !== undefined &&
+        !isNaN(lastRow.expPerRank)
       ) {
-        return true;
+        return Number(lastRow.expPerRank);
       }
-      return false;
+      if (steps.length >= 2) {
+        const prevRow = steps[steps.length - 2];
+        if (
+          prevRow.expPerRank !== "" &&
+          prevRow.expPerRank !== null &&
+          prevRow.expPerRank !== undefined &&
+          !isNaN(prevRow.expPerRank)
+        ) {
+          return Number(prevRow.expPerRank);
+        }
+      }
+      return 0;
+    };
+
+    const calcLastDefinedMaxRank = () => {
+      const steps = allRankSteps.value;
+      if (steps.length === 0) return "";
+      const lastRow = steps[steps.length - 1];
+      if (
+        lastRow.maxRank !== "" &&
+        lastRow.maxRank !== null &&
+        lastRow.maxRank !== undefined &&
+        !isNaN(lastRow.maxRank)
+      ) {
+        return formatPlainNumber(lastRow.maxRank) + "ランク";
+      }
+      return "";
+    };
+
+    const updateCommittedDisplayValues = () => {
+      committedLastEffectiveExp.value = calcLastEffectiveExp();
+      committedLastDefinedMaxRank.value = calcLastDefinedMaxRank();
+    };
+
+    const committedLastEffectiveExpFormatted = computed(() => {
+      return committedLastEffectiveExp.value.toLocaleString();
+    });
+
+    const committedLastDefinedMaxRankFormatted = computed(() => {
+      return committedLastDefinedMaxRank.value;
     });
 
     const updateStepInfo = () => {
@@ -235,15 +307,22 @@ createApp({
     };
 
     const handleStepMaxRankInput = (row, e) => {
-      const raw = e.target.value.replace(/[^0-9]/g, "");
-      if (raw === "") {
+      let cleaned = e.target.value.replace(/[^0-9]/g, "");
+      const maxRankInputLength = String(maxRank).length + 1;
+      if (cleaned.length > maxRankInputLength) {
+        cleaned = cleaned.slice(0, maxRankInputLength);
+      }
+      cleaned = cleaned.replace(/^0+/, "");
+
+      if (cleaned === "") {
         row.itemRef.maxRank = "";
       } else {
-        let num = parseInt(raw, 10);
+        let num = parseInt(cleaned, 10);
         if (num > maxRank) num = maxRank;
         row.itemRef.maxRank = num;
       }
       updateRankSteps();
+      // 入力中は連動させない（Blur完了時に更新）
     };
 
     const validateStepMaxRankBlur = (row) => {
@@ -267,12 +346,21 @@ createApp({
         }
       }
       updateRankSteps();
+      updateCommittedDisplayValues();
     };
 
     const handleStepExpFocus = (row) => {
-      // フォーカス時は数値のみにして編集しやすくする
-      if (row.itemRef.expPerRank !== "") {
-        row.itemRef.expPerRank = String(row.itemRef.expPerRank).replace(/[^0-9]/g, "");
+      if (
+        row.itemRef.expPerRank !== "" &&
+        row.itemRef.expPerRank !== null &&
+        row.itemRef.expPerRank !== undefined
+      ) {
+        row.itemRef.inputExpDisplay = String(row.itemRef.expPerRank).replace(
+          /[^0-9]/g,
+          "",
+        );
+      } else {
+        row.itemRef.inputExpDisplay = "";
       }
     };
 
@@ -289,23 +377,36 @@ createApp({
 
       if (raw === "") {
         row.itemRef.expPerRank = "";
+        row.itemRef.inputExpDisplay = "";
       } else {
         let numVal = Number(raw);
         if (numVal > maxStepExp) {
           numVal = maxStepExp;
+          raw = String(maxStepExp);
         }
         row.itemRef.expPerRank = numVal;
+        row.itemRef.inputExpDisplay = raw;
       }
       updateRankSteps();
+      // 入力中は連動させない（Blur完了時に更新）
     };
 
     const handleStepExpBlur = (row) => {
+      if (
+        row.itemRef.expPerRank !== "" &&
+        row.itemRef.expPerRank !== null &&
+        row.itemRef.expPerRank !== undefined
+      ) {
+        row.itemRef.inputExpDisplay = formatNumber(row.itemRef.expPerRank);
+      } else {
+        row.itemRef.inputExpDisplay = "";
+      }
       updateRankSteps();
+      updateCommittedDisplayValues();
     };
 
     const updateRankSteps = () => {
       allRankSteps.value.forEach((row, idx) => {
-        // 自動連動ロジック: 前の行の終了ランクから開始ランクを自動計算
         if (idx > 0) {
           const prevRow = allRankSteps.value[idx - 1];
           if (
@@ -345,8 +446,10 @@ createApp({
         minRank: newMinRank,
         maxRank: "",
         expPerRank: "",
+        inputExpDisplay: "",
       });
       updateRankSteps();
+      updateCommittedDisplayValues();
     };
 
     const removeRankStepRow = (originalIndex) => {
@@ -354,6 +457,7 @@ createApp({
       if (originalIndex < initialCsvCount) return;
       allRankSteps.value.splice(originalIndex, 1);
       updateRankSteps();
+      updateCommittedDisplayValues();
     };
 
     const resetRankSteps = () => {
@@ -362,10 +466,20 @@ createApp({
         const loadedSteps = Logic.getFullRankStepTable().map((item) => ({
           minRank: item.minRank,
           maxRank: item.maxRank === null ? "" : item.maxRank,
-          expPerRank: item.expPerRank,
+          expPerRank:
+            item.expPerRank === 0 && item.expPerRank !== ""
+              ? ""
+              : item.expPerRank,
+          inputExpDisplay:
+            item.expPerRank !== "" &&
+            item.expPerRank !== null &&
+            item.expPerRank !== undefined
+              ? formatNumber(item.expPerRank)
+              : "",
         }));
         allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
         updateStepInfo();
+        updateCommittedDisplayValues();
       }
     };
 
@@ -774,9 +888,8 @@ createApp({
       visibleRankSteps,
       hasUserEditedSteps,
       isAddRowBlocked,
-      
-      
-      formatRankDisplay,
+      committedLastEffectiveExpFormatted,
+      committedLastDefinedMaxRankFormatted,
       updateRankSteps,
       handleStepMaxRankInput,
       validateStepMaxRankBlur,
