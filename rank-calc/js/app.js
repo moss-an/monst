@@ -48,9 +48,6 @@ createApp({
     const initialDefaultParsedSteps = ref([]);
     const tableVersion = ref(0);
 
-    const committedLastEffectiveExp = ref(0);
-    const committedLastDefinedMaxRank = ref("");
-
     const formatNumber = (val) => {
       if (val === "" || val === null || val === undefined) return "";
       const cleaned = String(val).replace(/[^0-9]/g, "");
@@ -110,7 +107,6 @@ createApp({
 
         isLoaded.value = true;
         updateStepInfo();
-        updateCommittedDisplayValues();
       } catch (e) {
         console.warn("CSVの読み込みに失敗しました:", e);
       }
@@ -156,6 +152,7 @@ createApp({
     });
 
     const hasUserEditedSteps = computed(() => {
+      tableVersion.value;
       const steps = allRankSteps.value;
       const initialCount = Logic.getInitialCsvStepCount();
       if (steps.length !== initialCount) return true;
@@ -175,13 +172,20 @@ createApp({
       return false;
     });
 
-    const isAddRowBlocked = computed(() => {
-      if (allRankSteps.value.length === 0) return false;
-      const lastRow = allRankSteps.value[allRankSteps.value.length - 1];
+    // 4 patterns of message support:
+    // - 終了ランクのみが空欄: 'onlyMaxEmpty'
+    // - 必要経験値のみが空欄: 'onlyExpEmpty'
+    // - 終了ランクも必要経験値も空欄: 'bothEmpty'
+    // - 両方入力済み: 'normal'
+    const lastRowPattern = computed(() => {
+      tableVersion.value;
+      const steps = allRankSteps.value;
+      if (steps.length === 0) return "normal";
+      const lastRow = steps[steps.length - 1];
       const maxVal = lastRow.maxRank;
       const expVal = lastRow.expPerRank;
 
-      const isMaxRankEmpty =
+      const isMaxEmpty =
         maxVal === "" ||
         maxVal === null ||
         maxVal === undefined ||
@@ -193,61 +197,78 @@ createApp({
         expVal === undefined ||
         (typeof expVal === "number" && isNaN(expVal));
 
-      return isMaxRankEmpty || isExpEmpty;
+      if (isMaxEmpty && isExpEmpty) return "bothEmpty";
+      if (isMaxEmpty && !isExpEmpty) return "onlyMaxEmpty";
+      if (!isMaxEmpty && isExpEmpty) return "onlyExpEmpty";
+      return "normal";
     });
 
-    const calcLastEffectiveExp = () => {
-      const steps = allRankSteps.value;
-      if (steps.length === 0) return 0;
-      const lastRow = steps[steps.length - 1];
-      if (
-        lastRow.expPerRank !== "" &&
-        lastRow.expPerRank !== null &&
-        lastRow.expPerRank !== undefined &&
-        !isNaN(lastRow.expPerRank)
-      ) {
-        return Number(lastRow.expPerRank);
-      }
-      if (steps.length >= 2) {
-        const prevRow = steps[steps.length - 2];
-        if (
-          prevRow.expPerRank !== "" &&
-          prevRow.expPerRank !== null &&
-          prevRow.expPerRank !== undefined &&
-          !isNaN(prevRow.expPerRank)
-        ) {
-          return Number(prevRow.expPerRank);
-        }
-      }
-      return 0;
-    };
+    const isAddRowBlocked = computed(() => {
+      return lastRowPattern.value !== "normal";
+    });
 
-    const calcLastDefinedMaxRank = () => {
+    const lastRowMinRank = computed(() => {
+      tableVersion.value;
       const steps = allRankSteps.value;
       if (steps.length === 0) return "";
-      const lastRow = steps[steps.length - 1];
-      if (
-        lastRow.maxRank !== "" &&
-        lastRow.maxRank !== null &&
-        lastRow.maxRank !== undefined &&
-        !isNaN(lastRow.maxRank)
-      ) {
-        return formatPlainNumber(lastRow.maxRank) + "ランク";
-      }
-      return "";
-    };
-
-    const updateCommittedDisplayValues = () => {
-      committedLastEffectiveExp.value = calcLastEffectiveExp();
-      committedLastDefinedMaxRank.value = calcLastDefinedMaxRank();
-    };
-
-    const committedLastEffectiveExpFormatted = computed(() => {
-      return committedLastEffectiveExp.value.toLocaleString();
+      return steps[steps.length - 1].minRank;
     });
 
-    const committedLastDefinedMaxRankFormatted = computed(() => {
-      return committedLastDefinedMaxRank.value;
+    const lastRowMaxRankFormatted = computed(() => {
+      tableVersion.value;
+      const steps = allRankSteps.value;
+      if (steps.length === 0) return "";
+      const maxVal = steps[steps.length - 1].maxRank;
+      if (
+        maxVal === "" ||
+        maxVal === null ||
+        maxVal === undefined ||
+        isNaN(maxVal)
+      ) {
+        return "";
+      }
+      return formatPlainNumber(maxVal);
+    });
+
+    const lastRowExpFormatted = computed(() => {
+      tableVersion.value;
+      const steps = allRankSteps.value;
+      if (steps.length === 0) return "0";
+      const expVal = steps[steps.length - 1].expPerRank;
+      if (
+        expVal === "" ||
+        expVal === null ||
+        expVal === undefined ||
+        isNaN(expVal)
+      ) {
+        // fallback to previous row exp
+        if (steps.length >= 2) {
+          const prevExp = steps[steps.length - 2].expPerRank;
+          return prevExp !== "" && prevExp !== null && !isNaN(prevExp)
+            ? Number(prevExp).toLocaleString()
+            : "0";
+        }
+        return "0";
+      }
+      return Number(expVal).toLocaleString();
+    });
+
+    const prevRowExpFormatted = computed(() => {
+      tableVersion.value;
+      const steps = allRankSteps.value;
+      if (steps.length >= 2) {
+        const prevExp = steps[steps.length - 2].expPerRank;
+        if (prevExp !== "" && prevExp !== null && !isNaN(prevExp)) {
+          return Number(prevExp).toLocaleString();
+        }
+      }
+      if (steps.length >= 1) {
+        const currExp = steps[steps.length - 1].expPerRank;
+        if (currExp !== "" && currExp !== null && !isNaN(currExp)) {
+          return Number(currExp).toLocaleString();
+        }
+      }
+      return "0";
     });
 
     const updateStepInfo = () => {
@@ -375,7 +396,6 @@ createApp({
         );
       }
       updateRankSteps();
-      updateCommittedDisplayValues();
     };
 
     const handleStepExpFocus = (row) => {
@@ -430,7 +450,6 @@ createApp({
         row.itemRef.inputExpDisplay = "";
       }
       updateRankSteps();
-      updateCommittedDisplayValues();
     };
 
     const updateRankSteps = () => {
@@ -478,7 +497,6 @@ createApp({
         inputExpDisplay: "",
       });
       updateRankSteps();
-      updateCommittedDisplayValues();
     };
 
     const removeRankStepRow = (originalIndex) => {
@@ -486,7 +504,6 @@ createApp({
       if (originalIndex < initialCsvCount) return;
       allRankSteps.value.splice(originalIndex, 1);
       updateRankSteps();
-      updateCommittedDisplayValues();
     };
 
     const resetRankSteps = () => {
@@ -514,7 +531,6 @@ createApp({
         }));
         allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
         updateStepInfo();
-        updateCommittedDisplayValues();
       }
     };
 
@@ -922,9 +938,12 @@ createApp({
       lastStepMinRank,
       visibleRankSteps,
       hasUserEditedSteps,
+      lastRowPattern,
       isAddRowBlocked,
-      committedLastEffectiveExpFormatted,
-      committedLastDefinedMaxRankFormatted,
+      lastRowMinRank,
+      lastRowMaxRankFormatted,
+      lastRowExpFormatted,
+      prevRowExpFormatted,
       updateRankSteps,
       handleStepMaxRankFocus,
       handleStepMaxRankInput,

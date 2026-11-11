@@ -51,26 +51,39 @@ export function initRankStepTableFromCSV(csvText) {
 }
 
 export function setFullRankStepTable(steps) {
-  rankStepTable = steps.map((item) => ({
-    minRank:
+  let prevExp = 0;
+  rankStepTable = steps.map((item, index) => {
+    const minRank =
       item.minRank === "" || item.minRank === null || isNaN(item.minRank)
         ? 0
-        : parseInt(item.minRank, 10),
-    maxRank:
+        : parseInt(item.minRank, 10);
+
+    const maxRank =
       item.maxRank === "" ||
       item.maxRank === null ||
       item.maxRank === undefined ||
       item.maxRank === "上限なし" ||
       isNaN(item.maxRank)
         ? null
-        : parseInt(item.maxRank, 10),
-    expPerRank:
+        : parseInt(item.maxRank, 10);
+
+    let rawExp =
       item.expPerRank === "" ||
       item.expPerRank === null ||
+      item.expPerRank === undefined ||
       isNaN(item.expPerRank)
-        ? 0
-        : parseInt(item.expPerRank, 10),
-  }));
+        ? null
+        : parseInt(item.expPerRank, 10);
+
+    let expPerRank = rawExp;
+    if (expPerRank === null || expPerRank <= 0) {
+      expPerRank = prevExp;
+    } else {
+      prevExp = expPerRank;
+    }
+
+    return { minRank, maxRank, expPerRank, rawExp };
+  });
 }
 
 export function getFullRankStepTable() {
