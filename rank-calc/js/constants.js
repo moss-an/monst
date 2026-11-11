@@ -9,6 +9,9 @@ export const FLOATING_POINT_EPSILON = 1e-9;
 // CSV読み込み完了までの間のフォールバック用定数
 export const FALLBACK_MAX_EXP = 999999999999999; // 累計経験値の上限フォールバック値
 
+// ランク区間のフォールバック・基準用定数
+export const DEFAULT_THRESHOLD_RANK = 999; // 1〜999ランクの個別テーブルと区間テーブルの境界ランク
+
 // UI上で指定できる上限値
 export const MAX_RANK = 99999; // ランクの上限
 export const MAX_STEP_EXP = 99999999999; // 必要経験値の上限

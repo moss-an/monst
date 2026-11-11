@@ -41,7 +41,7 @@ createApp({
 
     const isLoaded = ref(false);
     const lastStepExp = ref(0);
-    const lastStepMinRank = ref(999);
+    const lastStepMinRank = ref(CONSTANTS.DEFAULT_THRESHOLD_RANK);
 
     const defaultStepTableText = ref("");
     const allRankSteps = ref([]);
