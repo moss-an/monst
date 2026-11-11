@@ -113,7 +113,7 @@
 
             <div class="space-y-3 pt-2 border-t border-slate-700/60 text-xs">
               <p class="text-slate-400 text-[11px] leading-relaxed">
-                ※ランク帯と、1ランク上げるのに必要な経験値を入力してください。
+                ランク帯と、1ランク上げるのに必要な経験値を入力してください。
               </p>
               <div class="overflow-x-auto max-h-60 overflow-y-auto">
                 <table class="w-full text-left border-collapse table-fixed">
@@ -135,7 +135,8 @@
                     >
                       <td class="py-1 px-1">
                         <input
-                          type="number"
+                          type="text"
+                          inputmode="numeric"
                           :value="row.itemRef.minRank"
                           disabled
                           placeholder="自動計算"
@@ -144,9 +145,10 @@
                       </td>
                       <td class="py-1 px-1">
                         <input
-                          type="number"
-                          v-model.number="row.itemRef.maxRank"
-                          @input="updateRankSteps"
+                          type="text"
+                          inputmode="numeric"
+                          :value="row.inputMaxRank"
+                          @input="e => handleStepMaxRankInput(row, e)"
                           @blur="validateStepMaxRankBlur(row.itemRef)"
                           :disabled="!row.isLast"
                           placeholder="数値を入力"
@@ -158,7 +160,7 @@
                         <input
                           type="text"
                           inputmode="numeric"
-                          :value="row.inputExpPerRank"
+                          v-model="row.itemRef.inputExpDisplay"
                           @focus="handleStepExpFocus(row)"
                           @input="e => handleStepExpInput(row, e)"
                           @blur="handleStepExpBlur(row)"
@@ -189,7 +191,15 @@
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
                 ※終了ランクが空欄の場合は行追加できず、以降は{{
-                lastStepExp.toLocaleString() }}Expを適用して計算します。
+                committedLastEffectiveExpFormatted }}Expを適用して計算します。
+              </p>
+              <p
+                v-else
+                class="text-slate-400 text-[11px] font-medium leading-relaxed"
+              >
+                ※{{ committedLastDefinedMaxRankFormatted
+                }}を超えるランク帯の必要経験値は、{{
+                committedLastEffectiveExpFormatted }}Expを適用して計算します。
               </p>
 
               <div class="flex justify-between items-center pt-1">
