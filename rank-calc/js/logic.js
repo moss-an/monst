@@ -51,26 +51,39 @@ export function initRankStepTableFromCSV(csvText) {
 }
 
 export function setFullRankStepTable(steps) {
-  rankStepTable = steps.map((item) => ({
-    minRank:
+  let prevExp = 0;
+  rankStepTable = steps.map((item, index) => {
+    const minRank =
       item.minRank === "" || item.minRank === null || isNaN(item.minRank)
         ? 0
-        : parseInt(item.minRank, 10),
-    maxRank:
+        : parseInt(item.minRank, 10);
+
+    const maxRank =
       item.maxRank === "" ||
       item.maxRank === null ||
       item.maxRank === undefined ||
       item.maxRank === "上限なし" ||
       isNaN(item.maxRank)
         ? null
-        : parseInt(item.maxRank, 10),
-    expPerRank:
+        : parseInt(item.maxRank, 10);
+
+    let rawExp =
       item.expPerRank === "" ||
       item.expPerRank === null ||
+      item.expPerRank === undefined ||
       isNaN(item.expPerRank)
-        ? 0
-        : parseInt(item.expPerRank, 10),
-  }));
+        ? null
+        : parseInt(item.expPerRank, 10);
+
+    let expPerRank = rawExp;
+    if (expPerRank === null || expPerRank <= 0) {
+      expPerRank = prevExp;
+    } else {
+      prevExp = expPerRank;
+    }
+
+    return { minRank, maxRank, expPerRank, rawExp };
+  });
 }
 
 export function getFullRankStepTable() {
@@ -175,7 +188,7 @@ export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
  */
 export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
   if (targetExp <= currentExp) return 0;
-  return targetExp - currentExp;
+  return Math.max(0, targetExp - currentExp);
 }
 
 /**
@@ -237,6 +250,8 @@ export function calculateTotalMultiplier(multipliers) {
  * 1周あたりの獲得経験値を算出
  */
 export function calculateEarnedExpPerRun(baseExp, multipliers) {
+  if (baseExp <= 0) return 0;
+
   const {
     manabi = 1.0,
     spot = 1.0,
@@ -271,7 +286,7 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
   currentExp = Math.ceil(
     currentExp * numericCustom - CONSTANTS.FLOATING_POINT_EPSILON,
   );
-  return currentExp;
+  return Math.max(0, currentExp);
 }
 
 /**
@@ -279,15 +294,20 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
  */
 export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
-  return Math.ceil(requiredTotalExp / earnedExpPerRun);
+  return Math.max(0, Math.ceil(requiredTotalExp / earnedExpPerRun));
 }
 
 /**
  * 秒数から「日・時間・分」のオブジェクトを取得
  */
 export function formatTime(totalSeconds) {
+  if (totalSeconds <= 0) return { days: 0, hours: 0, minutes: 0 };
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
-  return { days, hours, minutes };
+  return {
+    days: Math.max(0, days),
+    hours: Math.max(0, hours),
+    minutes: Math.max(0, minutes),
+  };
 }
