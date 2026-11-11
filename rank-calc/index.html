@@ -191,9 +191,9 @@
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
                 ※終了ランクが未入力の場合は行を追加できず、ランク{{
-                lastRowMinRank }}以降は<span class="font-mono"
-                  >{{ lastRowExpFormatted }}</span
-                >Expを適用して計算します。
+                lastRowMinRank }}以降は
+                <span class="font-mono">{{ lastRowExpFormatted }}</span>
+                Expを適用して計算します。
               </p>
 
               <p
@@ -201,9 +201,9 @@
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
                 ※必要経験値が未入力の場合は行を追加できず、ランク{{
-                lastRowMaxRankFormatted }}以降は<span class="font-mono"
-                  >{{ prevRowExpFormatted }}</span
-                >Expを適用して計算します。
+                lastRowMaxRankFormatted }}以降は
+                <span class="font-mono">{{ prevRowExpFormatted }}</span>
+                Expを適用して計算します。
               </p>
 
               <p
@@ -211,9 +211,9 @@
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
                 ※終了ランク・必要経験値が未入力の場合は行を追加できず、ランク{{
-                lastRowMinRank }}以降は<span class="font-mono"
-                  >{{ prevRowExpFormatted }}</span
-                >Expを適用して計算します。
+                lastRowMinRank }}以降は
+                <span class="font-mono">{{ prevRowExpFormatted }}</span>
+                Expを適用して計算します。
               </p>
 
               <p
@@ -221,9 +221,9 @@
                 class="text-slate-400 text-[11px] font-medium leading-relaxed"
               >
                 ※ランク{{ lastRowMaxRankFormatted
-                }}を超えるランク帯の必要経験値は、<span class="font-mono"
-                  >{{ lastRowExpFormatted }}</span
-                >Expを適用して計算します。
+                }}を超えるランク帯の必要経験値は、
+                <span class="font-mono">{{ lastRowExpFormatted }}</span>
+                Expを適用して計算します。
               </p>
 
               <div class="flex justify-between items-center pt-1">
@@ -250,9 +250,8 @@
               ※ランク帯ごとの必要経験値は、あなたによって設定されています。
             </template>
             <template v-else>
-              ※上限を超えるランク帯の必要経験値は、<span class="font-mono"
-                >{{ lastStepExp.toLocaleString() }}</span
-              >
+              ※上限を超えるランク帯の必要経験値は、
+              <span class="font-mono">{{ lastStepExp.toLocaleString() }}</span>
               Expを適用して計算します。
             </template>
           </p>
