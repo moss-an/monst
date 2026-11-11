@@ -116,15 +116,15 @@
                 ※ランク帯と、1ランク上げるのに必要な経験値を入力してください。
               </p>
               <div class="overflow-x-auto max-h-60 overflow-y-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                   <thead>
                     <tr
                       class="text-slate-400 border-b border-slate-700 sticky top-0 bg-slate-900/90"
                     >
-                      <th class="py-1 px-1 font-medium">開始ランク</th>
-                      <th class="py-1 px-1 font-medium">終了ランク</th>
-                      <th class="py-1 px-1 font-medium">必要経験値</th>
-                      <th class="py-1 px-1 w-8"></th>
+                      <th class="py-1 px-1 font-medium w-1/4">開始ランク</th>
+                      <th class="py-1 px-1 font-medium w-1/4">終了ランク</th>
+                      <th class="py-1 px-1 font-medium w-[40%]">必要経験値</th>
+                      <th class="py-1 px-1 w-[10%] text-center"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -136,12 +136,10 @@
                       <td class="py-1 px-1">
                         <input
                           type="number"
-                          v-model.number="row.itemRef.minRank"
-                          @input="updateRankSteps"
-                          :disabled="!row.isLast"
-                          placeholder="数値を入力"
-                          :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                          :value="row.itemRef.minRank"
+                          disabled
+                          placeholder="自動計算"
+                          class="w-full bg-slate-950 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-400 opacity-60 cursor-not-allowed font-mono"
                         />
                       </td>
                       <td class="py-1 px-1">
@@ -153,18 +151,21 @@
                           :disabled="!row.isLast"
                           placeholder="数値を入力"
                           :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-400"
                         />
                       </td>
                       <td class="py-1 px-1">
                         <input
-                          type="number"
-                          v-model.number="row.itemRef.expPerRank"
-                          @input="updateRankSteps"
+                          type="text"
+                          inputmode="numeric"
+                          :value="row.inputExpPerRank"
+                          @focus="handleStepExpFocus(row)"
+                          @input="e => handleStepExpInput(row, e)"
+                          @blur="handleStepExpBlur(row)"
                           :disabled="!row.isLast"
                           placeholder="数値を入力"
                           :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-400"
                         />
                       </td>
                       <td class="py-1 px-1 text-center">
@@ -185,9 +186,10 @@
               <!-- メッセージ表示 -->
               <p
                 v-if="isAddRowBlocked"
-                class="text-amber-400 text-[11px] font-medium"
+                class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
-                ※終了ランクが空欄の場合は行追加できず、以降はその必要経験値を適用して計算します。
+                ※終了ランクが空欄の場合は行追加できず、以降は{{
+                lastStepExp.toLocaleString() }}Expを適用して計算します。
               </p>
 
               <div class="flex justify-between items-center pt-1">
@@ -211,7 +213,7 @@
             class="text-xs text-slate-400 text-left pt-2 border-t border-slate-700"
           >
             <template v-if="hasUserEditedSteps">
-              ※ランク帯ごとの必要経験値はあなたによって設定されています。
+              ※ランク帯ごとの必要経験値は、あなたによって設定されています。
             </template>
             <template v-else>
               ※上限を超えるランク帯の必要経験値は、<span class="font-mono"

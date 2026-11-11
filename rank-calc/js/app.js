@@ -79,6 +79,24 @@ createApp({
       }
     });
 
+    const formatNumber = (val) => {
+      if (val === "" || val === null || val === undefined) return "";
+      const cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      return num.toLocaleString();
+    };
+
+    const formatRankDisplay = (val) => {
+      if (val === "" || val === null || val === undefined) return "";
+      const cleaned = String(val).replace(/[^0-9]/g, "");
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      return num.toLocaleString();
+    };
+
     const visibleRankSteps = computed(() => {
       const steps = allRankSteps.value;
       const len = steps.length;
@@ -101,6 +119,8 @@ createApp({
           originalIndex,
           isLast,
           isCustomRow: false,
+          inputMaxRank: formatRankDisplay(item.maxRank),
+          inputExpPerRank: formatNumber(item.expPerRank),
         });
       });
 
@@ -112,6 +132,8 @@ createApp({
           originalIndex,
           isLast,
           isCustomRow: true,
+          inputMaxRank: formatRankDisplay(item.maxRank),
+          inputExpPerRank: formatNumber(item.expPerRank),
         });
       });
 
@@ -212,6 +234,18 @@ createApp({
       }
     };
 
+    const handleStepMaxRankInput = (row, e) => {
+      const raw = e.target.value.replace(/[^0-9]/g, "");
+      if (raw === "") {
+        row.itemRef.maxRank = "";
+      } else {
+        let num = parseInt(raw, 10);
+        if (num > maxRank) num = maxRank;
+        row.itemRef.maxRank = num;
+      }
+      updateRankSteps();
+    };
+
     const validateStepMaxRankBlur = (row) => {
       if (
         row.maxRank === "" ||
@@ -235,8 +269,55 @@ createApp({
       updateRankSteps();
     };
 
+    const handleStepExpFocus = (row) => {
+      // フォーカス時は数値のみにして編集しやすくする
+      if (row.itemRef.expPerRank !== "") {
+        row.itemRef.expPerRank = String(row.itemRef.expPerRank).replace(/[^0-9]/g, "");
+      }
+    };
+
+    const handleStepExpInput = (row, e) => {
+      let raw = e.target.value.replace(/[^0-9]/g, "");
+      const limitDigits = String(maxStepExp).length + 2;
+      if (raw.length > limitDigits) {
+        raw = raw.slice(0, limitDigits);
+      }
+      if (raw.length > 1) {
+        raw = raw.replace(/^0+/, "");
+        if (raw === "") raw = "0";
+      }
+
+      if (raw === "") {
+        row.itemRef.expPerRank = "";
+      } else {
+        let numVal = Number(raw);
+        if (numVal > maxStepExp) {
+          numVal = maxStepExp;
+        }
+        row.itemRef.expPerRank = numVal;
+      }
+      updateRankSteps();
+    };
+
+    const handleStepExpBlur = (row) => {
+      updateRankSteps();
+    };
+
     const updateRankSteps = () => {
-      allRankSteps.value.forEach((row) => {
+      allRankSteps.value.forEach((row, idx) => {
+        // 自動連動ロジック: 前の行の終了ランクから開始ランクを自動計算
+        if (idx > 0) {
+          const prevRow = allRankSteps.value[idx - 1];
+          if (
+            prevRow.maxRank !== "" &&
+            prevRow.maxRank !== null &&
+            !isNaN(prevRow.maxRank)
+          ) {
+            row.minRank = Math.min(parseInt(prevRow.maxRank, 10) + 1, maxRank);
+          } else {
+            row.minRank = "";
+          }
+        }
         validateAndSanitizeStepRow(row);
       });
       Logic.setFullRankStepTable(allRankSteps.value);
@@ -286,15 +367,6 @@ createApp({
         allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
         updateStepInfo();
       }
-    };
-
-    const formatNumber = (val) => {
-      if (val === "" || val === null || val === undefined) return "";
-      const cleaned = String(val).replace(/[^0-9]/g, "");
-      if (cleaned === "") return "";
-      const num = parseInt(cleaned, 10);
-      if (isNaN(num)) return "";
-      return num.toLocaleString();
     };
 
     const parseNaturalRank = (val) => {
@@ -702,8 +774,15 @@ createApp({
       visibleRankSteps,
       hasUserEditedSteps,
       isAddRowBlocked,
+      
+      
+      formatRankDisplay,
       updateRankSteps,
+      handleStepMaxRankInput,
       validateStepMaxRankBlur,
+      handleStepExpFocus,
+      handleStepExpInput,
+      handleStepExpBlur,
       addRankStepRow,
       removeRankStepRow,
       resetRankSteps,
