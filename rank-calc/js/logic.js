@@ -15,12 +15,14 @@ let isTableLoaded = false;
  * @param {string} csvText
  */
 export function initRankTableFromCSV(csvText) {
+  if (!csvText) return;
   const lines = csvText.trim().split("\n");
   rankExpTable = lines
     .slice(1)
     .filter((line) => line.trim() !== "")
     .map((line) => {
       const parts = line.split(",");
+      if (!parts[1]) return 0;
       return parseInt(parts[1].trim(), 10);
     });
 
@@ -34,6 +36,7 @@ export function initRankTableFromCSV(csvText) {
  * @param {string} csvText
  */
 export function initRankStepTableFromCSV(csvText) {
+  if (!csvText) return;
   const lines = csvText.trim().split("\n");
   rankStepTable = lines
     .slice(1)
