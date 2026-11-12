@@ -7,6 +7,9 @@ import { createApp, ref, computed, onMounted } from "vue";
 import * as CONSTANTS from "./constants.js";
 import * as Logic from "./logic.js";
 
+import textRankTable from "../csv/rank_table_1_999.csv?raw";
+import textStepTable from "../csv/rank_step_table.csv?raw";
+
 createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
@@ -61,14 +64,8 @@ createApp({
       return String(num);
     };
 
-    onMounted(async () => {
+    onMounted(() => {
       try {
-        const [resRankTable, resStepTable] = await Promise.all([
-          fetch("./csv/rank_table_1_999.csv"),
-          fetch("./csv/rank_step_table.csv"),
-        ]);
-        const textRankTable = await resRankTable.text();
-        const textStepTable = await resStepTable.text();
         defaultStepTableText.value = textStepTable;
 
         Logic.initRankTableFromCSV(textRankTable);
@@ -103,7 +100,7 @@ createApp({
         isLoaded.value = true;
         updateStepInfo();
       } catch (e) {
-        console.warn("CSVの読み込みに失敗しました:", e);
+        console.warn("CSVの初期化に失敗しました:", e);
       }
     });
 
