@@ -31,10 +31,10 @@
 
 ```text
 monst/rank-calc/
-├── index.html            # メイン画面(UI・Tailwind CSS CDN読込)
+├── index.html            # メイン画面
 ├── README.md             # 本ドキュメント
 ├── js/
-│   ├── app.js            # Vue.js 3 による状態管理・UI操作制御
+│   ├── app.js            # 状態管理・UI操作制御
 │   ├── logic.js          # 経験値計算・倍率計算・時間計算ロジック
 │   └── constants.js      # 定数・倍率選択肢・クエストプリセット定義
 └── csv/
@@ -94,9 +94,3 @@ monst/rank-calc/
   - 末尾行のみ、`maxRank`は空欄を許容します。空欄の場合は上限なしの状態として扱われます。
   - 末尾行のみ、`expPerRank`は空欄を許容します。空欄の場合は1行前の値が引き継がれて処理されます。
   - 上記例の末尾行は、`2500,,51970572`, `2500,2999,51970572` のいずれでも`ランク2500以降は1ランクあたり51,970,572 Expを適用する`という設定になります。
-
-## 技術スタック
-
-- **フロントエンド**: HTML5, JavaScript (ES Modules)
-- **フレームワーク**: Vue.js 3 (CDN / ES Module形式)
-- **スタイリング**: Tailwind CSS (CDN)
