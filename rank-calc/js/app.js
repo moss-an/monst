@@ -3,12 +3,7 @@
  * @description UIの状態制御
  */
 
-import {
-  createApp,
-  ref,
-  computed,
-  onMounted,
-} from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+import { createApp, ref, computed, onMounted } from "vue";
 import * as CONSTANTS from "./constants.js";
 import * as Logic from "./logic.js";
 
