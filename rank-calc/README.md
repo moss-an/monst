@@ -31,10 +31,10 @@
 
 ```text
 monst/rank-calc/
-├── index.html            # メイン画面(UI・Tailwind CSS CDN読込)
+├── index.html            # メイン画面
 ├── README.md             # 本ドキュメント
 ├── js/
-│   ├── app.js            # Vue.js 3 による状態管理・UI操作制御
+│   ├── app.js            # 状態管理・UI操作制御
 │   ├── logic.js          # 経験値計算・倍率計算・時間計算ロジック
 │   └── constants.js      # 定数・倍率選択肢・クエストプリセット定義
 └── csv/
