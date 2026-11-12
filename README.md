@@ -63,11 +63,11 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 ### VS Code (Dev Containers) を使った開発
 
-ホスト (手元) 環境の Node.js を汚さず、コンテナ内で直接エディタの補完や型チェックを完全に効かせて開発したい場合は、`devcontainer.json` による **Dev Containers** を利用できます。
+ホスト (手元) 環境の Node.js を汚さず、コンテナ内で直接エディタの補完や型チェックを完全に効かせて開発したい場合は、`.devcontainer/devcontainer.json` による Dev Containers を利用できます。
 
-1. VS Code に拡張機能 **「Dev Containers」** をインストールします。
+1. VS Code に拡張機能「Dev Containers」をインストールします。
 2. プロジェクトを VS Code で開きます。
-3. 画面左下の緑色のアイコン (またはコマンドパレット) から **`Dev Containers: Reopen in Container`** を実行します。
+3. 画面左下の緑色のアイコン (またはコマンドパレット) から `Dev Containers: Reopen in Container` を実行します。
 4. 自動的にコンテナがビルドされ、接続と同時に依存関係のインストールや開発サーバーの起動が行われます。
 
 ## Viteのマルチページ自動検出
