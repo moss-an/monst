@@ -1,0 +1,18 @@
+// VS Codeの拡張機能「Dev Containers」用設定
+// docker-compose.yml からコンテナを起動するため、同時に開発サーバも立ち上がる
+{
+  "name": "Monst Dev Environment",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "npm install"
+}

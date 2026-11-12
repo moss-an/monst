@@ -1,19 +1,37 @@
 /**
- * @file app.js
+ * @file app.ts
  * @description UIの状態制御
  */
 
 import { createApp, ref, computed, onMounted } from "vue";
-import * as CONSTANTS from "./constants.js";
-import * as Logic from "./logic.js";
+import * as CONSTANTS from "./constants";
+import * as Logic from "./logic";
 
 import textRankTable from "../csv/rank_table_1_999.csv?raw";
 import textStepTable from "../csv/rank_step_table.csv?raw";
 
+interface RankStepRow {
+  minRank: number | "";
+  maxRank: number | "";
+  expPerRank: number | "";
+  inputMaxRankDisplay: string;
+  inputExpDisplay: string;
+}
+
+interface VisibleRankStep {
+  itemRef: RankStepRow;
+  originalIndex: number;
+  isLast: boolean;
+  isCustomRow: boolean;
+}
+
+type InputMode = "rank" | "exp";
+type LastRowPattern = "normal" | "onlyMaxEmpty" | "onlyExpEmpty" | "bothEmpty";
+
 createApp({
   setup() {
     const maxRank = CONSTANTS.MAX_RANK;
-    const maxExp = ref(CONSTANTS.FALLBACK_MAX_EXP);
+    const maxExp = ref<number>(CONSTANTS.FALLBACK_MAX_EXP);
     const maxStepExp = CONSTANTS.MAX_STEP_EXP;
     const maxCustomMultiplier = CONSTANTS.MAX_CUSTOM_MULTIPLIER;
     const maxCustomIntDigits = CONSTANTS.MAX_CUSTOM_INT_DIGITS;
@@ -29,24 +47,24 @@ createApp({
     const multiOptions = CONSTANTS.MULTI_OPTIONS;
     const questPresets = CONSTANTS.QUEST_PRESETS;
 
-    const currentRank = ref("");
-    const targetRank = ref("");
-    const currentExpInput = ref("");
-    const targetExpInput = ref("");
+    const currentRank = ref<string>("");
+    const targetRank = ref<string>("");
+    const currentExpInput = ref<string>("");
+    const targetExpInput = ref<string>("");
 
-    const activeCurrentMode = ref("rank"); // "rank" または "exp"
-    const activeTargetMode = ref("rank"); // "rank" または "exp"
+    const activeCurrentMode = ref<InputMode>("rank"); // "rank" または "exp"
+    const activeTargetMode = ref<InputMode>("rank"); // "rank" または "exp"
 
-    const isLoaded = ref(false);
-    const lastStepExp = ref(0);
-    const lastStepMinRank = ref(CONSTANTS.DEFAULT_THRESHOLD_RANK);
+    const isLoaded = ref<boolean>(false);
+    const lastStepExp = ref<number>(0);
+    const lastStepMinRank = ref<number>(CONSTANTS.DEFAULT_THRESHOLD_RANK);
 
-    const defaultStepTableText = ref("");
-    const allRankSteps = ref([]);
-    const initialDefaultParsedSteps = ref([]);
-    const tableVersion = ref(0);
+    const defaultStepTableText = ref<string>("");
+    const allRankSteps = ref<RankStepRow[]>([]);
+    const initialDefaultParsedSteps = ref<RankStepRow[]>([]);
+    const tableVersion = ref<number>(0);
 
-    const formatNumber = (val) => {
+    const formatNumber = (val: string | number | null | undefined): string => {
       if (val === "" || val === null || val === undefined) return "";
       const cleaned = String(val).replace(/[^0-9]/g, "");
       if (cleaned === "") return "";
@@ -55,7 +73,9 @@ createApp({
       return num.toLocaleString();
     };
 
-    const formatPlainNumber = (val) => {
+    const formatPlainNumber = (
+      val: string | number | null | undefined,
+    ): string => {
       if (val === "" || val === null || val === undefined) return "";
       const cleaned = String(val).replace(/[^0-9]/g, "");
       if (cleaned === "") return "";
@@ -71,26 +91,21 @@ createApp({
         Logic.initRankTableFromCSV(textRankTable);
         Logic.initRankStepTableFromCSV(textStepTable);
 
-        const loadedSteps = Logic.getFullRankStepTable().map((item) => ({
-          minRank: item.minRank,
-          maxRank: item.maxRank === null ? "" : item.maxRank,
-          expPerRank:
-            item.expPerRank === 0 && item.expPerRank !== ""
-              ? ""
-              : item.expPerRank,
-          inputMaxRankDisplay:
-            item.maxRank !== "" &&
-            item.maxRank !== null &&
-            item.maxRank !== undefined
-              ? formatPlainNumber(item.maxRank)
-              : "",
-          inputExpDisplay:
-            item.expPerRank !== "" &&
-            item.expPerRank !== null &&
-            item.expPerRank !== undefined
-              ? formatNumber(item.expPerRank)
-              : "",
-        }));
+        const loadedSteps: RankStepRow[] = Logic.getFullRankStepTable().map(
+          (item) => ({
+            minRank: item.minRank,
+            maxRank: item.maxRank === null ? "" : item.maxRank,
+            expPerRank: item.expPerRank === 0 ? "" : item.expPerRank,
+            inputMaxRankDisplay:
+              item.maxRank !== null && item.maxRank !== undefined
+                ? formatPlainNumber(item.maxRank)
+                : "",
+            inputExpDisplay:
+              item.expPerRank !== null && item.expPerRank !== undefined
+                ? formatNumber(item.expPerRank)
+                : "",
+          }),
+        );
 
         allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
         initialDefaultParsedSteps.value = JSON.parse(
@@ -104,7 +119,7 @@ createApp({
       }
     });
 
-    const visibleRankSteps = computed(() => {
+    const visibleRankSteps = computed<VisibleRankStep[]>(() => {
       const steps = allRankSteps.value;
       const len = steps.length;
       const initialCsvCount = Logic.getInitialCsvStepCount();
@@ -116,7 +131,7 @@ createApp({
       const csvStartIndex = Math.max(0, csvRows.length - 3);
       const visibleCsvRows = csvRows.slice(csvStartIndex);
 
-      const result = [];
+      const result: VisibleRankStep[] = [];
 
       visibleCsvRows.forEach((item, idx) => {
         const originalIndex = csvStartIndex + idx;
@@ -143,7 +158,7 @@ createApp({
       return result;
     });
 
-    const hasUserEditedSteps = computed(() => {
+    const hasUserEditedSteps = computed<boolean>(() => {
       tableVersion.value;
       const steps = allRankSteps.value;
       const initialCount = Logic.getInitialCsvStepCount();
@@ -164,7 +179,7 @@ createApp({
       return false;
     });
 
-    const lastRowPattern = computed(() => {
+    const lastRowPattern = computed<LastRowPattern>(() => {
       tableVersion.value;
       const steps = allRankSteps.value;
       if (steps.length === 0) return "normal";
@@ -190,18 +205,18 @@ createApp({
       return "normal";
     });
 
-    const isAddRowBlocked = computed(() => {
+    const isAddRowBlocked = computed<boolean>(() => {
       return lastRowPattern.value !== "normal";
     });
 
-    const lastRowMinRank = computed(() => {
+    const lastRowMinRank = computed<number | "">(() => {
       tableVersion.value;
       const steps = allRankSteps.value;
       if (steps.length === 0) return "";
       return steps[steps.length - 1].minRank;
     });
 
-    const lastRowMaxRankFormatted = computed(() => {
+    const lastRowMaxRankFormatted = computed<string>(() => {
       tableVersion.value;
       const steps = allRankSteps.value;
       if (steps.length === 0) return "";
@@ -210,14 +225,14 @@ createApp({
         maxVal === "" ||
         maxVal === null ||
         maxVal === undefined ||
-        isNaN(maxVal)
+        isNaN(Number(maxVal))
       ) {
         return "";
       }
       return formatPlainNumber(maxVal);
     });
 
-    const lastRowExpFormatted = computed(() => {
+    const lastRowExpFormatted = computed<string>(() => {
       tableVersion.value;
       const steps = allRankSteps.value;
       if (steps.length === 0) return "0";
@@ -226,11 +241,11 @@ createApp({
         expVal === "" ||
         expVal === null ||
         expVal === undefined ||
-        isNaN(expVal)
+        isNaN(Number(expVal))
       ) {
         if (steps.length >= 2) {
           const prevExp = steps[steps.length - 2].expPerRank;
-          return prevExp !== "" && prevExp !== null && !isNaN(prevExp)
+          return prevExp !== "" && prevExp !== null && !isNaN(Number(prevExp))
             ? Number(prevExp).toLocaleString()
             : "0";
         }
@@ -239,25 +254,41 @@ createApp({
       return Number(expVal).toLocaleString();
     });
 
-    const prevRowExpFormatted = computed(() => {
+    const prevRowExpFormatted = computed<string>(() => {
       tableVersion.value;
       const steps = allRankSteps.value;
       if (steps.length >= 2) {
         const prevExp = steps[steps.length - 2].expPerRank;
-        if (prevExp !== "" && prevExp !== null && !isNaN(prevExp)) {
+        if (prevExp !== "" && prevExp !== null && !isNaN(Number(prevExp))) {
           return Number(prevExp).toLocaleString();
         }
       }
       if (steps.length >= 1) {
         const currExp = steps[steps.length - 1].expPerRank;
-        if (currExp !== "" && currExp !== null && !isNaN(currExp)) {
+        if (currExp !== "" && currExp !== null && !isNaN(Number(currExp))) {
           return Number(currExp).toLocaleString();
         }
       }
       return "0";
     });
 
-    const updateStepInfo = () => {
+    const getEffectiveRank = (
+      val: string | number | null | undefined,
+    ): number => {
+      if (val === "" || val === null || val === undefined) return 1;
+      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
+      return isNaN(num) || num < 1 ? 1 : num;
+    };
+
+    const getEffectiveExp = (
+      val: string | number | null | undefined,
+    ): number => {
+      if (val === "" || val === null || val === undefined) return 0;
+      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
+      return isNaN(num) || num < 0 ? 0 : num;
+    };
+
+    const updateStepInfo = (): void => {
       tableVersion.value++;
       lastStepExp.value = Logic.getLastStepExp();
       lastStepMinRank.value = Logic.getLastStepMinRank();
@@ -278,8 +309,11 @@ createApp({
       }
     };
 
-    const sanitizePositiveInt = (val, maxVal = null) => {
-      if (val === "" || val === null || val === undefined || isNaN(val))
+    const sanitizePositiveInt = (
+      val: string | number | null | undefined,
+      maxVal: number | null = null,
+    ): number | "" => {
+      if (val === "" || val === null || val === undefined || isNaN(Number(val)))
         return "";
       let cleaned = String(val).replace(/[^0-9]/g, "");
       if (cleaned === "") return "";
@@ -292,7 +326,7 @@ createApp({
       return num;
     };
 
-    const validateAndSanitizeStepRow = (row) => {
+    const validateAndSanitizeStepRow = (row: RankStepRow): void => {
       if (
         row.minRank !== "" &&
         row.minRank !== null &&
@@ -316,7 +350,7 @@ createApp({
       }
     };
 
-    const handleStepMaxRankFocus = (row) => {
+    const handleStepMaxRankFocus = (row: VisibleRankStep): void => {
       if (
         row.itemRef.maxRank !== "" &&
         row.itemRef.maxRank !== null &&
@@ -331,8 +365,9 @@ createApp({
       }
     };
 
-    const handleStepMaxRankInput = (row, e) => {
-      let raw = e.target.value.replace(/[^0-9]/g, "");
+    const handleStepMaxRankInput = (row: VisibleRankStep, e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      let raw = target.value.replace(/[^0-9]/g, "");
       const maxRankInputLength = String(maxRank).length + 1;
       if (raw.length > maxRankInputLength) {
         raw = raw.slice(0, maxRankInputLength);
@@ -357,12 +392,12 @@ createApp({
       updateRankSteps();
     };
 
-    const validateStepMaxRankBlur = (row) => {
+    const validateStepMaxRankBlur = (row: VisibleRankStep): void => {
       if (
         row.itemRef.maxRank === "" ||
         row.itemRef.maxRank === null ||
         row.itemRef.maxRank === undefined ||
-        isNaN(row.itemRef.maxRank)
+        isNaN(Number(row.itemRef.maxRank))
       ) {
         row.itemRef.maxRank = "";
         row.itemRef.inputMaxRankDisplay = "";
@@ -371,7 +406,7 @@ createApp({
         if (
           row.itemRef.minRank !== "" &&
           row.itemRef.minRank !== null &&
-          !isNaN(row.itemRef.minRank) &&
+          !isNaN(Number(row.itemRef.minRank)) &&
           typeof row.itemRef.maxRank === "number" &&
           row.itemRef.maxRank < Number(row.itemRef.minRank)
         ) {
@@ -384,7 +419,7 @@ createApp({
       updateRankSteps();
     };
 
-    const handleStepExpFocus = (row) => {
+    const handleStepExpFocus = (row: VisibleRankStep): void => {
       if (
         row.itemRef.expPerRank !== "" &&
         row.itemRef.expPerRank !== null &&
@@ -399,8 +434,9 @@ createApp({
       }
     };
 
-    const handleStepExpInput = (row, e) => {
-      let raw = e.target.value.replace(/[^0-9]/g, "");
+    const handleStepExpInput = (row: VisibleRankStep, e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      let raw = target.value.replace(/[^0-9]/g, "");
       const limitDigits = String(maxStepExp).length + 2;
       if (raw.length > limitDigits) {
         raw = raw.slice(0, limitDigits);
@@ -425,7 +461,7 @@ createApp({
       updateRankSteps();
     };
 
-    const handleStepExpBlur = (row) => {
+    const handleStepExpBlur = (row: VisibleRankStep): void => {
       if (
         row.itemRef.expPerRank !== "" &&
         row.itemRef.expPerRank !== null &&
@@ -438,16 +474,19 @@ createApp({
       updateRankSteps();
     };
 
-    const updateRankSteps = () => {
+    const updateRankSteps = (): void => {
       allRankSteps.value.forEach((row, idx) => {
         if (idx > 0) {
           const prevRow = allRankSteps.value[idx - 1];
           if (
             prevRow.maxRank !== "" &&
             prevRow.maxRank !== null &&
-            !isNaN(prevRow.maxRank)
+            !isNaN(Number(prevRow.maxRank))
           ) {
-            row.minRank = Math.min(parseInt(prevRow.maxRank, 10) + 1, maxRank);
+            row.minRank = Math.min(
+              parseInt(String(prevRow.maxRank), 10) + 1,
+              maxRank,
+            );
           } else {
             row.minRank = "";
           }
@@ -458,20 +497,23 @@ createApp({
       updateStepInfo();
     };
 
-    const addRankStepRow = () => {
+    const addRankStepRow = (): void => {
       if (isAddRowBlocked.value) {
         return;
       }
 
-      let newMinRank = "";
+      let newMinRank: number | "" = "";
       if (allRankSteps.value.length > 0) {
         const lastRow = allRankSteps.value[allRankSteps.value.length - 1];
         if (
           lastRow.maxRank !== "" &&
           lastRow.maxRank !== null &&
-          !isNaN(lastRow.maxRank)
+          !isNaN(Number(lastRow.maxRank))
         ) {
-          newMinRank = Math.min(parseInt(lastRow.maxRank, 10) + 1, maxRank);
+          newMinRank = Math.min(
+            parseInt(String(lastRow.maxRank), 10) + 1,
+            maxRank,
+          );
         }
       }
 
@@ -485,42 +527,37 @@ createApp({
       updateRankSteps();
     };
 
-    const removeRankStepRow = (originalIndex) => {
+    const removeRankStepRow = (originalIndex: number): void => {
       const initialCsvCount = Logic.getInitialCsvStepCount();
       if (originalIndex < initialCsvCount) return;
       allRankSteps.value.splice(originalIndex, 1);
       updateRankSteps();
     };
 
-    const resetRankSteps = () => {
+    const resetRankSteps = (): void => {
       if (defaultStepTableText.value) {
         Logic.initRankStepTableFromCSV(defaultStepTableText.value);
-        const loadedSteps = Logic.getFullRankStepTable().map((item) => ({
-          minRank: item.minRank,
-          maxRank: item.maxRank === null ? "" : item.maxRank,
-          expPerRank:
-            item.expPerRank === 0 && item.expPerRank !== ""
-              ? ""
-              : item.expPerRank,
-          inputMaxRankDisplay:
-            item.maxRank !== "" &&
-            item.maxRank !== null &&
-            item.maxRank !== undefined
-              ? formatPlainNumber(item.maxRank)
-              : "",
-          inputExpDisplay:
-            item.expPerRank !== "" &&
-            item.expPerRank !== null &&
-            item.expPerRank !== undefined
-              ? formatNumber(item.expPerRank)
-              : "",
-        }));
+        const loadedSteps: RankStepRow[] = Logic.getFullRankStepTable().map(
+          (item) => ({
+            minRank: item.minRank,
+            maxRank: item.maxRank === null ? "" : item.maxRank,
+            expPerRank: item.expPerRank === 0 ? "" : item.expPerRank,
+            inputMaxRankDisplay:
+              item.maxRank !== null && item.maxRank !== undefined
+                ? formatPlainNumber(item.maxRank)
+                : "",
+            inputExpDisplay:
+              item.expPerRank !== null && item.expPerRank !== undefined
+                ? formatNumber(item.expPerRank)
+                : "",
+          }),
+        );
         allRankSteps.value = JSON.parse(JSON.stringify(loadedSteps));
         updateStepInfo();
       }
     };
 
-    const parseNaturalRank = (val) => {
+    const parseNaturalRank = (val: string): string => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
       const maxRankInputLength = String(maxRank).length + 1;
       if (cleaned.length > maxRankInputLength) {
@@ -533,7 +570,7 @@ createApp({
       return String(num);
     };
 
-    const parseExpInput = (val) => {
+    const parseExpInput = (val: string): string => {
       let cleaned = String(val).replace(/[^0-9]/g, "");
       const limitDigits = String(maxExp.value).length + 2;
       if (cleaned.length > limitDigits) {
@@ -549,21 +586,10 @@ createApp({
       return String(num);
     };
 
-    const getEffectiveRank = (val) => {
-      if (val === "" || val === null || val === undefined) return 1;
-      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
-      return isNaN(num) || num < 1 ? 1 : num;
-    };
-
-    const getEffectiveExp = (val) => {
-      if (val === "" || val === null || val === undefined) return 0;
-      const num = parseInt(String(val).replace(/[^0-9]/g, ""), 10);
-      return isNaN(num) || num < 0 ? 0 : num;
-    };
-
-    const handleCurrentRankInput = (e) => {
+    const handleCurrentRankInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
       activeCurrentMode.value = "rank";
-      currentRank.value = parseNaturalRank(e.target.value);
+      currentRank.value = parseNaturalRank(target.value);
       if (currentRank.value === "") {
         currentExpInput.value = "";
       } else if (isLoaded.value) {
@@ -572,15 +598,16 @@ createApp({
       }
     };
 
-    const handleCurrentExpFocus = () => {
+    const handleCurrentExpFocus = (): void => {
       if (currentExpInput.value !== "") {
         currentExpInput.value = currentExpInput.value.replace(/[^0-9]/g, "");
       }
     };
 
-    const handleCurrentExpInput = (e) => {
+    const handleCurrentExpInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
       activeCurrentMode.value = "exp";
-      const raw = e.target.value.replace(/[^0-9]/g, "");
+      const raw = target.value.replace(/[^0-9]/g, "");
       currentExpInput.value = parseExpInput(raw);
       if (currentExpInput.value === "") {
         currentRank.value = "";
@@ -594,7 +621,7 @@ createApp({
       }
     };
 
-    const validateCurrentRank = () => {
+    const validateCurrentRank = (): void => {
       if (currentRank.value !== "") {
         currentRank.value = parseNaturalRank(currentRank.value);
         if (currentRank.value !== "" && targetRank.value !== "") {
@@ -617,7 +644,7 @@ createApp({
       }
     };
 
-    const validateCurrentExp = () => {
+    const validateCurrentExp = (): void => {
       if (currentExpInput.value !== "") {
         const parsed = parseExpInput(currentExpInput.value);
         currentExpInput.value = parsed;
@@ -640,9 +667,10 @@ createApp({
       }
     };
 
-    const handleTargetRankInput = (e) => {
+    const handleTargetRankInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
       activeTargetMode.value = "rank";
-      targetRank.value = parseNaturalRank(e.target.value);
+      targetRank.value = parseNaturalRank(target.value);
       if (targetRank.value === "") {
         targetExpInput.value = "";
       } else if (isLoaded.value) {
@@ -651,15 +679,16 @@ createApp({
       }
     };
 
-    const handleTargetExpFocus = () => {
+    const handleTargetExpFocus = (): void => {
       if (targetExpInput.value !== "") {
         targetExpInput.value = targetExpInput.value.replace(/[^0-9]/g, "");
       }
     };
 
-    const handleTargetExpInput = (e) => {
+    const handleTargetExpInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
       activeTargetMode.value = "exp";
-      const raw = e.target.value.replace(/[^0-9]/g, "");
+      const raw = target.value.replace(/[^0-9]/g, "");
       targetExpInput.value = parseExpInput(raw);
       if (targetExpInput.value === "") {
         targetRank.value = "";
@@ -673,7 +702,7 @@ createApp({
       }
     };
 
-    const validateTargetRank = () => {
+    const validateTargetRank = (): void => {
       if (targetRank.value !== "") {
         targetRank.value = parseNaturalRank(targetRank.value);
         if (currentRank.value !== "" && targetRank.value !== "") {
@@ -696,7 +725,7 @@ createApp({
       }
     };
 
-    const validateTargetExp = () => {
+    const validateTargetExp = (): void => {
       if (targetExpInput.value !== "") {
         const parsed = parseExpInput(targetExpInput.value);
         targetExpInput.value = parsed;
@@ -719,7 +748,7 @@ createApp({
       }
     };
 
-    const currentExp = computed(() => {
+    const currentExp = computed<number>(() => {
       tableVersion.value;
       if (!isLoaded.value) return 0;
       if (currentRank.value === "" && currentExpInput.value === "") return 0;
@@ -730,7 +759,7 @@ createApp({
       }
     });
 
-    const targetExp = computed(() => {
+    const targetExp = computed<number>(() => {
       tableVersion.value;
       if (!isLoaded.value) return 0;
       if (targetRank.value === "" && targetExpInput.value === "") return 0;
@@ -741,16 +770,17 @@ createApp({
       }
     });
 
-    const selectedManabi = ref(CONSTANTS.DEFAULT_MANABI);
-    const selectedSpot = ref(CONSTANTS.DEFAULT_SPOT);
-    const selectedEvent = ref(CONSTANTS.DEFAULT_EVENT);
-    const selectedExpUpMonster = ref(CONSTANTS.DEFAULT_EXP_UP_MONSTER);
-    const selectedLuckBonus = ref(CONSTANTS.DEFAULT_LUCK_BONUS);
-    const selectedMulti = ref(CONSTANTS.DEFAULT_MULTI);
-    const customMultiplier = ref("");
+    const selectedManabi = ref<number>(CONSTANTS.DEFAULT_MANABI);
+    const selectedSpot = ref<number>(CONSTANTS.DEFAULT_SPOT);
+    const selectedEvent = ref<number>(CONSTANTS.DEFAULT_EVENT);
+    const selectedExpUpMonster = ref<number>(CONSTANTS.DEFAULT_EXP_UP_MONSTER);
+    const selectedLuckBonus = ref<number>(CONSTANTS.DEFAULT_LUCK_BONUS);
+    const selectedMulti = ref<number>(CONSTANTS.DEFAULT_MULTI);
+    const customMultiplier = ref<string>("");
 
-    const handleCustomMultiplierInput = (e) => {
-      let val = e.target.value;
+    const handleCustomMultiplierInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      let val = target.value;
       val = val.replace(/[^0-9.]/g, "");
 
       const parts = val.split(".");
@@ -778,15 +808,15 @@ createApp({
       customMultiplier.value = val;
     };
 
-    const validateCustomMultiplier = () => {
+    const validateCustomMultiplier = (): void => {
       if (customMultiplier.value === "" || customMultiplier.value === null) {
         return;
       }
       let num = Number(customMultiplier.value);
       if (isNaN(num) || num < 1) {
-        customMultiplier.value = 1;
+        customMultiplier.value = "1";
       } else if (num > maxCustomMultiplier) {
-        customMultiplier.value = maxCustomMultiplier;
+        customMultiplier.value = String(maxCustomMultiplier);
       } else {
         if (!customMultiplier.value.endsWith(".")) {
           customMultiplier.value = num.toString();
@@ -794,19 +824,20 @@ createApp({
       }
     };
 
-    const selectedPreset = ref(questPresets[0]);
-    const baseExp = ref(questPresets[0].exp);
-    const baseExpInput = ref(formatNumber(questPresets[0].exp));
-    const clearSec = ref(CONSTANTS.DEFAULT_CLEAR_SEC);
+    const selectedPreset = ref<CONSTANTS.QuestPreset>(questPresets[0]);
+    const baseExp = ref<number>(questPresets[0].exp);
+    const baseExpInput = ref<string>(formatNumber(questPresets[0].exp));
+    const clearSec = ref<number>(CONSTANTS.DEFAULT_CLEAR_SEC);
 
-    const handleBaseExpFocus = () => {
+    const handleBaseExpFocus = (): void => {
       if (baseExpInput.value !== "") {
         baseExpInput.value = baseExpInput.value.replace(/[^0-9]/g, "");
       }
     };
 
-    const handleBaseExpInput = (e) => {
-      let raw = e.target.value.replace(/[^0-9]/g, "");
+    const handleBaseExpInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      let raw = target.value.replace(/[^0-9]/g, "");
 
       const limitDigits = String(maxBaseExp).length + 2;
       if (raw.length > limitDigits) {
@@ -831,31 +862,32 @@ createApp({
       }
     };
 
-    const handleBaseExpBlur = () => {
+    const handleBaseExpBlur = (): void => {
       baseExpInput.value = formatNumber(baseExp.value);
     };
 
-    const handleClearSecInput = (e) => {
-      const val = e.target.value;
-      if (val === "" || isNaN(val) || Number(val) < 0) {
+    const handleClearSecInput = (e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      const val = target.value;
+      if (val === "" || isNaN(Number(val)) || Number(val) < 0) {
         clearSec.value = 0;
-        e.target.value = 0;
+        target.value = "0";
       } else {
         let numVal = Number(val);
         if (numVal > maxClearSec) {
           numVal = maxClearSec;
         }
         clearSec.value = numVal;
-        e.target.value = numVal;
+        target.value = String(numVal);
       }
     };
 
-    const handlePresetChange = () => {
+    const handlePresetChange = (): void => {
       baseExp.value = selectedPreset.value.exp;
       baseExpInput.value = formatNumber(selectedPreset.value.exp);
     };
 
-    const multiplierObj = computed(() => {
+    const multiplierObj = computed<Logic.Multipliers>(() => {
       return {
         manabi: selectedManabi.value,
         spot: selectedSpot.value,
@@ -867,19 +899,19 @@ createApp({
       };
     });
 
-    const baseMultiplier = computed(() => {
+    const baseMultiplier = computed<number>(() => {
       return Logic.calculateBaseMultiplier(multiplierObj.value);
     });
 
-    const totalMultiplier = computed(() => {
+    const totalMultiplier = computed<number>(() => {
       return Logic.calculateTotalMultiplier(multiplierObj.value);
     });
 
-    const earnedExpPerRun = computed(() => {
+    const earnedExpPerRun = computed<number>(() => {
       return Logic.calculateEarnedExpPerRun(baseExp.value, multiplierObj.value);
     });
 
-    const requiredTotalExp = computed(() => {
+    const requiredTotalExp = computed<number>(() => {
       tableVersion.value;
       if (!isLoaded.value) return 0;
       return Logic.calculateRequiredTotalExpByValue(
@@ -888,14 +920,14 @@ createApp({
       );
     });
 
-    const totalRuns = computed(() => {
+    const totalRuns = computed<number>(() => {
       return Logic.calculateTotalRuns(
         requiredTotalExp.value,
         earnedExpPerRun.value,
       );
     });
 
-    const timeResult = computed(() => {
+    const timeResult = computed<Logic.FormattedTime>(() => {
       return Logic.formatTime(totalRuns.value * clearSec.value);
     });
 
