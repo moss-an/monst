@@ -1,20 +1,48 @@
 /**
- * @file logic.js
+ * @file logic.ts
  * @description 計算ロジック
  */
 
-import * as CONSTANTS from "./constants.js";
+import * as CONSTANTS from "./constants";
 
-let rankExpTable = []; // 1〜999ランクの個別累計テーブル
-let rankStepTable = []; // 999以降の区間設定テーブル
+export interface RankStep {
+  minRank: number;
+  maxRank: number | null;
+  expPerRank: number;
+  rawExp?: number | null;
+}
+
+export interface RankStepInput {
+  minRank: number | string | null | undefined;
+  maxRank: number | string | null | undefined;
+  expPerRank: number | string | null | undefined;
+}
+
+export interface Multipliers {
+  manabi?: number;
+  spot?: number;
+  event?: number;
+  expUpMonster?: number;
+  luckBonus?: number;
+  multi?: number;
+  custom?: number | string | null;
+}
+
+export interface FormattedTime {
+  days: number;
+  hours: number;
+  minutes: number;
+}
+
+let rankExpTable: number[] = []; // 1〜999ランクの個別累計テーブル
+let rankStepTable: RankStep[] = []; // 999以降の区間設定テーブル
 let initialCsvStepCount = 0;
 let isTableLoaded = false;
 
 /**
  * 1〜999ランク用の累計経験値CSVを初期化
- * @param {string} csvText
  */
-export function initRankTableFromCSV(csvText) {
+export function initRankTableFromCSV(csvText: string): void {
   if (!csvText) return;
   const lines = csvText.trim().split("\n");
   rankExpTable = lines
@@ -33,9 +61,8 @@ export function initRankTableFromCSV(csvText) {
 
 /**
  * 999以降の区間定義CSVを初期化
- * @param {string} csvText
  */
-export function initRankStepTableFromCSV(csvText) {
+export function initRankStepTableFromCSV(csvText: string): void {
   if (!csvText) return;
   const lines = csvText.trim().split("\n");
   rankStepTable = lines
@@ -53,33 +80,36 @@ export function initRankStepTableFromCSV(csvText) {
   initialCsvStepCount = rankStepTable.length;
 }
 
-export function setFullRankStepTable(steps) {
+export function setFullRankStepTable(steps: RankStepInput[]): void {
   let prevExp = 0;
-  rankStepTable = steps.map((item, index) => {
+  rankStepTable = steps.map((item) => {
     const minRank =
-      item.minRank === "" || item.minRank === null || isNaN(item.minRank)
+      item.minRank === "" ||
+      item.minRank === null ||
+      item.minRank === undefined ||
+      isNaN(Number(item.minRank))
         ? 0
-        : parseInt(item.minRank, 10);
+        : parseInt(String(item.minRank), 10);
 
     const maxRank =
       item.maxRank === "" ||
       item.maxRank === null ||
       item.maxRank === undefined ||
       item.maxRank === "上限なし" ||
-      isNaN(item.maxRank)
+      isNaN(Number(item.maxRank))
         ? null
-        : parseInt(item.maxRank, 10);
+        : parseInt(String(item.maxRank), 10);
 
-    let rawExp =
+    const rawExp =
       item.expPerRank === "" ||
       item.expPerRank === null ||
       item.expPerRank === undefined ||
-      isNaN(item.expPerRank)
+      isNaN(Number(item.expPerRank))
         ? null
-        : parseInt(item.expPerRank, 10);
+        : parseInt(String(item.expPerRank), 10);
 
-    let expPerRank = rawExp;
-    if (expPerRank === null || expPerRank <= 0) {
+    let expPerRank = rawExp ?? 0;
+    if (rawExp === null || expPerRank <= 0) {
       expPerRank = prevExp;
     } else {
       prevExp = expPerRank;
@@ -89,18 +119,18 @@ export function setFullRankStepTable(steps) {
   });
 }
 
-export function getFullRankStepTable() {
+export function getFullRankStepTable(): RankStep[] {
   return rankStepTable;
 }
 
-export function getInitialCsvStepCount() {
+export function getInitialCsvStepCount(): number {
   return initialCsvStepCount;
 }
 
 /**
  * ランク r から r+1 に上げるために必要な経験値
  */
-export function getExpForNextRank(rank) {
+export function getExpForNextRank(rank: number): number {
   if (rank < 1) return 0;
 
   if (
@@ -132,7 +162,7 @@ export function getExpForNextRank(rank) {
 /**
  * ランク1を基準(0)とした指定ランク到達に必要な累計経験値を算出
  */
-export function calculateExpFromRank1(targetRank) {
+export function calculateExpFromRank1(targetRank: number): number {
   if (targetRank <= 1) return 0;
 
   if (!isTableLoaded || rankExpTable.length === 0) {
@@ -154,7 +184,7 @@ export function calculateExpFromRank1(targetRank) {
 /**
  * 累計経験値から相当するランクを逆引き
  */
-export function calculateRankFromExp(exp) {
+export function calculateRankFromExp(exp: number): number {
   if (exp <= 0 || !isTableLoaded || rankExpTable.length === 0) return 1;
 
   const maxTableExp = rankExpTable[rankExpTable.length - 1];
@@ -181,7 +211,10 @@ export function calculateRankFromExp(exp) {
 /**
  * 現在のランクから目標ランクに到達するまでに必要な「累計経験値」を算出
  */
-export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
+export function calculateRequiredTotalExpByRank(
+  currentRank: number,
+  targetRank: number,
+): number {
   if (targetRank <= currentRank) return 0;
   return calculateExpFromRank1(targetRank) - calculateExpFromRank1(currentRank);
 }
@@ -189,7 +222,10 @@ export function calculateRequiredTotalExpByRank(currentRank, targetRank) {
 /**
  * 現在の累計経験値と目標の累計経験値の差分を算出
  */
-export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
+export function calculateRequiredTotalExpByValue(
+  currentExp: number,
+  targetExp: number,
+): number {
   if (targetExp <= currentExp) return 0;
   return Math.max(0, targetExp - currentExp);
 }
@@ -197,7 +233,7 @@ export function calculateRequiredTotalExpByValue(currentExp, targetExp) {
 /**
  * CSVの最後の区間における1ランクあたりの必要経験値を取得
  */
-export function getLastStepExp() {
+export function getLastStepExp(): number {
   if (rankStepTable.length > 0) {
     return rankStepTable[rankStepTable.length - 1].expPerRank;
   }
@@ -207,7 +243,7 @@ export function getLastStepExp() {
 /**
  * CSVの最後の区間における開始ランクを取得
  */
-export function getLastStepMinRank() {
+export function getLastStepMinRank(): number {
   if (rankStepTable.length > 0) {
     return rankStepTable[rankStepTable.length - 1].minRank;
   }
@@ -217,7 +253,7 @@ export function getLastStepMinRank() {
 /**
  * リザルト倍率を算出（UI表示用）
  */
-export function calculateBaseMultiplier(multipliers) {
+export function calculateBaseMultiplier(multipliers: Multipliers): number {
   const {
     manabi = 1.0,
     spot = 1.0,
@@ -230,7 +266,7 @@ export function calculateBaseMultiplier(multipliers) {
 /**
  * トータル倍率を算出（UI表示用）
  */
-export function calculateTotalMultiplier(multipliers) {
+export function calculateTotalMultiplier(multipliers: Multipliers): number {
   const {
     manabi = 1.0,
     spot = 1.0,
@@ -241,7 +277,10 @@ export function calculateTotalMultiplier(multipliers) {
     custom = 1.0,
   } = multipliers;
   const numericCustom =
-    custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
+    custom === "" ||
+    custom === null ||
+    isNaN(Number(custom)) ||
+    Number(custom) < 1
       ? 1.0
       : Number(custom);
   return (
@@ -252,7 +291,10 @@ export function calculateTotalMultiplier(multipliers) {
 /**
  * 1周あたりの獲得経験値を算出
  */
-export function calculateEarnedExpPerRun(baseExp, multipliers) {
+export function calculateEarnedExpPerRun(
+  baseExp: number,
+  multipliers: Multipliers,
+): number {
   if (baseExp <= 0) return 0;
 
   const {
@@ -266,7 +308,10 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
   } = multipliers;
 
   const numericCustom =
-    custom === "" || custom === null || isNaN(custom) || Number(custom) < 1
+    custom === "" ||
+    custom === null ||
+    isNaN(Number(custom)) ||
+    Number(custom) < 1
       ? 1.0
       : Number(custom);
 
@@ -295,7 +340,10 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 /**
  * 必要周回数を算出
  */
-export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
+export function calculateTotalRuns(
+  requiredTotalExp: number,
+  earnedExpPerRun: number,
+): number {
   if (earnedExpPerRun <= 0 || requiredTotalExp <= 0) return 0;
   return Math.max(0, Math.ceil(requiredTotalExp / earnedExpPerRun));
 }
@@ -303,7 +351,7 @@ export function calculateTotalRuns(requiredTotalExp, earnedExpPerRun) {
 /**
  * 秒数から「日・時間・分」のオブジェクトを取得
  */
-export function formatTime(totalSeconds) {
+export function formatTime(totalSeconds: number): FormattedTime {
   if (totalSeconds <= 0) return { days: 0, hours: 0, minutes: 0 };
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);

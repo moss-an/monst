@@ -1,7 +1,18 @@
 /**
- * @file constants.js
+ * @file constants.ts
  * @description マスタデータと定数定義
  */
+
+export interface SelectOption {
+  label: string;
+  value: number;
+}
+
+export interface QuestPreset {
+  name: string;
+  exp: number;
+  isCustom?: boolean;
+}
 
 // 切り上げ・切り捨て時の浮動小数点誤差吸収用の補正値
 export const FLOATING_POINT_EPSILON = 1e-9;
@@ -30,31 +41,31 @@ export const DEFAULT_LUCK_BONUS = 1.05;
 export const DEFAULT_MULTI = 1.0;
 export const DEFAULT_CLEAR_SEC = 50;
 
-export const MANABI_OPTIONS = [
+export const MANABI_OPTIONS: SelectOption[] = [
   { label: "なし", value: 1.0 },
   { label: "学びの力 特級L", value: 1.6 },
   { label: "学びの力 特級EL", value: 1.65 },
 ];
 
-export const SPOT_OPTIONS = [
+export const SPOT_OPTIONS: SelectOption[] = [
   { label: "なし", value: 1.0 },
   { label: "サブスポット（1.25倍）", value: 1.25 },
   { label: "メインスポット（1.5倍）", value: 1.5 },
   { label: "メインスポット+（1.75倍）", value: 1.75 },
 ];
 
-export const EVENT_OPTIONS = [
+export const EVENT_OPTIONS: SelectOption[] = [
   { label: "通常", value: 1.0 },
   { label: "キャンペーン（2倍）", value: 2.0 },
   { label: "エラベルベル（3倍）", value: 3.0 },
 ];
 
-export const EXP_UP_MONSTER_OPTIONS = [
+export const EXP_UP_MONSTER_OPTIONS: SelectOption[] = [
   { label: "なし", value: 1.0 },
   { label: "あり（1.5倍）", value: 1.5 },
 ];
 
-export const LUCK_BONUS_OPTIONS = [
+export const LUCK_BONUS_OPTIONS: SelectOption[] = [
   { label: "なし", value: 1.0 },
   { label: "Lv1（1.01倍）", value: 1.01 },
   { label: "Lv2（1.02倍）", value: 1.02 },
@@ -63,12 +74,12 @@ export const LUCK_BONUS_OPTIONS = [
   { label: "Lv5（1.05倍）", value: 1.05 },
 ];
 
-export const MULTI_OPTIONS = [
+export const MULTI_OPTIONS: SelectOption[] = [
   { label: "ソロ", value: 1.0 },
   { label: "モンパスホスト", value: 1.05 },
 ];
 
-export const QUEST_PRESETS = [
+export const QUEST_PRESETS: QuestPreset[] = [
   { name: "要塞シリーズ", exp: 60000 },
   { name: "カスタム入力", exp: 0, isCustom: true },
 ];
