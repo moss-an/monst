@@ -1,0 +1,25 @@
+{
+  "name": "monst",
+  "version": "1.0.0",
+  "description": "モンスターストライク関連の各種ツールを管理するリポジトリです。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moss-an/monst.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/moss-an/monst/issues"
+  },
+  "homepage": "https://github.com/moss-an/monst#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "tailwindcss": "^4.3.5"
+  }
+}
