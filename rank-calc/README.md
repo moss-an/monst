@@ -33,10 +33,10 @@
 monst/rank-calc/
 ├── index.html            # メイン画面
 ├── README.md             # 本ドキュメント
-├── js/
-│   ├── app.js            # 状態管理・UI操作制御
-│   ├── logic.js          # 経験値計算・倍率計算・時間計算ロジック
-│   └── constants.js      # 定数・倍率選択肢・クエストプリセット定義
+├── ts/
+│   ├── app.ts            # 状態管理・UI操作制御
+│   ├── logic.ts          # 経験値計算・倍率計算・時間計算ロジック
+│   └── constants.ts      # 定数・倍率選択肢・クエストプリセット定義
 └── csv/
     ├── rank_table_1_999.csv  # 1〜999ランクの個別累計経験値データ
     └── rank_step_table.csv   # 1000ランク以降の区間毎の必要経験値データ
