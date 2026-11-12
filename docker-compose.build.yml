@@ -1,0 +1,9 @@
+# 本番環境と同じビルド成果物作成用
+version: "3.8"
+
+services:
+  builder:
+    build: .
+    volumes:
+      - ./dist:/app/dist
+    command: npm run build
