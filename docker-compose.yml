@@ -1,8 +1,12 @@
+# ローカル環境での確認サーバー構築用 (http://localhost:5173)
 version: "3.8"
 
 services:
-  builder:
+  dev:
     build: .
+    ports:
+      - "5173:5173"
     volumes:
-      - ./dist:/app/dist
-    command: npm run build
+      - .:/app
+      - /app/node_modules
+    command: npm run dev -- --host
