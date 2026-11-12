@@ -17,7 +17,7 @@ monst/
 ├── Dockerfile                  # Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
 ├── docker-compose.build.yml    # ビルド用Docker Compose
-├── vite.config.mjs             # Viteの設定ファイル(マルチページ自動検出対応)
+├── vite.config.mjs             # Viteの設定ファイル(マルチページ対応)
 └── package.json                # 依存関係とスクリプト定義
 ```
 
