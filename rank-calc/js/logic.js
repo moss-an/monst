@@ -18,15 +18,11 @@ export function initRankTableFromCSV(csvText) {
   const lines = csvText.trim().split("\n");
   rankExpTable = lines
     .slice(1)
-    .filter((line) => line && line.trim() !== "")
+    .filter((line) => line.trim() !== "")
     .map((line) => {
       const parts = line.split(",");
-      if (parts.length > 1 && parts[1]) {
-        return parseInt(parts[1].trim(), 10);
-      }
-      return 0;
-    })
-    .filter((val) => !isNaN(val) && val > 0);
+      return parseInt(parts[1].trim(), 10);
+    });
 
   if (rankExpTable.length > 0) {
     isTableLoaded = true;
@@ -41,19 +37,15 @@ export function initRankStepTableFromCSV(csvText) {
   const lines = csvText.trim().split("\n");
   rankStepTable = lines
     .slice(1)
-    .filter((line) => line && line.trim() !== "")
+    .filter((line) => line.trim() !== "")
     .map((line) => {
       const parts = line.split(",");
-      if (parts.length > 0 && parts[0]) {
-        const minRank = parseInt(parts[0].trim(), 10);
-        const maxRankStr = parts[1] ? parts[1].trim() : "";
-        const maxRank = maxRankStr === "" ? null : parseInt(maxRankStr, 10);
-        const expPerRank = parts[2] ? parseInt(parts[2].trim(), 10) : 0;
-        return { minRank, maxRank, expPerRank };
-      }
-      return null;
-    })
-    .filter((item) => item !== null);
+      const minRank = parseInt(parts[0].trim(), 10);
+      const maxRankStr = parts[1] ? parts[1].trim() : "";
+      const maxRank = maxRankStr === "" ? null : parseInt(maxRankStr, 10);
+      const expPerRank = parseInt(parts[2].trim(), 10);
+      return { minRank, maxRank, expPerRank };
+    });
 
   initialCsvStepCount = rankStepTable.length;
 }
@@ -135,7 +127,7 @@ export function getExpForNextRank(rank) {
 }
 
 /**
- * ランク1를基準(0)とした指定ランク到達に必要な累計経験値を算出
+ * ランク1を基準(0)とした指定ランク到達に必要な累計経験値を算出
  */
 export function calculateExpFromRank1(targetRank) {
   if (targetRank <= 1) return 0;
@@ -277,6 +269,8 @@ export function calculateEarnedExpPerRun(baseExp, multipliers) {
 
   let currentExp = baseExp;
 
+  //HACK: ゲーム内処理が不明のため、暫定ロジック
+  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
   currentExp = Math.ceil(
     currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
   );
