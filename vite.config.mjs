@@ -1,7 +1,24 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+import fg from "fast-glob";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// ルート直下およびサブディレクトリにあるすべての index.html を自動取得
+const htmlFiles = fg.sync(["index.html", "**/index.html"], {
+  cwd: __dirname,
+  ignore: ["node_modules/**", "dist/**"],
+});
+
+const input = {};
+htmlFiles.forEach((file) => {
+  const key =
+    file === "index.html" ? "main" : file.replace(/\/index\.html$/, "");
+  input[key] = resolve(__dirname, file);
+});
 
 export default defineConfig({
   base: "./",
@@ -14,10 +31,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-        rankCalc: resolve(__dirname, "rank-calc/index.html"),
-      },
+      input,
     },
   },
 });

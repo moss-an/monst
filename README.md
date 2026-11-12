@@ -61,38 +61,19 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
    docker compose -f docker-compose.build.yml up --build
    ```
 
-## Viteのマルチページ設定に関する注意点
+## Viteのマルチページ自動検出
 
-Viteはデフォルト状態ではシングルページアプリケーション (SPA) として動作するため、エントリーポイントが1つ (`index.html`) に制限されます。
+`vite.config.mjs` では `fast-glob` を使用して、リポジトリ内のすべての `index.html` (ルート直下および各サブディレクトリ内) を自動的に検出し、ビルドのエントリーポイント (`rollupOptions.input`) として登録する設定になっています。
 
-今回のように、トップページ (`index.html`) とサブページ (例: `rank-calc/index.html`) を持つ**マルチページ構成**でデプロイ・公開する場合、追加したHTMLファイルをViteのビルドターゲットに含めるため、`vite.config.mjs` の `rollupOptions.input` に各エントリーポイントを明示的に追記・設定する必要があります。
-
-設定例 (`vite.config.mjs`):
-
-```javascript
-import { defineConfig } from "vite";
-import { resolve } from "path";
-
-export default defineConfig({
-  build: {
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-        rankCalc: resolve(__dirname, "rank-calc/index.html"),
-      },
-    },
-  },
-});
-```
-
-新しいサブページを追加・拡張する際は、必ずこの `vite.config.mjs` への追加を忘れないよう注意してください。
+新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mjs` を手動で書き換える必要はありません。
 
 ## CI/CD
 
 このリポジトリでは、`.github/workflows/deploy.yml` を用いたGitHub Actionsによる自動デプロイが設定されています。
 
-- `main` ブランチへ変更がマージされると、自動的にビルドとGitHub Pagesへのデプロイが実行されます。
-- ビルド成果物 (`dist/` 内のファイル群) は `.gitignore` で除外されており、リポジトリに手動でpushする必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
+`main` ブランチへ変更がマージされると、自動的にビルドとGitHub Pagesへのデプロイが実行されます。
+
+ビルド成果物 (`dist/` 内のファイル群) は `.gitignore` で除外されており、リポジトリに手動でpushする必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
 
 ## ライセンス
 
