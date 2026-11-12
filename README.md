@@ -15,15 +15,15 @@ monst/
 ├── src/
 │   └── input.css               # スタイル(Tailwind CSS)
 ├── Dockerfile                  # Dockerイメージ定義
-├── docker-compose.yml          # Docker Compose設定
-├── docker-compose.build.yml    # ビルド用Docker Compose設定
+├── docker-compose.yml          # 開発サーバー構築用Docker Compose
+├── docker-compose.build.yml    # ビルド用Docker Compose
 ├── vite.config.mjs             # Viteの設定ファイル(マルチページ対応)
 └── package.json                # 依存関係とスクリプト定義
 ```
 
 ## ローカルでの開発・確認方法
 
-Node.js環境を直接利用してローカルで開発・確認する手順です。
+Node.js環境を直接利用して、ローカルで確認やビルドを行うことができます。
 
 1. 依存パッケージをインストールします。
 
@@ -47,7 +47,7 @@ Node.js環境を直接利用してローカルで開発・確認する手順で�
 
 ## Docker環境での開発・確認方法
 
-リポジトリにはDocker環境が用意されており、コンテナを使ったビルドや確認を行うことができます。
+Docker環境で、コンテナを使った確認やビルドを行うことができます。
 
 1. 開発サーバーを起動します。
 
@@ -87,6 +87,13 @@ export default defineConfig({
 ```
 
 新しいサブページを追加・拡張する際は、必ずこの `vite.config.mjs` への追加を忘れないよう注意してください。
+
+## CI/CD (デプロイについて)
+
+このリポジトリでは、`.github/workflows/deploy.yml` を用いたGitHub Actionsによる自動デプロイが設定されています。
+
+- `main` ブランチへ変更がプッシュされると、自動的にビルドとGitHub Pagesへのデプロイが実行されます。
+- 手動でビルドやデプロイ手順を実行する必要はありません。
 
 ## ライセンス
 
