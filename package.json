@@ -26,6 +26,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
     "@vitejs/plugin-vue": "^5.0.0",
+    "fast-glob": "^3.3.2",
     "tailwindcss": "^4.3.5",
     "vite": "^5.0.0"
   }
