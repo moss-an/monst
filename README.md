@@ -65,7 +65,7 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 Viteはデフォルト状態ではシングルページアプリケーション (SPA) として動作するため、エントリーポイントが1つ (`index.html`) に制限されます。
 
-今回のように、トップページ (`index.html`) とサブページ (例: `rank-calc/index.html`) を持つ**マルチページ構成**でGitHub Pagesなどにデプロイ・公開する場合、追加したHTMLファイルをViteのビルドターゲットに含めるため、`vite.config.mjs` の `rollupOptions.input` に各エントリーポイントを明示的に追記・設定する必要があります。
+今回のように、トップページ (`index.html`) とサブページ (例: `rank-calc/index.html`) を持つ**マルチページ構成**でデプロイ・公開する場合、追加したHTMLファイルをViteのビルドターゲットに含めるため、`vite.config.mjs` の `rollupOptions.input` に各エントリーポイントを明示的に追記・設定する必要があります。
 
 設定例 (`vite.config.mjs`):
 
@@ -92,7 +92,7 @@ export default defineConfig({
 このリポジトリでは、`.github/workflows/deploy.yml` を用いたGitHub Actionsによる自動デプロイが設定されています。
 
 - `main` ブランチへ変更がマージされると、自動的にビルドとGitHub Pagesへのデプロイが実行されます。
-- ビルド成果物 (`dist/` 内のファイル群) は `.gitignore` で除外されており、リポジトリに手動で push する必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
+- ビルド成果物 (`dist/` 内のファイル群) は `.gitignore` で除外されており、リポジトリに手動でpushする必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
 
 ## ライセンス
 
