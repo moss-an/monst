@@ -59,9 +59,9 @@ export const MAX_SPD_INPUT_VALUE = 9999; // スピード（基礎・下限・上
 export const MAX_SPD_DEC_DIGITS = 2; // スピードの小数部桁数上限
 
 // デフォルト入力値
-export const DEFAULT_BASE_ATK_STR = "30000";
-export const DEFAULT_BASE_SPD_STR = "350.00";
-export const DEFAULT_ATK_MIN_STR = "33000";
+export const DEFAULT_BASE_ATK_STR = "";
+export const DEFAULT_BASE_SPD_STR = "";
+export const DEFAULT_ATK_MIN_STR = "";
 export const DEFAULT_ATK_MAX_STR = "";
 export const DEFAULT_SPD_MIN_STR = "";
 export const DEFAULT_SPD_MAX_STR = "";
