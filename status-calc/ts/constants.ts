@@ -46,14 +46,12 @@ export const DEFAULT_SELECTED_GRADES: FruitGrade[] = ["特級L", "特級EL"];
 export const MAX_FRUIT_SLOTS_OPTIONS = [1, 2, 3, 4];
 export const DEFAULT_MAX_FRUIT_SLOTS = 3;
 
-export const PAGE_SIZE_OPTIONS = [50, 100, 200, 500];
-export const DEFAULT_PAGE_SIZE = 100;
+export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+export const DEFAULT_PAGE_SIZE = 10;
 
-/** 検索結果の最大許容数（これを超えたら計算を即座に打ち切る） */
-export const MAX_SEARCH_RESULTS_LIMIT = 100;
+export const MAX_SEARCH_RESULTS_LIMIT = 1000; // 検索結果の最大許容数
 
-/** ローディング表示を確実に反映させるための描画遅延時間（ミリ秒） */
-export const CALC_LOADING_DELAY_MS = 50;
+export const CALC_LOADING_DELAY_MS = 50; // ロード遅延時間（ミリ秒）
 
 export const MAX_STAT_VALUE = 999999;
 export const MAX_TOLERANCE_VALUE = 999999;
@@ -69,14 +67,14 @@ const GRADE_VALUES: Record<
     特級EL: { atk: 3300, spd: 0 },
   },
   "同族・加撃速": {
-    特級: { atk: 1000, spd: 13.2 },
-    特級M: { atk: 1500, spd: 19.8 },
+    特級: { atk: 1200, spd: 16.0 },
+    特級M: { atk: 1600, spd: 21.2 },
     特級L: { atk: 2000, spd: 26.6 },
-    特級EL: { atk: 2200, spd: 29.2 },
+    特級EL: { atk: 2200, spd: 29.3 },
   },
   "同族・加命撃": {
-    特級: { atk: 1000, spd: 0 },
-    特級M: { atk: 1500, spd: 0 },
+    特級: { atk: 1200, spd: 0 },
+    特級M: { atk: 1600, spd: 0 },
     特級L: { atk: 2000, spd: 0 },
     特級EL: { atk: 2200, spd: 0 },
   },
@@ -87,14 +85,14 @@ const GRADE_VALUES: Record<
     特級EL: { atk: 1650, spd: 0 },
   },
   "撃種・加撃速": {
-    特級: { atk: 500, spd: 6.6 },
-    特級M: { atk: 750, spd: 10.0 },
+    特級: { atk: 600, spd: 8.0 },
+    特級M: { atk: 800, spd: 10.6 },
     特級L: { atk: 1000, spd: 13.2 },
     特級EL: { atk: 1100, spd: 14.5 },
   },
   "撃種・加命撃": {
-    特級: { atk: 500, spd: 0 },
-    特級M: { atk: 750, spd: 0 },
+    特級: { atk: 600, spd: 0 },
+    特級M: { atk: 800, spd: 0 },
     特級L: { atk: 1000, spd: 0 },
     特級EL: { atk: 1100, spd: 0 },
   },
@@ -105,50 +103,50 @@ const GRADE_VALUES: Record<
     特級EL: { atk: 1650, spd: 0 },
   },
   "戦型・加撃速": {
-    特級: { atk: 500, spd: 6.6 },
-    特級M: { atk: 750, spd: 10.0 },
+    特級: { atk: 600, spd: 8.0 },
+    特級M: { atk: 800, spd: 10.6 },
     特級L: { atk: 1000, spd: 13.2 },
     特級EL: { atk: 1100, spd: 14.5 },
   },
   "戦型・加命撃": {
-    特級: { atk: 500, spd: 0 },
-    特級M: { atk: 750, spd: 0 },
+    特級: { atk: 600, spd: 0 },
+    特級M: { atk: 800, spd: 0 },
     特級L: { atk: 1000, spd: 0 },
     特級EL: { atk: 1100, spd: 0 },
   },
   "同族・加速": {
     特級: { atk: 0, spd: 20.0 },
     特級M: { atk: 0, spd: 26.6 },
-    特級L: { atk: 0, spd: 33.2 },
-    特級EL: { atk: 0, spd: 36.5 },
+    特級L: { atk: 0, spd: 33.3 },
+    特級EL: { atk: 0, spd: 36.6 },
   },
   "同族・加速命": {
-    特級: { atk: 0, spd: 13.2 },
-    特級M: { atk: 0, spd: 19.8 },
+    特級: { atk: 0, spd: 16.0 },
+    特級M: { atk: 0, spd: 21.2 },
     特級L: { atk: 0, spd: 26.6 },
-    特級EL: { atk: 0, spd: 29.2 },
+    特級EL: { atk: 0, spd: 29.3 },
   },
   "撃種・加速": {
     特級: { atk: 0, spd: 10.0 },
-    特級M: { atk: 0, spd: 13.2 },
+    特級M: { atk: 0, spd: 13.3 },
     特級L: { atk: 0, spd: 16.6 },
-    特級EL: { atk: 0, spd: 18.2 },
+    特級EL: { atk: 0, spd: 18.3 },
   },
   "撃種・加速命": {
-    特級: { atk: 0, spd: 6.6 },
-    特級M: { atk: 0, spd: 10.0 },
+    特級: { atk: 0, spd: 8.0 },
+    特級M: { atk: 0, spd: 10.6 },
     特級L: { atk: 0, spd: 13.2 },
     特級EL: { atk: 0, spd: 14.5 },
   },
   "戦型・加速": {
     特級: { atk: 0, spd: 10.0 },
-    特級M: { atk: 0, spd: 13.2 },
+    特級M: { atk: 0, spd: 13.3 },
     特級L: { atk: 0, spd: 16.6 },
-    特級EL: { atk: 0, spd: 18.2 },
+    特級EL: { atk: 0, spd: 18.3 },
   },
   "戦型・加速命": {
-    特級: { atk: 0, spd: 6.6 },
-    特級M: { atk: 0, spd: 10.0 },
+    特級: { atk: 0, spd: 8.0 },
+    特級M: { atk: 0, spd: 10.6 },
     特級L: { atk: 0, spd: 13.2 },
     特級EL: { atk: 0, spd: 14.5 },
   },
@@ -160,6 +158,7 @@ const GRADE_VALUES: Record<
   },
 };
 
+// マスターデータをもとに、わくわくの実の全種類・等級の組み合わせを自動生成
 export const ALL_FRUIT_SPECS: FruitSpec[] = (() => {
   const list: FruitSpec[] = [];
   (Object.keys(GRADE_VALUES) as FruitCategory[]).forEach((category) => {
@@ -183,59 +182,23 @@ export const ALL_FRUIT_SPECS: FruitSpec[] = (() => {
 })();
 
 export const SPOT_OPTIONS: SpotOption[] = [
-  { id: "none", label: "なし（+0 / +0）", atkBonus: 0, spdBonus: 0 },
+  { id: "none", label: "なし（攻+0 / 速+0）", atkBonus: 0, spdBonus: 0 },
   {
-    id: "sub_atk",
-    label: "サブスポット：剣（攻撃+1000）",
-    atkBonus: 1000,
-    spdBonus: 0,
-  },
-  {
-    id: "main_atk",
-    label: "メインスポット：剣（攻撃+1500）",
-    atkBonus: 1500,
-    spdBonus: 0,
-  },
-  {
-    id: "main_plus_atk",
-    label: "メインスポット+：剣（攻撃+2000）",
-    atkBonus: 2000,
-    spdBonus: 0,
-  },
-  {
-    id: "sub_spd",
-    label: "サブスポット：靴（スピード+15.0）",
-    atkBonus: 0,
-    spdBonus: 15.0,
-  },
-  {
-    id: "main_spd",
-    label: "メインスポット：靴（スピード+22.5）",
-    atkBonus: 0,
-    spdBonus: 22.5,
-  },
-  {
-    id: "main_plus_spd",
-    label: "メインスポット+：靴（スピード+30.0）",
-    atkBonus: 0,
-    spdBonus: 30.0,
-  },
-  {
-    id: "all_sub",
-    label: "サブスポット：全ステータス（攻撃+500 / 速度+7.5）",
+    id: "sub",
+    label: "サブスポット（攻+500 / 速+10.2）",
     atkBonus: 500,
-    spdBonus: 7.5,
+    spdBonus: 10.2,
   },
   {
-    id: "all_main",
-    label: "メインスポット：全ステータス（攻撃+750 / 速度+11.2）",
-    atkBonus: 750,
-    spdBonus: 11.2,
+    id: "main",
+    label: "メインスポット（攻+1500 / 速+30.6）",
+    atkBonus: 1500,
+    spdBonus: 30.6,
   },
   {
-    id: "all_main_plus",
-    label: "メインスポット+：全ステータス（攻撃+1000 / 速度+15.0）",
-    atkBonus: 1000,
-    spdBonus: 15.0,
+    id: "main_plus",
+    label: "メインスポット+（攻+2000 / 速+40.8）",
+    atkBonus: 2000,
+    spdBonus: 40.8,
   },
 ];
