@@ -5,6 +5,8 @@
 
 import { createApp, ref, computed, watch } from "vue";
 import * as CONSTANTS from "./constants";
+import * as FRUITS from "./fruits";
+import * as SPOTS from "./spots";
 import * as Logic from "./logic";
 
 type SortKey = "fruitCount" | "finalAtk" | "finalSpd";
@@ -14,10 +16,10 @@ type SpdFieldKey = "baseSpd" | "spdMin" | "spdMax";
 
 createApp({
   setup() {
-    const spotOptions = CONSTANTS.SPOT_OPTIONS;
-    const fruitGrades = CONSTANTS.FRUIT_GRADES;
-    const groupedFruitCategories = CONSTANTS.GROUPED_FRUIT_CATEGORIES;
-    const selectableFruitCategories = CONSTANTS.SELECTABLE_FRUIT_CATEGORIES;
+    const spotOptions = SPOTS.SPOT_OPTIONS;
+    const fruitGrades = FRUITS.FRUIT_GRADES;
+    const groupedFruitCategories = FRUITS.GROUPED_FRUIT_CATEGORIES;
+    const selectableFruitCategories = FRUITS.SELECTABLE_FRUIT_CATEGORIES;
     const slotOptions = CONSTANTS.MAX_FRUIT_SLOTS_OPTIONS;
     const pageSizeOptions = CONSTANTS.PAGE_SIZE_OPTIONS;
 
@@ -35,11 +37,11 @@ createApp({
 
     const maxSlots = ref<number>(CONSTANTS.DEFAULT_MAX_FRUIT_SLOTS);
     const selectedSpotId = ref<string>(spotOptions[0].id);
-    const selectedGrades = ref<CONSTANTS.FruitGrade[]>([
-      ...CONSTANTS.DEFAULT_SELECTED_GRADES,
+    const selectedGrades = ref<FRUITS.FruitGrade[]>([
+      ...FRUITS.DEFAULT_SELECTED_GRADES,
     ]);
-    const selectedCategories = ref<CONSTANTS.FruitCategory[]>([
-      ...CONSTANTS.DEFAULT_SELECTED_CATEGORIES,
+    const selectedCategories = ref<FRUITS.FruitCategory[]>([
+      ...FRUITS.DEFAULT_SELECTED_CATEGORIES,
     ]);
     const isCategorySectionOpen = ref<boolean>(false);
 
@@ -183,13 +185,13 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
-    const selectedSpot = computed<CONSTANTS.SpotOption>(() => {
+    const selectedSpot = computed<SPOTS.SpotOption>(() => {
       return (
         spotOptions.find((s) => s.id === selectedSpotId.value) ?? spotOptions[0]
       );
     });
 
-    const toggleGrade = (grade: CONSTANTS.FruitGrade): void => {
+    const toggleGrade = (grade: FRUITS.FruitGrade): void => {
       const idx = selectedGrades.value.indexOf(grade);
       if (idx >= 0) {
         selectedGrades.value.splice(idx, 1);
@@ -198,7 +200,7 @@ createApp({
       }
     };
 
-    const toggleCategory = (category: CONSTANTS.FruitCategory): void => {
+    const toggleCategory = (category: FRUITS.FruitCategory): void => {
       const idx = selectedCategories.value.indexOf(category);
       if (idx >= 0) {
         selectedCategories.value.splice(idx, 1);
@@ -208,14 +210,14 @@ createApp({
     };
 
     const selectAllCategories = (): void => {
-      selectedCategories.value = [...CONSTANTS.DEFAULT_SELECTED_CATEGORIES];
+      selectedCategories.value = [...FRUITS.DEFAULT_SELECTED_CATEGORIES];
     };
 
     const clearAllCategories = (): void => {
       selectedCategories.value = [];
     };
 
-    const toggleCategoryGroup = (group: CONSTANTS.FruitGroup): void => {
+    const toggleCategoryGroup = (group: FRUITS.FruitGroup): void => {
       const groupItems = selectableFruitCategories
         .filter((c) => c.group === group)
         .map((c) => c.name);
@@ -232,7 +234,7 @@ createApp({
       }
     };
 
-    const isGroupAllSelected = (group: CONSTANTS.FruitGroup): boolean => {
+    const isGroupAllSelected = (group: FRUITS.FruitGroup): boolean => {
       const groupItems = selectableFruitCategories
         .filter((c) => c.group === group)
         .map((c) => c.name);

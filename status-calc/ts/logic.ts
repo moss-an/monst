@@ -4,6 +4,8 @@
  */
 
 import * as CONSTANTS from "./constants";
+import * as FRUITS from "./fruits";
+import * as SPOTS from "./spots";
 
 export interface SearchCondition {
   baseAtk: number;
@@ -13,14 +15,14 @@ export interface SearchCondition {
   spdMin: number | null;
   spdMax: number | null;
   maxSlots: number;
-  spot: CONSTANTS.SpotOption;
-  allowedGrades: CONSTANTS.FruitGrade[];
-  allowedCategories?: CONSTANTS.FruitCategory[];
+  spot: SPOTS.SpotOption;
+  allowedGrades: FRUITS.FruitGrade[];
+  allowedCategories?: FRUITS.FruitCategory[];
 }
 
 export interface FruitCombinationResult {
   id: string;
-  fruits: CONSTANTS.FruitSpec[];
+  fruits: FRUITS.FruitSpec[];
   fruitCount: number;
   fruitAtkBonus: number;
   fruitSpdBonus: number;
@@ -128,7 +130,7 @@ export function findMatchingCombinations(
     maxSlots,
     spot,
     allowedGrades,
-    allowedCategories = CONSTANTS.DEFAULT_SELECTED_CATEGORIES,
+    allowedCategories = FRUITS.DEFAULT_SELECTED_CATEGORIES,
   } = condition;
 
   const validationErrors = validateSearchCondition({
@@ -158,11 +160,11 @@ export function findMatchingCombinations(
   const hasSpdCondition =
     (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
 
-  const candidateFruits: CONSTANTS.FruitSpec[] = [];
+  const candidateFruits: FRUITS.FruitSpec[] = [];
   let hasNoneFruit = false;
 
-  for (const spec of CONSTANTS.ALL_FRUIT_SPECS) {
-    if (spec.category === CONSTANTS.OTHER_CATEGORY_NAME) {
+  for (const spec of FRUITS.ALL_FRUIT_SPECS) {
+    if (spec.category === FRUITS.OTHER_CATEGORY_NAME) {
       if (!hasNoneFruit) {
         candidateFruits.push({
           ...spec,
@@ -194,7 +196,7 @@ export function findMatchingCombinations(
 
   const results: FruitCombinationResult[] = [];
   const uniqueIds = new Set<string>();
-  const current: CONSTANTS.FruitSpec[] = [];
+  const current: FRUITS.FruitSpec[] = [];
   const MAX_LIMIT = CONSTANTS.MAX_SEARCH_RESULTS_LIMIT;
 
   const backtrack = (
@@ -219,7 +221,7 @@ export function findMatchingCombinations(
 
     if (isAtkOk && isSpdOk) {
       const effectiveFruits = current.filter(
-        (f) => f.category !== CONSTANTS.OTHER_CATEGORY_NAME,
+        (f) => f.category !== FRUITS.OTHER_CATEGORY_NAME,
       );
       const signature =
         effectiveFruits.length === 0
@@ -254,7 +256,7 @@ export function findMatchingCombinations(
       const nextFruit = candidateFruits[i];
 
       if (
-        nextFruit.category !== CONSTANTS.OTHER_CATEGORY_NAME &&
+        nextFruit.category !== FRUITS.OTHER_CATEGORY_NAME &&
         current.some((f) => f.category === nextFruit.category)
       ) {
         continue;

@@ -11,9 +11,11 @@ monst/status-calc/
 └── ts/
     ├── app.ts        # 状態管理・UI操作制御
     ├── logic.ts      # 組み合わせ探索・ステータス計算ロジック
-    └── constants.ts  # わくわくの実・モンスポット加算値マスタ定義
+    ├── constants.ts  # アプリケーション共通定数・エラーメッセージ
+    ├── fruits.ts     # わくわくの実マスタ定義と自動生成ロジック
+    └── spots.ts      # モンスポットマスタ定義
 ```
 
 ## わくわくの実マスタのメンテナンス方法
 
-`ts/constants.ts` の `FRUIT_CATEGORY_MASTER` に配列要素を追加・編集するだけで、型定義（`FruitCategory`）・UIの選択ボタン・計算ロジックのすべてに自動反映されます。
+`ts/fruits.ts` の `FRUIT_CATEGORY_MASTER` に配列要素を追加・編集するだけで、型定義・UIの選択ボタン・計算ロジックのすべてに自動反映されます。
