@@ -55,6 +55,21 @@ createApp({
       return isNaN(num) ? null : num;
     };
 
+    const validationErrors = computed<Logic.ValidationErrors>(() => {
+      return Logic.validateSearchCondition({
+        baseAtk: parseIntOrNull(baseAtkInput.value) ?? 0,
+        baseSpd: parseFloatOrNull(baseSpdInput.value) ?? 0,
+        atkMin: parseIntOrNull(atkMinInput.value),
+        atkMax: parseIntOrNull(atkMaxInput.value),
+        spdMin: parseFloatOrNull(spdMinInput.value),
+        spdMax: parseFloatOrNull(spdMaxInput.value),
+      });
+    });
+
+    const hasValidationError = computed<boolean>(() => {
+      return Logic.hasAnyValidationError(validationErrors.value);
+    });
+
     const selectedSpot = computed<CONSTANTS.SpotOption>(() => {
       return (
         spotOptions.find((s) => s.id === selectedSpotId.value) ?? spotOptions[0]
@@ -71,7 +86,7 @@ createApp({
     };
 
     const executeSearch = (): void => {
-      if (isCalculating.value) return;
+      if (isCalculating.value || hasValidationError.value) return;
       isCalculating.value = true;
       errorMessage.value = null;
 
@@ -92,7 +107,10 @@ createApp({
           const results = Logic.findMatchingCombinations(condition);
           rawResults.value = results;
         } catch (err: any) {
-          if (err instanceof Logic.TooManyResultsError) {
+          if (err instanceof Logic.InvalidConditionError) {
+            errorMessage.value = err.message;
+            rawResults.value = [];
+          } else if (err instanceof Logic.TooManyResultsError) {
             errorMessage.value = `適合パターンが多すぎます（${CONSTANTS.MAX_SEARCH_RESULTS_LIMIT}件超）。条件が広すぎますので、攻撃力・スピードの範囲を狭めるか、等級を絞り込んでください。`;
             rawResults.value = [];
           } else {
@@ -187,6 +205,8 @@ createApp({
       atkMaxInput,
       spdMinInput,
       spdMaxInput,
+      validationErrors,
+      hasValidationError,
       maxSlots,
       selectedSpotId,
       selectedGrades,
