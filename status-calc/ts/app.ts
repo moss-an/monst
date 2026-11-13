@@ -9,6 +9,8 @@ import * as Logic from "./logic";
 
 type SortKey = "fruitCount" | "finalAtk" | "finalSpd";
 type SortOrder = "asc" | "desc";
+type AtkFieldKey = "baseAtk" | "atkMin" | "atkMax";
+type SpdFieldKey = "baseSpd" | "spdMin" | "spdMax";
 
 createApp({
   setup() {
@@ -16,6 +18,10 @@ createApp({
     const fruitGrades = CONSTANTS.FRUIT_GRADES;
     const slotOptions = CONSTANTS.MAX_FRUIT_SLOTS_OPTIONS;
     const pageSizeOptions = CONSTANTS.PAGE_SIZE_OPTIONS;
+
+    const maxAtkInputValue = CONSTANTS.MAX_ATK_INPUT_VALUE;
+    const maxSpdInputValue = CONSTANTS.MAX_SPD_INPUT_VALUE;
+    const maxSpdDecDigits = CONSTANTS.MAX_SPD_DEC_DIGITS;
 
     const baseAtkInput = ref<string>("30000");
     const baseSpdInput = ref<string>("350.00");
@@ -41,19 +47,122 @@ createApp({
     const currentPage = ref<number>(1);
     const pageSize = ref<number>(CONSTANTS.DEFAULT_PAGE_SIZE);
 
+    const sanitizeAtkString = (val: string): string => {
+      let cleaned = val.replace(/[^0-9]/g, "");
+      const maxDigits = String(maxAtkInputValue).length + 1;
+      if (cleaned.length > maxDigits) {
+        cleaned = cleaned.slice(0, maxDigits);
+      }
+      if (cleaned.length > 1) {
+        cleaned = cleaned.replace(/^0+/, "");
+        if (cleaned === "") cleaned = "0";
+      }
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      if (num > maxAtkInputValue) {
+        return String(maxAtkInputValue);
+      }
+      return String(num);
+    };
+
+    const sanitizeSpdString = (val: string): string => {
+      let cleaned = val.replace(/[^0-9.]/g, "");
+      const parts = cleaned.split(".");
+      if (parts.length > 2) {
+        cleaned = parts[0] + "." + parts.slice(1).join("");
+      }
+
+      const splitVal = cleaned.split(".");
+      let integerPart = splitVal[0];
+      let decimalPart = splitVal[1];
+
+      const maxIntDigits = String(Math.floor(maxSpdInputValue)).length + 1;
+      if (integerPart.length > maxIntDigits) {
+        integerPart = integerPart.slice(0, maxIntDigits);
+      }
+      if (integerPart.length > 1) {
+        integerPart = integerPart.replace(/^0+/, "");
+        if (integerPart === "") integerPart = "0";
+      }
+
+      if (decimalPart !== undefined) {
+        if (decimalPart.length > maxSpdDecDigits) {
+          decimalPart = decimalPart.slice(0, maxSpdDecDigits);
+        }
+        cleaned = `${integerPart}.${decimalPart}`;
+      } else if (cleaned.endsWith(".")) {
+        cleaned = integerPart === "" ? "0." : `${integerPart}.`;
+      } else {
+        cleaned = integerPart;
+      }
+
+      if (cleaned === "") return "";
+      const num = parseFloat(cleaned);
+      if (!isNaN(num) && num > maxSpdInputValue) {
+        return String(maxSpdInputValue);
+      }
+      return cleaned;
+    };
+
+    const handleAtkInput = (field: AtkFieldKey, e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      const sanitized = sanitizeAtkString(target.value);
+      target.value = sanitized;
+
+      if (field === "baseAtk") {
+        baseAtkInput.value = sanitized;
+      } else if (field === "atkMin") {
+        atkMinInput.value = sanitized;
+      } else {
+        atkMaxInput.value = sanitized;
+      }
+    };
+
+    const handleSpdInput = (field: SpdFieldKey, e: Event): void => {
+      const target = e.target as HTMLInputElement;
+      const sanitized = sanitizeSpdString(target.value);
+      target.value = sanitized;
+
+      if (field === "baseSpd") {
+        baseSpdInput.value = sanitized;
+      } else if (field === "spdMin") {
+        spdMinInput.value = sanitized;
+      } else {
+        spdMaxInput.value = sanitized;
+      }
+    };
+
     const parseIntOrNull = (val: string): number | null => {
       const cleaned = val.replace(/[^0-9]/g, "");
       if (cleaned === "") return null;
       const num = parseInt(cleaned, 10);
-      return isNaN(num) ? null : num;
+      if (isNaN(num)) return null;
+      return Math.min(num, maxAtkInputValue);
     };
 
     const parseFloatOrNull = (val: string): number | null => {
       const cleaned = val.replace(/[^0-9.]/g, "");
       if (cleaned === "") return null;
       const num = parseFloat(cleaned);
-      return isNaN(num) ? null : num;
+      if (isNaN(num)) return null;
+      return Math.min(num, maxSpdInputValue);
     };
+
+    const validationErrors = computed<Logic.ValidationErrors>(() => {
+      return Logic.validateSearchCondition({
+        baseAtk: parseIntOrNull(baseAtkInput.value) ?? 0,
+        baseSpd: parseFloatOrNull(baseSpdInput.value) ?? 0,
+        atkMin: parseIntOrNull(atkMinInput.value),
+        atkMax: parseIntOrNull(atkMaxInput.value),
+        spdMin: parseFloatOrNull(spdMinInput.value),
+        spdMax: parseFloatOrNull(spdMaxInput.value),
+      });
+    });
+
+    const hasValidationError = computed<boolean>(() => {
+      return Logic.hasAnyValidationError(validationErrors.value);
+    });
 
     const selectedSpot = computed<CONSTANTS.SpotOption>(() => {
       return (
@@ -71,7 +180,7 @@ createApp({
     };
 
     const executeSearch = (): void => {
-      if (isCalculating.value) return;
+      if (isCalculating.value || hasValidationError.value) return;
       isCalculating.value = true;
       errorMessage.value = null;
 
@@ -92,7 +201,10 @@ createApp({
           const results = Logic.findMatchingCombinations(condition);
           rawResults.value = results;
         } catch (err: any) {
-          if (err instanceof Logic.TooManyResultsError) {
+          if (err instanceof Logic.InvalidConditionError) {
+            errorMessage.value = err.message;
+            rawResults.value = [];
+          } else if (err instanceof Logic.TooManyResultsError) {
             errorMessage.value = `適合パターンが多すぎます（${CONSTANTS.MAX_SEARCH_RESULTS_LIMIT}件超）。条件が広すぎますので、攻撃力・スピードの範囲を狭めるか、等級を絞り込んでください。`;
             rawResults.value = [];
           } else {
@@ -181,12 +293,18 @@ createApp({
       fruitGrades,
       slotOptions,
       pageSizeOptions,
+      maxAtkInputValue,
+      maxSpdInputValue,
       baseAtkInput,
       baseSpdInput,
       atkMinInput,
       atkMaxInput,
       spdMinInput,
       spdMaxInput,
+      handleAtkInput,
+      handleSpdInput,
+      validationErrors,
+      hasValidationError,
       maxSlots,
       selectedSpotId,
       selectedGrades,

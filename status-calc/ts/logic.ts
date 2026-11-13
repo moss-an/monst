@@ -29,6 +29,13 @@ export interface FruitCombinationResult {
   finalSpd: number;
 }
 
+export interface ValidationErrors {
+  atkMin: string[];
+  atkMax: string[];
+  spdMin: string[];
+  spdMax: string[];
+}
+
 export class TooManyResultsError extends Error {
   constructor(message: string = "適合パターンが多すぎます") {
     super(message);
@@ -36,8 +43,83 @@ export class TooManyResultsError extends Error {
   }
 }
 
+export class InvalidConditionError extends Error {
+  constructor(message: string = "入力条件に誤りがあります") {
+    super(message);
+    this.name = "InvalidConditionError";
+  }
+}
+
 export function roundSpeed(val: number): number {
   return Math.round(val * 100) / 100;
+}
+
+export function validateSearchCondition(params: {
+  baseAtk: number;
+  baseSpd: number;
+  atkMin: number | null;
+  atkMax: number | null;
+  spdMin: number | null;
+  spdMax: number | null;
+}): ValidationErrors {
+  const { baseAtk, baseSpd, atkMin, atkMax, spdMin, spdMax } = params;
+  const errors: ValidationErrors = {
+    atkMin: [],
+    atkMax: [],
+    spdMin: [],
+    spdMax: [],
+  };
+
+  if (atkMin !== null) {
+    if (atkMin < baseAtk) {
+      errors.atkMin.push("攻撃力の下限は基礎攻撃力以上に設定してください。");
+    }
+    if (atkMax !== null && atkMin > atkMax) {
+      errors.atkMin.push("攻撃力の下限は上限以下に設定してください。");
+    }
+  }
+
+  if (atkMax !== null) {
+    if (atkMax < baseAtk) {
+      errors.atkMax.push("攻撃力の上限は基礎攻撃力以上に設定してください。");
+    }
+    if (atkMin !== null && atkMax < atkMin) {
+      errors.atkMax.push("攻撃力の上限は下限以上に設定してください。");
+    }
+  }
+
+  if (spdMin !== null) {
+    if (spdMin < baseSpd) {
+      errors.spdMin.push(
+        "スピードの下限は基礎スピード以上に設定してください。",
+      );
+    }
+    if (spdMax !== null && spdMin > spdMax) {
+      errors.spdMin.push("スピードの下限は上限以下に設定してください。");
+    }
+  }
+
+  if (spdMax !== null) {
+    if (spdMax < baseSpd) {
+      errors.spdMax.push(
+        "スピードの上限は基礎スピード以上に設定してください。",
+      );
+    }
+    if (spdMin !== null && spdMax < spdMin) {
+      errors.spdMax.push("スピードの上限は下限以上に設定してください。");
+    }
+  }
+
+  return errors;
+}
+
+export function hasAnyValidationError(errors: ValidationErrors): boolean {
+  return (
+    errors.atkMin.length > 0 ||
+    errors.atkMax.length > 0 ||
+    errors.spdMin.length > 0 ||
+    errors.spdMax.length > 0
+  );
 }
 
 export function findMatchingCombinations(
@@ -54,6 +136,24 @@ export function findMatchingCombinations(
     spot,
     allowedGrades,
   } = condition;
+
+  const validationErrors = validateSearchCondition({
+    baseAtk,
+    baseSpd,
+    atkMin,
+    atkMax,
+    spdMin,
+    spdMax,
+  });
+
+  if (hasAnyValidationError(validationErrors)) {
+    const firstMessage =
+      validationErrors.atkMin[0] ||
+      validationErrors.atkMax[0] ||
+      validationErrors.spdMin[0] ||
+      validationErrors.spdMax[0];
+    throw new InvalidConditionError(firstMessage);
+  }
 
   if (allowedGrades.length === 0 || maxSlots < 0) {
     return [];

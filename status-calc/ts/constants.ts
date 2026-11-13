@@ -53,8 +53,10 @@ export const MAX_SEARCH_RESULTS_LIMIT = 1000; // 検索結果の最大許容数
 
 export const CALC_LOADING_DELAY_MS = 50; // ロード遅延時間（ミリ秒）
 
-export const MAX_STAT_VALUE = 999999;
-export const MAX_TOLERANCE_VALUE = 999999;
+// ステータス・許容範囲の入力上限値
+export const MAX_ATK_INPUT_VALUE = 9999999; // 攻撃力（基礎・下限・上限）の入力上限
+export const MAX_SPD_INPUT_VALUE = 9999; // スピード（基礎・下限・上限）の入力上限
+export const MAX_SPD_DEC_DIGITS = 2; // スピードの小数部桁数上限
 
 const GRADE_VALUES: Record<
   FruitCategory,

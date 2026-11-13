@@ -49,7 +49,8 @@
               <input
                 type="text"
                 inputmode="numeric"
-                v-model="baseAtkInput"
+                :value="baseAtkInput"
+                @input="e => handleAtkInput('baseAtk', e)"
                 placeholder="例: 30000"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
               />
@@ -59,7 +60,8 @@
               <input
                 type="text"
                 inputmode="decimal"
-                v-model="baseSpdInput"
+                :value="baseSpdInput"
+                @input="e => handleSpdInput('baseSpd', e)"
                 placeholder="例: 350.00"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
               />
@@ -76,18 +78,39 @@
               <input
                 type="text"
                 inputmode="numeric"
-                v-model="atkMinInput"
+                :value="atkMinInput"
+                @input="e => handleAtkInput('atkMin', e)"
                 placeholder="下限（例: 33000）"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+                :class="validationErrors.atkMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
               <span class="text-slate-400">〜</span>
               <input
                 type="text"
                 inputmode="numeric"
-                v-model="atkMaxInput"
+                :value="atkMaxInput"
+                @input="e => handleAtkInput('atkMax', e)"
                 placeholder="上限（任意）"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+                :class="validationErrors.atkMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
+            </div>
+            <div
+              v-if="validationErrors.atkMin.length > 0 || validationErrors.atkMax.length > 0"
+              class="space-y-0.5 pt-1 text-xs text-rose-400"
+            >
+              <p
+                v-for="(err, idx) in validationErrors.atkMin"
+                :key="'atkMin-' + idx"
+              >
+                ・{{ err }}
+              </p>
+              <p
+                v-for="(err, idx) in validationErrors.atkMax"
+                :key="'atkMax-' + idx"
+              >
+                ・{{ err }}
+              </p>
             </div>
           </div>
 
@@ -101,18 +124,39 @@
               <input
                 type="text"
                 inputmode="decimal"
-                v-model="spdMinInput"
+                :value="spdMinInput"
+                @input="e => handleSpdInput('spdMin', e)"
                 placeholder="下限（例: 380.00）"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+                :class="validationErrors.spdMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
               <span class="text-slate-400">〜</span>
               <input
                 type="text"
                 inputmode="decimal"
-                v-model="spdMaxInput"
+                :value="spdMaxInput"
+                @input="e => handleSpdInput('spdMax', e)"
                 placeholder="上限（任意）"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+                :class="validationErrors.spdMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
+            </div>
+            <div
+              v-if="validationErrors.spdMin.length > 0 || validationErrors.spdMax.length > 0"
+              class="space-y-0.5 pt-1 text-xs text-rose-400"
+            >
+              <p
+                v-for="(err, idx) in validationErrors.spdMin"
+                :key="'spdMin-' + idx"
+              >
+                ・{{ err }}
+              </p>
+              <p
+                v-for="(err, idx) in validationErrors.spdMax"
+                :key="'spdMax-' + idx"
+              >
+                ・{{ err }}
+              </p>
             </div>
           </div>
         </section>
@@ -187,7 +231,7 @@
             <button
               type="button"
               @click="executeSearch"
-              :disabled="isCalculating"
+              :disabled="isCalculating || hasValidationError"
               class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg
@@ -312,12 +356,12 @@
           </p>
         </div>
 
-        <!-- エラーメッセージ（パターン多すぎ警告） -->
+        <!-- エラーメッセージ（バリデーション・パターン多すぎ警告） -->
         <div
           v-else-if="errorMessage"
           class="bg-rose-500/10 border border-rose-500/40 rounded-xl p-4 text-sm text-rose-200 space-y-1.5 text-center my-4"
         >
-          <p class="font-bold text-rose-300">⚠️ 検索条件が広すぎます</p>
+          <p class="font-bold text-rose-300">⚠️ 検索を実行できません</p>
           <p>{{ errorMessage }}</p>
         </div>
 
