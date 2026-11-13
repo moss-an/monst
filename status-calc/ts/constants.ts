@@ -6,8 +6,8 @@
 export const MAX_FRUIT_SLOTS_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const DEFAULT_MAX_FRUIT_SLOTS = 3;
 
-export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 300];
-export const DEFAULT_PAGE_SIZE = 10;
+export const PAGE_SIZE_OPTIONS = [5, 20, 50, 100, 300];
+export const DEFAULT_PAGE_SIZE = 5;
 
 export const MAX_SEARCH_RESULTS_LIMIT = 3000; // 検索結果の最大許容数
 
