@@ -28,6 +28,12 @@ export default defineConfig({
       vue: "vue/dist/vue.esm-bundler.js",
     },
   },
+  server: {
+    host: true,
+    watch: {
+      usePolling: true,
+    },
+  },
   build: {
     outDir: "dist",
     rollupOptions: {
