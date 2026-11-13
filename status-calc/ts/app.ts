@@ -205,7 +205,7 @@ createApp({
             errorMessage.value = err.message;
             rawResults.value = [];
           } else if (err instanceof Logic.TooManyResultsError) {
-            errorMessage.value = `適合パターンが多すぎます（${CONSTANTS.MAX_SEARCH_RESULTS_LIMIT}件超）。条件が広すぎますので、攻撃力・スピードの範囲を狭めるか、等級を絞り込んでください。`;
+            errorMessage.value = `適合パターンが多すぎます（${CONSTANTS.MAX_SEARCH_RESULTS_LIMIT}件超）。条件を絞り込んでから再検索してください。`;
             rawResults.value = [];
           } else {
             console.error("計算エラー:", err);
