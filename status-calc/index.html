@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>モンスト ステータス計算ツール（わくわくの実逆算）</title>
+    <meta
+      name="description"
+      content="モンスターのステータスと許容範囲、上限数、モンスポット、等級から条件を満たすわくわくの実の組み合わせパターンを一覧検索します。"
+    />
+    <link rel="stylesheet" href="../src/input.css" />
+  </head>
+  <body
+    class="bg-slate-900 text-slate-100 min-h-screen py-4 px-3 sm:p-6 md:p-8 flex flex-col justify-between"
+  >
+    <div id="app" class="max-w-4xl mx-auto space-y-4 sm:space-y-6 w-full">
+      <header class="text-center">
+        <div class="mb-2 text-left">
+          <a
+            href="../"
+            class="text-xs text-slate-400 hover:text-amber-400 transition"
+            >← ツール一覧へ戻る</a
+          >
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-amber-400">
+          モンスト ステータス計算ツール
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+          目標ステータス（攻撃力・スピード）の許容範囲に収まるわくわくの実パターンを逆算します
+        </p>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <!-- 1. ステータス・許容範囲設定 -->
+        <section
+          class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
+        >
+          <h2
+            class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
+          >
+            1. ステータス・許容範囲設定
+          </h2>
+
+          <div
+            class="grid grid-cols-2 gap-3 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+          >
+            <div>
+              <label class="block text-xs text-slate-400"
+                >基礎攻撃力（ゲージ前等）</label
+              >
+              <input
+                type="text"
+                inputmode="numeric"
+                v-model="baseAtkInput"
+                placeholder="例: 30000"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400">基礎スピード</label>
+              <input
+                type="text"
+                inputmode="decimal"
+                v-model="baseSpdInput"
+                placeholder="例: 350.00"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
+              />
+            </div>
+          </div>
+
+          <div
+            class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+          >
+            <label class="block text-xs text-slate-400"
+              >攻撃力の許容範囲（空欄は制限なし）</label
+            >
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                inputmode="numeric"
+                v-model="atkMinInput"
+                placeholder="下限（例: 33000）"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+              />
+              <span class="text-slate-400">〜</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                v-model="atkMaxInput"
+                placeholder="上限（任意）"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+              />
+            </div>
+          </div>
+
+          <div
+            class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+          >
+            <label class="block text-xs text-slate-400"
+              >スピードの許容範囲（空欄は制限なし）</label
+            >
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                inputmode="decimal"
+                v-model="spdMinInput"
+                placeholder="下限（例: 380.00）"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+              />
+              <span class="text-slate-400">〜</span>
+              <input
+                type="text"
+                inputmode="decimal"
+                v-model="spdMaxInput"
+                placeholder="上限（任意）"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-amber-400"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. わくわくの実・モンスポット条件 -->
+        <section
+          class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4 flex flex-col justify-between"
+        >
+          <div class="space-y-4">
+            <h2
+              class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
+            >
+              2. わくわくの実・スポット条件
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm text-slate-400"
+                  >わくわくの実 上限数 (最大4個)</label
+                >
+                <select
+                  v-model.number="maxSlots"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
+                >
+                  <option v-for="n in slotOptions" :key="n" :value="n">
+                    最大 {{ n }} 個
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm text-slate-400">モンスポット</label>
+                <select
+                  v-model="selectedSpotId"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
+                >
+                  <option
+                    v-for="spot in spotOptions"
+                    :key="spot.id"
+                    :value="spot.id"
+                  >
+                    {{ spot.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-slate-400 mb-1.5"
+                >計算に使用する等級（複数選択可）</label
+              >
+              <div class="grid grid-cols-4 gap-2">
+                <button
+                  v-for="grade in fruitGrades"
+                  :key="grade"
+                  type="button"
+                  @click="toggleGrade(grade)"
+                  :class="
+                    selectedGrades.includes(grade)
+                      ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold'
+                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
+                  "
+                  class="py-2 px-2 rounded-lg border text-xs sm:text-sm transition text-center"
+                >
+                  {{ grade }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <button
+              type="button"
+              @click="executeSearch"
+              :disabled="isCalculating"
+              class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg v-if="isCalculating" class="animate-spin h-5 w-5 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ isCalculating ? '計算中...' : '条件で検索する' }}</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- 3. 検索結果一覧 -->
+      <section
+        class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
+      >
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700 pb-3"
+        >
+          <div>
+            <h2 class="text-lg font-semibold text-amber-300">
+              検索結果（適合パターン：
+              <span class="font-mono text-white">{{ totalCount.toLocaleString() }}</span>
+              件）
+            </h2>
+            <p v-if="hasSearched && totalCount > 0" class="text-xs text-slate-400 mt-0.5">
+              {{ displayRangeText }} を表示中（全 {{ totalPages.toLocaleString() }} ページ）
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400">表示件数:</span>
+              <select
+                v-model.number="pageSize"
+                class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-amber-400"
+              >
+                <option v-for="size in pageSizeOptions" :key="size" :value="size">
+                  {{ size }}件
+                </option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <span class="text-slate-400">並び替え:</span>
+              <button
+                type="button"
+                @click="changeSort('fruitCount')"
+                :class="sortKey === 'fruitCount' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
+                class="px-2 py-1 rounded border transition"
+              >
+                個数 {{ sortKey === 'fruitCount' ? (sortOrder === 'asc' ? '▲' : '▼') : '' }}
+              </button>
+              <button
+                type="button"
+                @click="changeSort('finalAtk')"
+                :class="sortKey === 'finalAtk' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
+                class="px-2 py-1 rounded border transition"
+              >
+                実攻撃力 {{ sortKey === 'finalAtk' ? (sortOrder === 'asc' ? '▲' : '▼') : '' }}
+              </button>
+              <button
+                type="button"
+                @click="changeSort('finalSpd')"
+                :class="sortKey === 'finalSpd' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
+                class="px-2 py-1 rounded border transition"
+              >
+                実スピード {{ sortKey === 'finalSpd' ? (sortOrder === 'asc' ? '▲' : '▼') : '' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 計算中 -->
+        <div v-if="isCalculating" class="text-center py-12 space-y-3">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-amber-400 border-t-transparent"></div>
+          <p class="text-sm text-slate-300">大量の組み合わせパターンを計算中...</p>
+        </div>
+
+        <!-- 未検索状態 -->
+        <div
+          v-else-if="!hasSearched"
+          class="text-center py-10 text-sm text-slate-400 space-y-2"
+        >
+          <p>まだ検索が行われていません。</p>
+          <p class="text-xs text-slate-500">上の「条件で検索する」ボタンを押すと、指定した条件に一致するわくわくの実の組み合わせを算出します。</p>
+        </div>
+
+        <!-- エラーメッセージ（パターン多すぎ警告） -->
+        <div
+          v-else-if="errorMessage"
+          class="bg-rose-500/10 border border-rose-500/40 rounded-xl p-4 text-sm text-rose-200 space-y-1.5 text-center my-4"
+        >
+          <p class="font-bold text-rose-300">⚠️ 検索条件が広すぎます</p>
+          <p>{{ errorMessage }}</p>
+        </div>
+
+        <div
+          v-if="hasSearched && !isCalculating && !errorMessage && totalCount === 0"
+          class="text-center py-8 text-sm text-slate-400"
+        >
+          条件に適合する組み合わせが見つかりませんでした。許容範囲や等級を見直してください。
+        </div>
+
+        <template v-if="hasSearched && !isCalculating && !errorMessage && totalCount > 0">
+          <!-- PC用コンパクトテーブル -->
+          <div class="hidden md:block overflow-x-auto max-h-[32rem] overflow-y-auto">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead>
+                <tr
+                  class="text-slate-400 border-b border-slate-700 sticky top-0 bg-slate-900 z-10"
+                >
+                  <th class="py-2.5 px-3 font-medium w-16 text-center">個数</th>
+                  <th class="py-2.5 px-3 font-medium">わくわくの実の組み合わせ</th>
+                  <th class="py-2.5 px-3 font-medium text-right">実攻撃力 (+加撃)</th>
+                  <th class="py-2.5 px-3 font-medium text-right">実スピード (+加速)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="row in paginatedResults"
+                  :key="row.id"
+                  class="border-b border-slate-700/60 hover:bg-slate-700/30 transition"
+                >
+                  <td class="py-2.5 px-3 text-center font-mono text-slate-300">
+                    {{ row.fruitCount }}個
+                  </td>
+                  <td class="py-2.5 px-3">
+                    <div
+                      v-if="row.fruits.length === 0"
+                      class="text-slate-400 italic text-xs"
+                    >
+                      わくわくの実なし（スポットのみ）
+                    </div>
+                    <div v-else class="flex flex-wrap gap-1">
+                      <span
+                        v-for="(f, idx) in row.fruits"
+                        :key="idx"
+                        class="inline-block bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-slate-200"
+                      >
+                        {{ f.name }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="py-2.5 px-3 text-right font-mono whitespace-nowrap">
+                    <div class="font-bold text-amber-300">{{ row.finalAtk.toLocaleString() }}</div>
+                    <div class="text-[11px] text-emerald-400">+{{ row.totalAtkBonus.toLocaleString() }}</div>
+                  </td>
+                  <td class="py-2.5 px-3 text-right font-mono whitespace-nowrap">
+                    <div class="font-bold text-amber-300">{{ row.finalSpd.toFixed(2) }}</div>
+                    <div class="text-[11px] text-sky-400">+{{ row.totalSpdBonus.toFixed(2) }}</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- スマホ用カードUI -->
+          <div class="md:hidden space-y-3 max-h-[34rem] overflow-y-auto pr-1">
+            <div
+              v-for="row in paginatedResults"
+              :key="row.id"
+              class="bg-slate-900/70 border border-slate-700/80 rounded-lg p-3.5 space-y-2.5 hover:border-amber-500/40 transition"
+            >
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="inline-block bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-2 py-0.5 rounded font-mono font-bold">
+                  {{ row.fruitCount }}個
+                </span>
+                <div class="flex items-center gap-3 text-xs font-mono">
+                  <div>
+                    <span class="text-slate-400 text-[10px]">攻撃力:</span>
+                    <span class="text-amber-300 font-bold ml-1">{{ row.finalAtk.toLocaleString() }}</span>
+                    <span class="text-emerald-400 text-[10px] ml-0.5">(+{{ row.totalAtkBonus.toLocaleString() }})</span>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 text-[10px]">速度:</span>
+                    <span class="text-amber-300 font-bold ml-1">{{ row.finalSpd.toFixed(2) }}</span>
+                    <span class="text-sky-400 text-[10px] ml-0.5">(+{{ row.totalSpdBonus.toFixed(2) }})</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p class="text-[11px] text-slate-400 mb-1">組み合わせ:</p>
+                <div
+                  v-if="row.fruits.length === 0"
+                  class="text-slate-400 italic text-xs"
+                >
+                  わくわくの実なし（スポットのみ）
+                </div>
+                <div v-else class="flex flex-wrap gap-1">
+                  <span
+                    v-for="(f, idx) in row.fruits"
+                    :key="idx"
+                    class="inline-block bg-slate-800 border border-slate-700 rounded px-2 py-1 text-[11px] text-slate-200"
+                  >
+                    {{ f.name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ページネーション -->
+          <div
+            v-if="totalPages > 1"
+            class="flex items-center justify-between pt-3 border-t border-slate-700/60 text-xs"
+          >
+            <div class="flex items-center gap-1.5">
+              <button
+                type="button"
+                @click="goToPage(1)"
+                :disabled="currentPage <= 1"
+                class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
+              >
+                « 最初
+              </button>
+              <button
+                type="button"
+                @click="goToPage(currentPage - 1)"
+                :disabled="currentPage <= 1"
+                class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
+              >
+                ‹ 前へ
+              </button>
+            </div>
+
+            <span class="font-mono text-slate-300">
+              {{ currentPage.toLocaleString() }} / {{ totalPages.toLocaleString() }} ページ
+            </span>
+
+            <div class="flex items-center gap-1.5">
+              <button
+                type="button"
+                @click="goToPage(currentPage + 1)"
+                :disabled="currentPage >= totalPages"
+                class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
+              >
+                次へ ›
+              </button>
+              <button
+                type="button"
+                @click="goToPage(totalPages)"
+                :disabled="currentPage >= totalPages"
+                class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
+              >
+                最後 »
+              </button>
+            </div>
+          </div>
+        </template>
+      </section>
+    </div>
+
+    <footer
+      class="mt-8 pt-4 pb-2 border-t border-slate-800 text-center text-xs text-slate-400 space-y-1"
+    >
+      <p>
+        <a
+          href="https://github.com/moss-an/monst/issues/new?title=%E3%80%90status-calc%E3%80%91"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-slate-400 hover:text-slate-200 hover:underline transition inline-flex items-center gap-1"
+        >
+          改善要望・不具合報告はこちら（GitHub Issue）
+        </a>
+      </p>
+    </footer>
+
+    <script type="module" src="./ts/app.ts"></script>
+  </body>
+</html>
