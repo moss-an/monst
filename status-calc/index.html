@@ -192,9 +192,26 @@
               :disabled="isCalculating"
               class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg v-if="isCalculating" class="animate-spin h-5 w-5 text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                v-if="isCalculating"
+                class="animate-spin h-5 w-5 text-slate-950"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               <span>{{ isCalculating ? '計算中...' : '条件で検索する' }}</span>
             </button>
@@ -212,11 +229,17 @@
           <div>
             <h2 class="text-lg font-semibold text-amber-300">
               検索結果（適合パターン：
-              <span class="font-mono text-white">{{ totalCount.toLocaleString() }}</span>
+              <span class="font-mono text-white"
+                >{{ totalCount.toLocaleString() }}</span
+              >
               件）
             </h2>
-            <p v-if="hasSearched && totalCount > 0" class="text-xs text-slate-400 mt-0.5">
-              {{ displayRangeText }} を表示中（全 {{ totalPages.toLocaleString() }} ページ）
+            <p
+              v-if="hasSearched && totalCount > 0"
+              class="text-xs text-slate-400 mt-0.5"
+            >
+              {{ displayRangeText }} を表示中（全 {{ totalPages.toLocaleString()
+              }} ページ）
             </p>
           </div>
 
@@ -227,7 +250,11 @@
                 v-model.number="pageSize"
                 class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-amber-400"
               >
-                <option v-for="size in pageSizeOptions" :key="size" :value="size">
+                <option
+                  v-for="size in pageSizeOptions"
+                  :key="size"
+                  :value="size"
+                >
                   {{ size }}件
                 </option>
               </select>
@@ -241,7 +268,8 @@
                 :class="sortKey === 'fruitCount' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
                 class="px-2 py-1 rounded border transition"
               >
-                個数 {{ sortKey === 'fruitCount' ? (sortOrder === 'asc' ? '▲' : '▼') : '' }}
+                個数 {{ sortKey === 'fruitCount' ? (sortOrder === 'asc' ? '▲' :
+                '▼') : '' }}
               </button>
               <button
                 type="button"
@@ -249,7 +277,8 @@
                 :class="sortKey === 'finalAtk' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
                 class="px-2 py-1 rounded border transition"
               >
-                実攻撃力 {{ sortKey === 'finalAtk' ? (sortOrder === 'asc' ? '▲' : '▼') : '' }}
+                実攻撃力 {{ sortKey === 'finalAtk' ? (sortOrder === 'asc' ? '▲'
+                : '▼') : '' }}
               </button>
               <button
                 type="button"
@@ -257,7 +286,8 @@
                 :class="sortKey === 'finalSpd' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
                 class="px-2 py-1 rounded border transition"
               >
-                実スピード {{ sortKey === 'finalSpd' ? (sortOrder === 'asc' ? '▲' : '▼') : '' }}
+                実スピード {{ sortKey === 'finalSpd' ? (sortOrder === 'asc' ?
+                '▲' : '▼') : '' }}
               </button>
             </div>
           </div>
@@ -265,8 +295,12 @@
 
         <!-- 計算中 -->
         <div v-if="isCalculating" class="text-center py-12 space-y-3">
-          <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-amber-400 border-t-transparent"></div>
-          <p class="text-sm text-slate-300">大量の組み合わせパターンを計算中...</p>
+          <div
+            class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-amber-400 border-t-transparent"
+          ></div>
+          <p class="text-sm text-slate-300">
+            大量の組み合わせパターンを計算中...
+          </p>
         </div>
 
         <!-- 未検索状態 -->
@@ -275,7 +309,9 @@
           class="text-center py-10 text-sm text-slate-400 space-y-2"
         >
           <p>まだ検索が行われていません。</p>
-          <p class="text-xs text-slate-500">上の「条件で検索する」ボタンを押すと、指定した条件に一致するわくわくの実の組み合わせを算出します。</p>
+          <p class="text-xs text-slate-500">
+            上の「条件で検索する」ボタンを押すと、指定した条件に一致するわくわくの実の組み合わせを算出します。
+          </p>
         </div>
 
         <!-- エラーメッセージ（パターン多すぎ警告） -->
@@ -294,18 +330,28 @@
           条件に適合する組み合わせが見つかりませんでした。許容範囲や等級を見直してください。
         </div>
 
-        <template v-if="hasSearched && !isCalculating && !errorMessage && totalCount > 0">
+        <template
+          v-if="hasSearched && !isCalculating && !errorMessage && totalCount > 0"
+        >
           <!-- PC用コンパクトテーブル -->
-          <div class="hidden md:block overflow-x-auto max-h-[32rem] overflow-y-auto">
+          <div
+            class="hidden md:block overflow-x-auto max-h-[32rem] overflow-y-auto"
+          >
             <table class="w-full text-left border-collapse text-sm">
               <thead>
                 <tr
                   class="text-slate-400 border-b border-slate-700 sticky top-0 bg-slate-900 z-10"
                 >
                   <th class="py-2.5 px-3 font-medium w-16 text-center">個数</th>
-                  <th class="py-2.5 px-3 font-medium">わくわくの実の組み合わせ</th>
-                  <th class="py-2.5 px-3 font-medium text-right">実攻撃力 (+加撃)</th>
-                  <th class="py-2.5 px-3 font-medium text-right">実スピード (+加速)</th>
+                  <th class="py-2.5 px-3 font-medium">
+                    わくわくの実の組み合わせ
+                  </th>
+                  <th class="py-2.5 px-3 font-medium text-right">
+                    実攻撃力 (+加撃)
+                  </th>
+                  <th class="py-2.5 px-3 font-medium text-right">
+                    実スピード (+加速)
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -334,13 +380,25 @@
                       </span>
                     </div>
                   </td>
-                  <td class="py-2.5 px-3 text-right font-mono whitespace-nowrap">
-                    <div class="font-bold text-amber-300">{{ row.finalAtk.toLocaleString() }}</div>
-                    <div class="text-[11px] text-emerald-400">+{{ row.totalAtkBonus.toLocaleString() }}</div>
+                  <td
+                    class="py-2.5 px-3 text-right font-mono whitespace-nowrap"
+                  >
+                    <div class="font-bold text-amber-300">
+                      {{ row.finalAtk.toLocaleString() }}
+                    </div>
+                    <div class="text-[11px] text-emerald-400">
+                      +{{ row.totalAtkBonus.toLocaleString() }}
+                    </div>
                   </td>
-                  <td class="py-2.5 px-3 text-right font-mono whitespace-nowrap">
-                    <div class="font-bold text-amber-300">{{ row.finalSpd.toFixed(2) }}</div>
-                    <div class="text-[11px] text-sky-400">+{{ row.totalSpdBonus.toFixed(2) }}</div>
+                  <td
+                    class="py-2.5 px-3 text-right font-mono whitespace-nowrap"
+                  >
+                    <div class="font-bold text-amber-300">
+                      {{ row.finalSpd.toFixed(2) }}
+                    </div>
+                    <div class="text-[11px] text-sky-400">
+                      +{{ row.totalSpdBonus.toFixed(2) }}
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -354,20 +412,32 @@
               :key="row.id"
               class="bg-slate-900/70 border border-slate-700/80 rounded-lg p-3.5 space-y-2.5 hover:border-amber-500/40 transition"
             >
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span class="inline-block bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-2 py-0.5 rounded font-mono font-bold">
+              <div
+                class="flex items-center justify-between border-b border-slate-800 pb-2"
+              >
+                <span
+                  class="inline-block bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-2 py-0.5 rounded font-mono font-bold"
+                >
                   {{ row.fruitCount }}個
                 </span>
                 <div class="flex items-center gap-3 text-xs font-mono">
                   <div>
                     <span class="text-slate-400 text-[10px]">攻撃力:</span>
-                    <span class="text-amber-300 font-bold ml-1">{{ row.finalAtk.toLocaleString() }}</span>
-                    <span class="text-emerald-400 text-[10px] ml-0.5">(+{{ row.totalAtkBonus.toLocaleString() }})</span>
+                    <span class="text-amber-300 font-bold ml-1"
+                      >{{ row.finalAtk.toLocaleString() }}</span
+                    >
+                    <span class="text-emerald-400 text-[10px] ml-0.5"
+                      >(+{{ row.totalAtkBonus.toLocaleString() }})</span
+                    >
                   </div>
                   <div>
                     <span class="text-slate-400 text-[10px]">速度:</span>
-                    <span class="text-amber-300 font-bold ml-1">{{ row.finalSpd.toFixed(2) }}</span>
-                    <span class="text-sky-400 text-[10px] ml-0.5">(+{{ row.totalSpdBonus.toFixed(2) }})</span>
+                    <span class="text-amber-300 font-bold ml-1"
+                      >{{ row.finalSpd.toFixed(2) }}</span
+                    >
+                    <span class="text-sky-400 text-[10px] ml-0.5"
+                      >(+{{ row.totalSpdBonus.toFixed(2) }})</span
+                    >
                   </div>
                 </div>
               </div>
@@ -418,7 +488,8 @@
             </div>
 
             <span class="font-mono text-slate-300">
-              {{ currentPage.toLocaleString() }} / {{ totalPages.toLocaleString() }} ページ
+              {{ currentPage.toLocaleString() }} / {{
+              totalPages.toLocaleString() }} ページ
             </span>
 
             <div class="flex items-center gap-1.5">

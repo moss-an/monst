@@ -184,13 +184,58 @@ export const ALL_FRUIT_SPECS: FruitSpec[] = (() => {
 
 export const SPOT_OPTIONS: SpotOption[] = [
   { id: "none", label: "なし（+0 / +0）", atkBonus: 0, spdBonus: 0 },
-  { id: "sub_atk", label: "サブスポット：剣（攻撃+1000）", atkBonus: 1000, spdBonus: 0 },
-  { id: "main_atk", label: "メインスポット：剣（攻撃+1500）", atkBonus: 1500, spdBonus: 0 },
-  { id: "main_plus_atk", label: "メインスポット+：剣（攻撃+2000）", atkBonus: 2000, spdBonus: 0 },
-  { id: "sub_spd", label: "サブスポット：靴（スピード+15.0）", atkBonus: 0, spdBonus: 15.0 },
-  { id: "main_spd", label: "メインスポット：靴（スピード+22.5）", atkBonus: 0, spdBonus: 22.5 },
-  { id: "main_plus_spd", label: "メインスポット+：靴（スピード+30.0）", atkBonus: 0, spdBonus: 30.0 },
-  { id: "all_sub", label: "サブスポット：全ステータス（攻撃+500 / 速度+7.5）", atkBonus: 500, spdBonus: 7.5 },
-  { id: "all_main", label: "メインスポット：全ステータス（攻撃+750 / 速度+11.2）", atkBonus: 750, spdBonus: 11.2 },
-  { id: "all_main_plus", label: "メインスポット+：全ステータス（攻撃+1000 / 速度+15.0）", atkBonus: 1000, spdBonus: 15.0 },
+  {
+    id: "sub_atk",
+    label: "サブスポット：剣（攻撃+1000）",
+    atkBonus: 1000,
+    spdBonus: 0,
+  },
+  {
+    id: "main_atk",
+    label: "メインスポット：剣（攻撃+1500）",
+    atkBonus: 1500,
+    spdBonus: 0,
+  },
+  {
+    id: "main_plus_atk",
+    label: "メインスポット+：剣（攻撃+2000）",
+    atkBonus: 2000,
+    spdBonus: 0,
+  },
+  {
+    id: "sub_spd",
+    label: "サブスポット：靴（スピード+15.0）",
+    atkBonus: 0,
+    spdBonus: 15.0,
+  },
+  {
+    id: "main_spd",
+    label: "メインスポット：靴（スピード+22.5）",
+    atkBonus: 0,
+    spdBonus: 22.5,
+  },
+  {
+    id: "main_plus_spd",
+    label: "メインスポット+：靴（スピード+30.0）",
+    atkBonus: 0,
+    spdBonus: 30.0,
+  },
+  {
+    id: "all_sub",
+    label: "サブスポット：全ステータス（攻撃+500 / 速度+7.5）",
+    atkBonus: 500,
+    spdBonus: 7.5,
+  },
+  {
+    id: "all_main",
+    label: "メインスポット：全ステータス（攻撃+750 / 速度+11.2）",
+    atkBonus: 750,
+    spdBonus: 11.2,
+  },
+  {
+    id: "all_main_plus",
+    label: "メインスポット+：全ステータス（攻撃+1000 / 速度+15.0）",
+    atkBonus: 1000,
+    spdBonus: 15.0,
+  },
 ];

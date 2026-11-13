@@ -1,6 +1,6 @@
 /**
  * @file logic.ts
- * @description わくわくの実組み合わせ探索・ステータス計算ロジック（100件超え早期打ち切り版）
+ * @description わくわくの実組み合わせ探索・ステータス計算ロジック
  */
 
 import * as CONSTANTS from "./constants";
@@ -59,6 +59,11 @@ export function findMatchingCombinations(
     return [];
   }
 
+  const hasAtkCondition =
+    (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
+  const hasSpdCondition =
+    (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
+
   const candidateFruits: CONSTANTS.FruitSpec[] = [];
   let hasNoneFruit = false;
 
@@ -74,9 +79,19 @@ export function findMatchingCombinations(
       }
       continue;
     }
-    if (allowedGrades.includes(spec.grade)) {
-      candidateFruits.push(spec);
+
+    if (!allowedGrades.includes(spec.grade)) {
+      continue;
     }
+
+    if (hasAtkCondition && !hasSpdCondition && spec.atkBonus === 0) {
+      continue;
+    }
+    if (hasSpdCondition && !hasAtkCondition && spec.spdBonus === 0) {
+      continue;
+    }
+
+    candidateFruits.push(spec);
   }
 
   const results: FruitCombinationResult[] = [];
@@ -84,7 +99,11 @@ export function findMatchingCombinations(
   const current: CONSTANTS.FruitSpec[] = [];
   const MAX_LIMIT = CONSTANTS.MAX_SEARCH_RESULTS_LIMIT;
 
-  const backtrack = (startIndex: number, currentFruitAtk: number, currentFruitSpd: number) => {
+  const backtrack = (
+    startIndex: number,
+    currentFruitAtk: number,
+    currentFruitSpd: number,
+  ) => {
     const totalAtkBonus = currentFruitAtk + spot.atkBonus;
     const totalSpdBonus = roundSpeed(currentFruitSpd + spot.spdBonus);
     const finalAtk = baseAtk + totalAtkBonus;

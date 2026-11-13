@@ -150,7 +150,10 @@ createApp({
     const displayRangeText = computed<string>(() => {
       if (totalCount.value === 0) return "0件";
       const start = (currentPage.value - 1) * pageSize.value + 1;
-      const end = Math.min(currentPage.value * pageSize.value, totalCount.value);
+      const end = Math.min(
+        currentPage.value * pageSize.value,
+        totalCount.value,
+      );
       return `${start.toLocaleString()}〜${end.toLocaleString()}件`;
     });
 
