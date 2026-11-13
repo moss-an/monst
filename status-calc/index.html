@@ -265,6 +265,7 @@
 
       <!-- 3. 検索結果一覧 -->
       <section
+        ref="resultSection"
         class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
       >
         <div
@@ -379,6 +380,7 @@
         >
           <!-- PC用コンパクトテーブル -->
           <div
+            ref="pcScrollContainer"
             class="hidden md:block overflow-x-auto max-h-[32rem] overflow-y-auto"
           >
             <table class="w-full text-left border-collapse text-sm">
@@ -450,7 +452,10 @@
           </div>
 
           <!-- スマホ用カードUI -->
-          <div class="md:hidden space-y-2.5 max-h-[34rem] overflow-y-auto pr-1">
+          <div
+            ref="mobileScrollContainer"
+            class="md:hidden space-y-2.5 max-h-[34rem] overflow-y-auto pr-1"
+          >
             <div
               v-for="row in paginatedResults"
               :key="row.id"
