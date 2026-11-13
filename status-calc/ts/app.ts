@@ -23,13 +23,13 @@ createApp({
     const maxSpdInputValue = CONSTANTS.MAX_SPD_INPUT_VALUE;
     const maxSpdDecDigits = CONSTANTS.MAX_SPD_DEC_DIGITS;
 
-    const baseAtkInput = ref<string>("30000");
-    const baseSpdInput = ref<string>("350.00");
+    const baseAtkInput = ref<string>(CONSTANTS.DEFAULT_BASE_ATK_STR);
+    const baseSpdInput = ref<string>(CONSTANTS.DEFAULT_BASE_SPD_STR);
 
-    const atkMinInput = ref<string>("33000");
-    const atkMaxInput = ref<string>("");
-    const spdMinInput = ref<string>("");
-    const spdMaxInput = ref<string>("");
+    const atkMinInput = ref<string>(CONSTANTS.DEFAULT_ATK_MIN_STR);
+    const atkMaxInput = ref<string>(CONSTANTS.DEFAULT_ATK_MAX_STR);
+    const spdMinInput = ref<string>(CONSTANTS.DEFAULT_SPD_MIN_STR);
+    const spdMaxInput = ref<string>(CONSTANTS.DEFAULT_SPD_MAX_STR);
 
     const maxSlots = ref<number>(CONSTANTS.DEFAULT_MAX_FRUIT_SLOTS);
     const selectedSpotId = ref<string>(spotOptions[0].id);
@@ -205,7 +205,7 @@ createApp({
             errorMessage.value = err.message;
             rawResults.value = [];
           } else if (err instanceof Logic.TooManyResultsError) {
-            errorMessage.value = `適合パターンが多すぎます（${CONSTANTS.MAX_SEARCH_RESULTS_LIMIT}件超）。条件が広すぎますので、攻撃力・スピードの範囲を狭めるか、等級を絞り込んでください。`;
+            errorMessage.value = `適合パターンが多すぎます（${CONSTANTS.MAX_SEARCH_RESULTS_LIMIT}件超）。条件を絞り込んでから再検索してください。`;
             rawResults.value = [];
           } else {
             console.error("計算エラー:", err);
