@@ -1,6 +1,6 @@
 /**
  * @file app.ts
- * @description ステータス逆算・わくわくの実組み合わせ検索ツールのUI状態制御
+ * @description UIの状態制御
  */
 
 import { createApp, ref, computed, watch } from "vue";
