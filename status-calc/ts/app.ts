@@ -47,6 +47,11 @@ createApp({
     const currentPage = ref<number>(1);
     const pageSize = ref<number>(CONSTANTS.DEFAULT_PAGE_SIZE);
 
+    // スクロール制御用の参照
+    const resultSection = ref<HTMLElement | null>(null);
+    const pcScrollContainer = ref<HTMLElement | null>(null);
+    const mobileScrollContainer = ref<HTMLElement | null>(null);
+
     const sanitizeAtkString = (val: string): string => {
       let cleaned = val.replace(/[^0-9]/g, "");
       const maxDigits = String(maxAtkInputValue).length + 1;
@@ -277,6 +282,20 @@ createApp({
       } else {
         currentPage.value = page;
       }
+
+      // ページ切り替え時にスクロール位置を最上部にリセット
+      if (pcScrollContainer.value) {
+        pcScrollContainer.value.scrollTop = 0;
+      }
+      if (mobileScrollContainer.value) {
+        mobileScrollContainer.value.scrollTop = 0;
+      }
+      if (resultSection.value) {
+        resultSection.value.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     };
 
     const changeSort = (key: SortKey): void => {
@@ -324,6 +343,9 @@ createApp({
       isCalculating,
       hasSearched,
       errorMessage,
+      resultSection,
+      pcScrollContainer,
+      mobileScrollContainer,
     };
   },
 }).mount("#app");
