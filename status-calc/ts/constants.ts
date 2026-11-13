@@ -3,7 +3,7 @@
  * @description アプリケーションの共通定数・エラーメッセージ定義
  */
 
-export const MAX_FRUIT_SLOTS_OPTIONS = [1, 2, 3, 4];
+export const MAX_FRUIT_SLOTS_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 export const DEFAULT_MAX_FRUIT_SLOTS = 3;
 
 export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
