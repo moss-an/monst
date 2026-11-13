@@ -1,6 +1,6 @@
 /**
  * @file logic.ts
- * @description わくわくの実組み合わせ探索・ステータス計算ロジック（100件超え早期打ち切り版）
+ * @description わくわくの実組み合わせ探索・ステータス計算ロジック
  */
 
 import * as CONSTANTS from "./constants";
@@ -59,6 +59,13 @@ export function findMatchingCombinations(
     return [];
   }
 
+  // 【v17スマート判定】「実質的に意味のある制限」がかかっているかを判定
+  // 下限が基礎値を厳に上回っている場合、または上限が設定されている場合のみ「有効な条件」とみなす
+  const hasAtkCondition =
+    (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
+  const hasSpdCondition =
+    (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
+
   const candidateFruits: CONSTANTS.FruitSpec[] = [];
   let hasNoneFruit = false;
 
@@ -74,9 +81,20 @@ export function findMatchingCombinations(
       }
       continue;
     }
-    if (allowedGrades.includes(spec.grade)) {
-      candidateFruits.push(spec);
+
+    if (!allowedGrades.includes(spec.grade)) {
+      continue;
     }
+
+    // 【v17最適化】実質的に有効な条件が片方のみの場合、影響しない実を探索候補から自動除外
+    if (hasAtkCondition && !hasSpdCondition && spec.atkBonus === 0) {
+      continue;
+    }
+    if (hasSpdCondition && !hasAtkCondition && spec.spdBonus === 0) {
+      continue;
+    }
+
+    candidateFruits.push(spec);
   }
 
   const results: FruitCombinationResult[] = [];
@@ -84,7 +102,11 @@ export function findMatchingCombinations(
   const current: CONSTANTS.FruitSpec[] = [];
   const MAX_LIMIT = CONSTANTS.MAX_SEARCH_RESULTS_LIMIT;
 
-  const backtrack = (startIndex: number, currentFruitAtk: number, currentFruitSpd: number) => {
+  const backtrack = (
+    startIndex: number,
+    currentFruitAtk: number,
+    currentFruitSpd: number,
+  ) => {
     const totalAtkBonus = currentFruitAtk + spot.atkBonus;
     const totalSpdBonus = roundSpeed(currentFruitSpd + spot.spdBonus);
     const finalAtk = baseAtk + totalAtkBonus;
