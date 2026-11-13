@@ -37,14 +37,14 @@ export interface ValidationErrors {
 }
 
 export class TooManyResultsError extends Error {
-  constructor(message: string = "適合パターンが多すぎます") {
+  constructor(message: string = CONSTANTS.ERROR_MSG_TOO_MANY_RESULTS) {
     super(message);
     this.name = "TooManyResultsError";
   }
 }
 
 export class InvalidConditionError extends Error {
-  constructor(message: string = "入力条件に誤りがあります") {
+  constructor(message: string = CONSTANTS.ERROR_MSG_INVALID_CONDITION) {
     super(message);
     this.name = "InvalidConditionError";
   }
@@ -72,34 +72,34 @@ export function validateSearchCondition(params: {
 
   if (atkMin !== null) {
     if (atkMin < baseAtk) {
-      errors.atkMin.push("攻撃下限値 ≧ 基礎攻撃力 に設定してください");
+      errors.atkMin.push(CONSTANTS.ERROR_MSG_ATK_MIN_LOWER);
     }
   }
 
   if (atkMax !== null) {
     if (atkMax < baseAtk) {
-      errors.atkMax.push("攻撃上限値 ≧ 基礎攻撃力 に設定してください");
+      errors.atkMax.push(CONSTANTS.ERROR_MSG_ATK_MAX_LOWER);
     }
   }
 
   if (atkMin !== null && atkMax !== null && atkMin > atkMax) {
-    errors.atkMin.push("攻撃下限値 ≦ 攻撃上限値 に設定してください");
+    errors.atkMin.push(CONSTANTS.ERROR_MSG_ATK_MIN_MAX);
   }
 
   if (spdMin !== null) {
     if (spdMin < baseSpd) {
-      errors.spdMin.push("スピード下限値 ≧ 基礎スピード に設定してください");
+      errors.spdMin.push(CONSTANTS.ERROR_MSG_SPD_MIN_LOWER);
     }
   }
 
   if (spdMax !== null) {
     if (spdMax < baseSpd) {
-      errors.spdMax.push("スピード上限値 ≧ 基礎スピード に設定してください");
+      errors.spdMax.push(CONSTANTS.ERROR_MSG_SPD_MAX_LOWER);
     }
   }
 
   if (spdMin !== null && spdMax !== null && spdMin > spdMax) {
-    errors.spdMin.push("スピード下限値 ≦ スピード上限値 に設定してください");
+    errors.spdMin.push(CONSTANTS.ERROR_MSG_SPD_MIN_MAX);
   }
 
   return errors;
@@ -160,12 +160,12 @@ export function findMatchingCombinations(
   let hasNoneFruit = false;
 
   for (const spec of CONSTANTS.ALL_FRUIT_SPECS) {
-    if (spec.category === "その他（加撃・加速なし）") {
+    if (spec.category === CONSTANTS.OTHER_CATEGORY_NAME) {
       if (!hasNoneFruit) {
         candidateFruits.push({
           ...spec,
-          id: "none_slot",
-          name: "空き枠 / 加撃・加速なし",
+          id: CONSTANTS.NONE_SLOT_ID,
+          name: CONSTANTS.NONE_SLOT_NAME,
         });
         hasNoneFruit = true;
       }
@@ -213,7 +213,7 @@ export function findMatchingCombinations(
 
     if (isAtkOk && isSpdOk) {
       const effectiveFruits = current.filter(
-        (f) => f.category !== "その他（加撃・加速なし）",
+        (f) => f.category !== CONSTANTS.OTHER_CATEGORY_NAME,
       );
       const signature =
         effectiveFruits.length === 0
@@ -248,7 +248,7 @@ export function findMatchingCombinations(
       const nextFruit = candidateFruits[i];
 
       if (
-        nextFruit.category !== "その他（加撃・加速なし）" &&
+        nextFruit.category !== CONSTANTS.OTHER_CATEGORY_NAME &&
         current.some((f) => f.category === nextFruit.category)
       ) {
         continue;

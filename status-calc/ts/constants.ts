@@ -58,6 +58,34 @@ export const MAX_ATK_INPUT_VALUE = 9999999; // 攻撃力（基礎・下限・上
 export const MAX_SPD_INPUT_VALUE = 9999; // スピード（基礎・下限・上限）の入力上限
 export const MAX_SPD_DEC_DIGITS = 2; // スピードの小数部桁数上限
 
+// デフォルト入力値
+export const DEFAULT_BASE_ATK_STR = "30000";
+export const DEFAULT_BASE_SPD_STR = "350.00";
+export const DEFAULT_ATK_MIN_STR = "33000";
+export const DEFAULT_ATK_MAX_STR = "";
+export const DEFAULT_SPD_MIN_STR = "";
+export const DEFAULT_SPD_MAX_STR = "";
+
+// 特殊スロット・メッセージ定義
+export const NONE_SLOT_ID = "none_slot";
+export const NONE_SLOT_NAME = "空き枠 / 加撃・加速なし";
+export const OTHER_CATEGORY_NAME = "その他（加撃・加速なし）";
+
+export const ERROR_MSG_TOO_MANY_RESULTS = "適合パターンが多すぎます";
+export const ERROR_MSG_INVALID_CONDITION = "入力条件に誤りがあります";
+export const ERROR_MSG_ATK_MIN_LOWER =
+  "攻撃下限値 ≧ 基礎攻撃力 に設定してください";
+export const ERROR_MSG_ATK_MAX_LOWER =
+  "攻撃上限値 ≧ 基礎攻撃力 に設定してください";
+export const ERROR_MSG_ATK_MIN_MAX =
+  "攻撃下限値 ≦ 攻撃上限値 に設定してください";
+export const ERROR_MSG_SPD_MIN_LOWER =
+  "スピード下限値 ≧ 基礎スピード に設定してください";
+export const ERROR_MSG_SPD_MAX_LOWER =
+  "スピード上限値 ≧ 基礎スピード に設定してください";
+export const ERROR_MSG_SPD_MIN_MAX =
+  "スピード下限値 ≦ スピード上限値 に設定してください";
+
 const GRADE_VALUES: Record<
   FruitCategory,
   Record<FruitGrade, { atk: number; spd: number }>
@@ -167,8 +195,8 @@ export const ALL_FRUIT_SPECS: FruitSpec[] = (() => {
     FRUIT_GRADES.forEach((grade) => {
       const bonus = GRADE_VALUES[category][grade];
       const name =
-        category === "その他（加撃・加速なし）"
-          ? "その他（加撃/加速なし）"
+        category === OTHER_CATEGORY_NAME
+          ? OTHER_CATEGORY_NAME
           : `${category}（${grade}）`;
       list.push({
         id: `${category}_${grade}`,
