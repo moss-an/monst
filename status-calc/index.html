@@ -206,21 +206,40 @@
               <label class="block text-sm text-slate-400 mb-1.5"
                 >実の等級</label
               >
-              <div class="grid grid-cols-4 gap-2">
-                <button
-                  v-for="grade in fruitGrades"
-                  :key="grade"
-                  type="button"
-                  @click="toggleGrade(grade)"
-                  :class="
-                    selectedGrades.includes(grade)
-                      ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold'
-                      : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
-                  "
-                  class="py-2 px-2 rounded-lg border text-xs sm:text-sm transition text-center"
-                >
-                  {{ grade }}
-                </button>
+              <div class="space-y-2">
+                <div class="grid grid-cols-4 gap-2">
+                  <button
+                    v-for="grade in fruitGrades.slice(0, 4)"
+                    :key="grade"
+                    type="button"
+                    @click="toggleGrade(grade)"
+                    :class="
+                      selectedGrades.includes(grade)
+                        ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold'
+                        : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
+                    "
+                    class="py-2 px-1 rounded-lg border text-xs sm:text-sm transition text-center"
+                  >
+                    {{ grade }}
+                  </button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                  <button
+                    v-for="grade in fruitGrades.slice(4, 7)"
+                    :key="grade"
+                    type="button"
+                    @click="toggleGrade(grade)"
+                    :class="
+                      selectedGrades.includes(grade)
+                        ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold'
+                        : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500'
+                    "
+                    class="py-2 px-1 rounded-lg border text-xs sm:text-sm transition text-center"
+                  >
+                    {{ grade }}
+                  </button>
+                  <div aria-hidden="true"></div>
+                </div>
               </div>
             </div>
 

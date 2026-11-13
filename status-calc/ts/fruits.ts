@@ -3,7 +3,14 @@
  * @description わくわくの実のマスタ定義と型
  */
 
-export type FruitGrade = "特級" | "特級M" | "特級L" | "特級EL";
+export type FruitGrade =
+  | "1級"
+  | "1級M"
+  | "1級L"
+  | "特級"
+  | "特級M"
+  | "特級L"
+  | "特級EL";
 
 export type FruitGroup = "同族" | "撃種" | "戦型" | "その他";
 
@@ -25,6 +32,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "同族・加撃",
     group: "同族",
     grades: {
+      "1級": { atk: 500, spd: 0 },
+      "1級M": { atk: 750, spd: 0 },
+      "1級L": { atk: 1000, spd: 0 },
       特級: { atk: 2000, spd: 0 },
       特級M: { atk: 2500, spd: 0 },
       特級L: { atk: 3000, spd: 0 },
@@ -35,6 +45,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "同族・加撃速",
     group: "同族",
     grades: {
+      "1級": { atk: 400, spd: 5.4 },
+      "1級M": { atk: 600, spd: 6.6 },
+      "1級L": { atk: 800, spd: 8.0 },
       特級: { atk: 1200, spd: 16.0 },
       特級M: { atk: 1600, spd: 21.2 },
       特級L: { atk: 2000, spd: 26.6 },
@@ -45,6 +58,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "同族・加命撃",
     group: "同族",
     grades: {
+      "1級": { atk: 400, spd: 0 },
+      "1級M": { atk: 600, spd: 0 },
+      "1級L": { atk: 800, spd: 0 },
       特級: { atk: 1200, spd: 0 },
       特級M: { atk: 1600, spd: 0 },
       特級L: { atk: 2000, spd: 0 },
@@ -55,6 +71,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "同族・加速",
     group: "同族",
     grades: {
+      "1級": { atk: 0, spd: 6.6 },
+      "1級M": { atk: 0, spd: 8.3 },
+      "1級L": { atk: 0, spd: 10.0 },
       特級: { atk: 0, spd: 20.0 },
       特級M: { atk: 0, spd: 26.6 },
       特級L: { atk: 0, spd: 33.3 },
@@ -65,6 +84,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "同族・加速命",
     group: "同族",
     grades: {
+      "1級": { atk: 0, spd: 5.4 },
+      "1級M": { atk: 0, spd: 6.6 },
+      "1級L": { atk: 0, spd: 8.0 },
       特級: { atk: 0, spd: 16.0 },
       特級M: { atk: 0, spd: 21.2 },
       特級L: { atk: 0, spd: 26.6 },
@@ -77,6 +99,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "撃種・加撃",
     group: "撃種",
     grades: {
+      "1級": { atk: 250, spd: 0 },
+      "1級M": { atk: 375, spd: 0 },
+      "1級L": { atk: 500, spd: 0 },
       特級: { atk: 1000, spd: 0 },
       特級M: { atk: 1250, spd: 0 },
       特級L: { atk: 1500, spd: 0 },
@@ -87,6 +112,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "撃種・加撃速",
     group: "撃種",
     grades: {
+      "1級": { atk: 200, spd: 2.8 },
+      "1級M": { atk: 300, spd: 3.4 },
+      "1級L": { atk: 400, spd: 4.0 },
       特級: { atk: 600, spd: 8.0 },
       特級M: { atk: 800, spd: 10.6 },
       特級L: { atk: 1000, spd: 13.2 },
@@ -97,6 +125,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "撃種・加命撃",
     group: "撃種",
     grades: {
+      "1級": { atk: 200, spd: 0 },
+      "1級M": { atk: 300, spd: 0 },
+      "1級L": { atk: 400, spd: 0 },
       特級: { atk: 600, spd: 0 },
       特級M: { atk: 800, spd: 0 },
       特級L: { atk: 1000, spd: 0 },
@@ -107,6 +138,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "撃種・加速",
     group: "撃種",
     grades: {
+      "1級": { atk: 0, spd: 3.4 },
+      "1級M": { atk: 0, spd: 4.2 },
+      "1級L": { atk: 0, spd: 5.0 },
       特級: { atk: 0, spd: 10.0 },
       特級M: { atk: 0, spd: 13.3 },
       特級L: { atk: 0, spd: 16.6 },
@@ -117,6 +151,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "撃種・加速命",
     group: "撃種",
     grades: {
+      "1級": { atk: 0, spd: 2.8 },
+      "1級M": { atk: 0, spd: 3.4 },
+      "1級L": { atk: 0, spd: 4.0 },
       特級: { atk: 0, spd: 8.0 },
       特級M: { atk: 0, spd: 10.6 },
       特級L: { atk: 0, spd: 13.2 },
@@ -129,6 +166,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "戦型・加撃",
     group: "戦型",
     grades: {
+      "1級": { atk: 250, spd: 0 },
+      "1級M": { atk: 375, spd: 0 },
+      "1級L": { atk: 500, spd: 0 },
       特級: { atk: 1000, spd: 0 },
       特級M: { atk: 1250, spd: 0 },
       特級L: { atk: 1500, spd: 0 },
@@ -139,6 +179,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "戦型・加撃速",
     group: "戦型",
     grades: {
+      "1級": { atk: 200, spd: 2.8 },
+      "1級M": { atk: 300, spd: 3.4 },
+      "1級L": { atk: 400, spd: 4.0 },
       特級: { atk: 600, spd: 8.0 },
       特級M: { atk: 800, spd: 10.6 },
       特級L: { atk: 1000, spd: 13.2 },
@@ -149,6 +192,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "戦型・加命撃",
     group: "戦型",
     grades: {
+      "1級": { atk: 200, spd: 0 },
+      "1級M": { atk: 300, spd: 0 },
+      "1級L": { atk: 400, spd: 0 },
       特級: { atk: 600, spd: 0 },
       特級M: { atk: 800, spd: 0 },
       特級L: { atk: 1000, spd: 0 },
@@ -159,6 +205,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "戦型・加速",
     group: "戦型",
     grades: {
+      "1級": { atk: 0, spd: 3.4 },
+      "1級M": { atk: 0, spd: 4.2 },
+      "1級L": { atk: 0, spd: 5.0 },
       特級: { atk: 0, spd: 10.0 },
       特級M: { atk: 0, spd: 13.3 },
       特級L: { atk: 0, spd: 16.6 },
@@ -169,6 +218,9 @@ export const FRUIT_CATEGORY_MASTER = [
     name: "戦型・加速命",
     group: "戦型",
     grades: {
+      "1級": { atk: 0, spd: 2.8 },
+      "1級M": { atk: 0, spd: 3.4 },
+      "1級L": { atk: 0, spd: 4.0 },
       特級: { atk: 0, spd: 8.0 },
       特級M: { atk: 0, spd: 10.6 },
       特級L: { atk: 0, spd: 13.2 },
@@ -190,6 +242,9 @@ export const FRUIT_CATEGORY_MASTER = [
     group: "その他",
     isNoneSlot: true,
     grades: {
+      "1級": { atk: 0, spd: 0 },
+      "1級M": { atk: 0, spd: 0 },
+      "1級L": { atk: 0, spd: 0 },
       特級: { atk: 0, spd: 0 },
       特級M: { atk: 0, spd: 0 },
       特級L: { atk: 0, spd: 0 },
@@ -225,7 +280,15 @@ export interface FruitSpec {
   spdBonus: number;
 }
 
-export const FRUIT_GRADES: FruitGrade[] = ["特級", "特級M", "特級L", "特級EL"];
+export const FRUIT_GRADES: FruitGrade[] = [
+  "特級",
+  "特級M",
+  "特級L",
+  "特級EL",
+  "1級",
+  "1級M",
+  "1級L",
+];
 
 export const DEFAULT_SELECTED_GRADES: FruitGrade[] = ["特級L", "特級EL"];
 
