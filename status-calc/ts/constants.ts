@@ -21,6 +21,7 @@ export type FruitCategory =
   | "撃種・加速命"
   | "戦型・加速"
   | "戦型・加速命"
+  | "孤高・加撃"
   | "その他（加撃・加速なし）";
 
 export interface FruitSpec {
@@ -88,7 +89,7 @@ export const ERROR_MSG_SPD_MIN_MAX =
 
 const GRADE_VALUES: Record<
   FruitCategory,
-  Record<FruitGrade, { atk: number; spd: number }>
+  Partial<Record<FruitGrade, { atk: number; spd: number }>>
 > = {
   "同族・加撃": {
     特級: { atk: 2000, spd: 0 },
@@ -180,6 +181,10 @@ const GRADE_VALUES: Record<
     特級L: { atk: 0, spd: 13.2 },
     特級EL: { atk: 0, spd: 14.5 },
   },
+  "孤高・加撃": {
+    特級L: { atk: 3000, spd: 0 },
+    特級EL: { atk: 3300, spd: 0 },
+  },
   "その他（加撃・加速なし）": {
     特級: { atk: 0, spd: 0 },
     特級M: { atk: 0, spd: 0 },
@@ -192,8 +197,10 @@ const GRADE_VALUES: Record<
 export const ALL_FRUIT_SPECS: FruitSpec[] = (() => {
   const list: FruitSpec[] = [];
   (Object.keys(GRADE_VALUES) as FruitCategory[]).forEach((category) => {
-    FRUIT_GRADES.forEach((grade) => {
-      const bonus = GRADE_VALUES[category][grade];
+    const gradesObj = GRADE_VALUES[category];
+    (Object.keys(gradesObj) as FruitGrade[]).forEach((grade) => {
+      const bonus = gradesObj[grade];
+      if (!bonus) return;
       const name =
         category === OTHER_CATEGORY_NAME
           ? OTHER_CATEGORY_NAME
