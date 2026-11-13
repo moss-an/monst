@@ -5,6 +5,8 @@
 
 import { createApp, ref, computed, watch } from "vue";
 import * as CONSTANTS from "./constants";
+import * as FRUITS from "./fruits";
+import * as SPOTS from "./spots";
 import * as Logic from "./logic";
 
 type SortKey = "fruitCount" | "finalAtk" | "finalSpd";
@@ -14,8 +16,10 @@ type SpdFieldKey = "baseSpd" | "spdMin" | "spdMax";
 
 createApp({
   setup() {
-    const spotOptions = CONSTANTS.SPOT_OPTIONS;
-    const fruitGrades = CONSTANTS.FRUIT_GRADES;
+    const spotOptions = SPOTS.SPOT_OPTIONS;
+    const fruitGrades = FRUITS.FRUIT_GRADES;
+    const groupedFruitCategories = FRUITS.GROUPED_FRUIT_CATEGORIES;
+    const selectableFruitCategories = FRUITS.SELECTABLE_FRUIT_CATEGORIES;
     const slotOptions = CONSTANTS.MAX_FRUIT_SLOTS_OPTIONS;
     const pageSizeOptions = CONSTANTS.PAGE_SIZE_OPTIONS;
 
@@ -33,9 +37,21 @@ createApp({
 
     const maxSlots = ref<number>(CONSTANTS.DEFAULT_MAX_FRUIT_SLOTS);
     const selectedSpotId = ref<string>(spotOptions[0].id);
-    const selectedGrades = ref<CONSTANTS.FruitGrade[]>([
-      ...CONSTANTS.DEFAULT_SELECTED_GRADES,
+    const selectedGrades = ref<FRUITS.FruitGrade[]>([
+      ...FRUITS.DEFAULT_SELECTED_GRADES,
     ]);
+    const selectedCategories = ref<FRUITS.FruitCategory[]>([
+      ...FRUITS.DEFAULT_SELECTED_CATEGORIES,
+    ]);
+    const isCategorySectionOpen = ref<boolean>(false);
+
+    const categorySelectionSummary = computed<string>(() => {
+      const total = selectableFruitCategories.length;
+      const count = selectedCategories.value.length;
+      if (count === total) return "すべて選択中";
+      if (count === 0) return "未選択";
+      return `${count} / ${total} 種類選択中`;
+    });
 
     const rawResults = ref<Logic.FruitCombinationResult[]>([]);
     const isCalculating = ref<boolean>(false);
@@ -169,19 +185,63 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
-    const selectedSpot = computed<CONSTANTS.SpotOption>(() => {
+    const selectedSpot = computed<SPOTS.SpotOption>(() => {
       return (
         spotOptions.find((s) => s.id === selectedSpotId.value) ?? spotOptions[0]
       );
     });
 
-    const toggleGrade = (grade: CONSTANTS.FruitGrade): void => {
+    const toggleGrade = (grade: FRUITS.FruitGrade): void => {
       const idx = selectedGrades.value.indexOf(grade);
       if (idx >= 0) {
         selectedGrades.value.splice(idx, 1);
       } else {
         selectedGrades.value.push(grade);
       }
+    };
+
+    const toggleCategory = (category: FRUITS.FruitCategory): void => {
+      const idx = selectedCategories.value.indexOf(category);
+      if (idx >= 0) {
+        selectedCategories.value.splice(idx, 1);
+      } else {
+        selectedCategories.value.push(category);
+      }
+    };
+
+    const selectAllCategories = (): void => {
+      selectedCategories.value = [...FRUITS.DEFAULT_SELECTED_CATEGORIES];
+    };
+
+    const clearAllCategories = (): void => {
+      selectedCategories.value = [];
+    };
+
+    const toggleCategoryGroup = (group: FRUITS.FruitGroup): void => {
+      const groupItems = selectableFruitCategories
+        .filter((c) => c.group === group)
+        .map((c) => c.name);
+      const isAllSelected = groupItems.every((name) =>
+        selectedCategories.value.includes(name),
+      );
+      if (isAllSelected) {
+        selectedCategories.value = selectedCategories.value.filter(
+          (name) => !groupItems.includes(name),
+        );
+      } else {
+        const nextSet = new Set([...selectedCategories.value, ...groupItems]);
+        selectedCategories.value = Array.from(nextSet);
+      }
+    };
+
+    const isGroupAllSelected = (group: FRUITS.FruitGroup): boolean => {
+      const groupItems = selectableFruitCategories
+        .filter((c) => c.group === group)
+        .map((c) => c.name);
+      return (
+        groupItems.length > 0 &&
+        groupItems.every((name) => selectedCategories.value.includes(name))
+      );
     };
 
     const executeSearch = (): void => {
@@ -201,6 +261,7 @@ createApp({
             maxSlots: maxSlots.value,
             spot: selectedSpot.value,
             allowedGrades: selectedGrades.value,
+            allowedCategories: selectedCategories.value,
           };
 
           const results = Logic.findMatchingCombinations(condition);
@@ -310,6 +371,8 @@ createApp({
     return {
       spotOptions,
       fruitGrades,
+      groupedFruitCategories,
+      selectableFruitCategories,
       slotOptions,
       pageSizeOptions,
       maxAtkInputValue,
@@ -327,8 +390,16 @@ createApp({
       maxSlots,
       selectedSpotId,
       selectedGrades,
+      selectedCategories,
+      isCategorySectionOpen,
+      categorySelectionSummary,
       selectedSpot,
       toggleGrade,
+      toggleCategory,
+      selectAllCategories,
+      clearAllCategories,
+      toggleCategoryGroup,
+      isGroupAllSelected,
       totalCount,
       totalPages,
       currentPage,
