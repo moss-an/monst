@@ -1,6 +1,6 @@
 /**
  * @file logic.ts
- * @description わくわくの実組み合わせ探索・ステータス計算ロジック
+ * @description 計算ロジック
  */
 
 import * as CONSTANTS from "./constants";
@@ -72,42 +72,34 @@ export function validateSearchCondition(params: {
 
   if (atkMin !== null) {
     if (atkMin < baseAtk) {
-      errors.atkMin.push("攻撃力の下限は基礎攻撃力以上に設定してください。");
-    }
-    if (atkMax !== null && atkMin > atkMax) {
-      errors.atkMin.push("攻撃力の下限は上限以下に設定してください。");
+      errors.atkMin.push("攻撃下限値 ≧ 基礎攻撃力 に設定してください");
     }
   }
 
   if (atkMax !== null) {
     if (atkMax < baseAtk) {
-      errors.atkMax.push("攻撃力の上限は基礎攻撃力以上に設定してください。");
+      errors.atkMax.push("攻撃上限値 ≧ 基礎攻撃力 に設定してください");
     }
-    if (atkMin !== null && atkMax < atkMin) {
-      errors.atkMax.push("攻撃力の上限は下限以上に設定してください。");
-    }
+  }
+
+  if (atkMin !== null && atkMax !== null && atkMin > atkMax) {
+    errors.atkMin.push("攻撃下限値 ≦ 攻撃上限値 に設定してください");
   }
 
   if (spdMin !== null) {
     if (spdMin < baseSpd) {
-      errors.spdMin.push(
-        "スピードの下限は基礎スピード以上に設定してください。",
-      );
-    }
-    if (spdMax !== null && spdMin > spdMax) {
-      errors.spdMin.push("スピードの下限は上限以下に設定してください。");
+      errors.spdMin.push("スピード下限値 ≧ 基礎スピード に設定してください");
     }
   }
 
   if (spdMax !== null) {
     if (spdMax < baseSpd) {
-      errors.spdMax.push(
-        "スピードの上限は基礎スピード以上に設定してください。",
-      );
+      errors.spdMax.push("スピード上限値 ≧ 基礎スピード に設定してください");
     }
-    if (spdMin !== null && spdMax < spdMin) {
-      errors.spdMax.push("スピードの上限は下限以上に設定してください。");
-    }
+  }
+
+  if (spdMin !== null && spdMax !== null && spdMin > spdMax) {
+    errors.spdMin.push("スピード下限値 ≦ スピード上限値 に設定してください");
   }
 
   return errors;

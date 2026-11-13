@@ -1,6 +1,6 @@
 /**
  * @file constants.ts
- * @description わくわくの実・モンスポットのマスタデータと定数定義
+ * @description マスタデータと定数定義
  */
 
 export type FruitGrade = "特級" | "特級M" | "特級L" | "特級EL";
