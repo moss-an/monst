@@ -15,6 +15,7 @@ export interface SearchCondition {
   maxSlots: number;
   spot: CONSTANTS.SpotOption;
   allowedGrades: CONSTANTS.FruitGrade[];
+  allowedCategories?: CONSTANTS.FruitCategory[];
 }
 
 export interface FruitCombinationResult {
@@ -127,6 +128,7 @@ export function findMatchingCombinations(
     maxSlots,
     spot,
     allowedGrades,
+    allowedCategories = CONSTANTS.DEFAULT_SELECTED_CATEGORIES,
   } = condition;
 
   const validationErrors = validateSearchCondition({
@@ -147,7 +149,7 @@ export function findMatchingCombinations(
     throw new InvalidConditionError(firstMessage);
   }
 
-  if (allowedGrades.length === 0 || maxSlots < 0) {
+  if (maxSlots < 0) {
     return [];
   }
 
@@ -173,6 +175,10 @@ export function findMatchingCombinations(
     }
 
     if (!allowedGrades.includes(spec.grade)) {
+      continue;
+    }
+
+    if (!allowedCategories.includes(spec.category)) {
       continue;
     }
 

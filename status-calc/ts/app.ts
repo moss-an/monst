@@ -16,6 +16,8 @@ createApp({
   setup() {
     const spotOptions = CONSTANTS.SPOT_OPTIONS;
     const fruitGrades = CONSTANTS.FRUIT_GRADES;
+    const groupedFruitCategories = CONSTANTS.GROUPED_FRUIT_CATEGORIES;
+    const selectableFruitCategories = CONSTANTS.SELECTABLE_FRUIT_CATEGORIES;
     const slotOptions = CONSTANTS.MAX_FRUIT_SLOTS_OPTIONS;
     const pageSizeOptions = CONSTANTS.PAGE_SIZE_OPTIONS;
 
@@ -36,6 +38,18 @@ createApp({
     const selectedGrades = ref<CONSTANTS.FruitGrade[]>([
       ...CONSTANTS.DEFAULT_SELECTED_GRADES,
     ]);
+    const selectedCategories = ref<CONSTANTS.FruitCategory[]>([
+      ...CONSTANTS.DEFAULT_SELECTED_CATEGORIES,
+    ]);
+    const isCategorySectionOpen = ref<boolean>(false);
+
+    const categorySelectionSummary = computed<string>(() => {
+      const total = selectableFruitCategories.length;
+      const count = selectedCategories.value.length;
+      if (count === total) return "すべて選択中";
+      if (count === 0) return "未選択";
+      return `${count} / ${total} 種類選択中`;
+    });
 
     const rawResults = ref<Logic.FruitCombinationResult[]>([]);
     const isCalculating = ref<boolean>(false);
@@ -184,6 +198,50 @@ createApp({
       }
     };
 
+    const toggleCategory = (category: CONSTANTS.FruitCategory): void => {
+      const idx = selectedCategories.value.indexOf(category);
+      if (idx >= 0) {
+        selectedCategories.value.splice(idx, 1);
+      } else {
+        selectedCategories.value.push(category);
+      }
+    };
+
+    const selectAllCategories = (): void => {
+      selectedCategories.value = [...CONSTANTS.DEFAULT_SELECTED_CATEGORIES];
+    };
+
+    const clearAllCategories = (): void => {
+      selectedCategories.value = [];
+    };
+
+    const toggleCategoryGroup = (group: CONSTANTS.FruitGroup): void => {
+      const groupItems = selectableFruitCategories
+        .filter((c) => c.group === group)
+        .map((c) => c.name);
+      const isAllSelected = groupItems.every((name) =>
+        selectedCategories.value.includes(name),
+      );
+      if (isAllSelected) {
+        selectedCategories.value = selectedCategories.value.filter(
+          (name) => !groupItems.includes(name),
+        );
+      } else {
+        const nextSet = new Set([...selectedCategories.value, ...groupItems]);
+        selectedCategories.value = Array.from(nextSet);
+      }
+    };
+
+    const isGroupAllSelected = (group: CONSTANTS.FruitGroup): boolean => {
+      const groupItems = selectableFruitCategories
+        .filter((c) => c.group === group)
+        .map((c) => c.name);
+      return (
+        groupItems.length > 0 &&
+        groupItems.every((name) => selectedCategories.value.includes(name))
+      );
+    };
+
     const executeSearch = (): void => {
       if (isCalculating.value || hasValidationError.value) return;
       isCalculating.value = true;
@@ -201,6 +259,7 @@ createApp({
             maxSlots: maxSlots.value,
             spot: selectedSpot.value,
             allowedGrades: selectedGrades.value,
+            allowedCategories: selectedCategories.value,
           };
 
           const results = Logic.findMatchingCombinations(condition);
@@ -310,6 +369,8 @@ createApp({
     return {
       spotOptions,
       fruitGrades,
+      groupedFruitCategories,
+      selectableFruitCategories,
       slotOptions,
       pageSizeOptions,
       maxAtkInputValue,
@@ -327,8 +388,16 @@ createApp({
       maxSlots,
       selectedSpotId,
       selectedGrades,
+      selectedCategories,
+      isCategorySectionOpen,
+      categorySelectionSummary,
       selectedSpot,
       toggleGrade,
+      toggleCategory,
+      selectAllCategories,
+      clearAllCategories,
+      toggleCategoryGroup,
+      isGroupAllSelected,
       totalCount,
       totalPages,
       currentPage,
