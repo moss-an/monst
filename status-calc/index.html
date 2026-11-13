@@ -49,7 +49,8 @@
               <input
                 type="text"
                 inputmode="numeric"
-                v-model="baseAtkInput"
+                :value="baseAtkInput"
+                @input="e => handleAtkInput('baseAtk', e)"
                 placeholder="例: 30000"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
               />
@@ -59,7 +60,8 @@
               <input
                 type="text"
                 inputmode="decimal"
-                v-model="baseSpdInput"
+                :value="baseSpdInput"
+                @input="e => handleSpdInput('baseSpd', e)"
                 placeholder="例: 350.00"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
               />
@@ -76,7 +78,8 @@
               <input
                 type="text"
                 inputmode="numeric"
-                v-model="atkMinInput"
+                :value="atkMinInput"
+                @input="e => handleAtkInput('atkMin', e)"
                 placeholder="下限（例: 33000）"
                 :class="validationErrors.atkMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
@@ -85,7 +88,8 @@
               <input
                 type="text"
                 inputmode="numeric"
-                v-model="atkMaxInput"
+                :value="atkMaxInput"
+                @input="e => handleAtkInput('atkMax', e)"
                 placeholder="上限（任意）"
                 :class="validationErrors.atkMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
@@ -120,7 +124,8 @@
               <input
                 type="text"
                 inputmode="decimal"
-                v-model="spdMinInput"
+                :value="spdMinInput"
+                @input="e => handleSpdInput('spdMin', e)"
                 placeholder="下限（例: 380.00）"
                 :class="validationErrors.spdMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
@@ -129,7 +134,8 @@
               <input
                 type="text"
                 inputmode="decimal"
-                v-model="spdMaxInput"
+                :value="spdMaxInput"
+                @input="e => handleSpdInput('spdMax', e)"
                 placeholder="上限（任意）"
                 :class="validationErrors.spdMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
