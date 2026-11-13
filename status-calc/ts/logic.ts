@@ -59,8 +59,6 @@ export function findMatchingCombinations(
     return [];
   }
 
-  // 【v17スマート判定】「実質的に意味のある制限」がかかっているかを判定
-  // 下限が基礎値を厳に上回っている場合、または上限が設定されている場合のみ「有効な条件」とみなす
   const hasAtkCondition =
     (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
   const hasSpdCondition =
@@ -86,7 +84,6 @@ export function findMatchingCombinations(
       continue;
     }
 
-    // 【v17最適化】実質的に有効な条件が片方のみの場合、影響しない実を探索候補から自動除外
     if (hasAtkCondition && !hasSpdCondition && spec.atkBonus === 0) {
       continue;
     }
