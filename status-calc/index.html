@@ -174,9 +174,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm text-slate-400"
-                  >わくわくの実 上限数</label
-                >
+                <label class="block text-sm text-slate-400">実の上限数</label>
                 <select
                   v-model.number="maxSlots"
                   class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
@@ -206,7 +204,7 @@
 
             <div>
               <label class="block text-sm text-slate-400 mb-1.5"
-                >計算に使用する等級</label
+                >実の等級</label
               >
               <div class="grid grid-cols-4 gap-2">
                 <button
@@ -238,7 +236,7 @@
               >
                 <div class="flex items-center gap-2 min-w-0">
                   <span class="text-xs sm:text-sm text-slate-300 font-medium"
-                    >使用する実の種類</span
+                    >実の種類</span
                   >
                   <span
                     :class="

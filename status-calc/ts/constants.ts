@@ -3,13 +3,13 @@
  * @description アプリケーションの共通定数・エラーメッセージ定義
  */
 
-export const MAX_FRUIT_SLOTS_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+export const MAX_FRUIT_SLOTS_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const DEFAULT_MAX_FRUIT_SLOTS = 3;
 
-export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 300];
 export const DEFAULT_PAGE_SIZE = 10;
 
-export const MAX_SEARCH_RESULTS_LIMIT = 1000; // 検索結果の最大許容数
+export const MAX_SEARCH_RESULTS_LIMIT = 3000; // 検索結果の最大許容数
 
 export const CALC_LOADING_DELAY_MS = 50; // ロード遅延時間（ミリ秒）
 
