@@ -123,7 +123,81 @@
               <p class="text-slate-400 text-[11px] leading-relaxed">
                 ランク帯と、1ランク上げるのに必要な経験値を設定してください。
               </p>
-              <div class="overflow-x-auto max-h-60 overflow-y-auto">
+              <!-- スマホ用カードレイアウト (md:hidden) -->
+              <div class="md:hidden space-y-3 max-h-80 overflow-y-auto pr-1">
+                <div
+                  v-for="row in visibleRankSteps"
+                  :key="'mob-' + row.originalIndex"
+                  class="bg-slate-950 p-3 rounded-lg border border-slate-700/80 space-y-2.5"
+                >
+                  <div
+                    v-if="row.isCustomRow"
+                    class="flex justify-end items-center text-xs pb-0"
+                  >
+                    <button
+                      @click="removeRankStepRow(row.originalIndex)"
+                      class="text-red-400 hover:text-red-300 font-bold px-1 text-xs"
+                      title="削除"
+                    >
+                      ✕ 削除
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <label class="block text-[11px] text-slate-400 mb-0.5"
+                        >開始ランク</label
+                      >
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        :value="row.itemRef.minRank"
+                        disabled
+                        placeholder="自動計算"
+                        class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-400 opacity-60 cursor-not-allowed"
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-[11px] text-slate-400 mb-0.5"
+                        >終了ランク</label
+                      >
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        v-model="row.itemRef.inputMaxRankDisplay"
+                        @focus="handleStepMaxRankFocus(row)"
+                        @input="e => handleStepMaxRankInput(row, e)"
+                        @blur="validateStepMaxRankBlur(row)"
+                        :disabled="!row.isLast"
+                        placeholder="未入力"
+                        :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
+                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                  </div>
+                  <div class="text-xs">
+                    <label class="block text-[11px] text-slate-400 mb-0.5"
+                      >必要経験値（1ランクあたり）</label
+                    >
+                    <input
+                      type="text"
+                      inputmode="numeric"
+                      v-model="row.itemRef.inputExpDisplay"
+                      @focus="handleStepExpFocus(row)"
+                      @input="e => handleStepExpInput(row, e)"
+                      @blur="handleStepExpBlur(row)"
+                      :disabled="!row.isLast"
+                      placeholder="未入力"
+                      :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
+                      class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- PC用テーブルレイアウト (hidden md:block) -->
+              <div
+                class="hidden md:block overflow-x-auto max-h-60 overflow-y-auto"
+              >
                 <table class="w-full text-left border-collapse table-fixed">
                   <thead>
                     <tr
@@ -239,7 +313,7 @@
                   @click="addRankStepRow"
                   class="bg-slate-700 hover:bg-slate-600 text-amber-300 font-medium px-2.5 py-1 rounded text-xs transition"
                 >
-                  + 行を追加
+                  + 要素を追加
                 </button>
                 <button
                   @click="resetRankSteps"
