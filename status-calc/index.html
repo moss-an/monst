@@ -17,8 +17,12 @@
       id="app"
       class="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 w-full flex-grow"
     >
-      <header class="text-center pl-11 pr-2 sm:px-0">
-        <h1 class="text-2xl sm:text-3xl font-bold text-amber-400">
+      <!-- 修正: スマホでの不要な左パディング(pl-11)を解消 -->
+      <header class="text-center px-2 sm:px-0">
+        <!-- 修正: タイトルが1行に収まるよう文字サイズ調整とwhitespace-nowrap等を付与 -->
+        <h1
+          class="text-xl sm:text-3xl font-bold text-amber-300 whitespace-nowrap overflow-hidden text-ellipsis"
+        >
           モンスト ステータス計算ツール
         </h1>
         <p class="text-xs sm:text-sm text-slate-400 mt-1">
@@ -624,17 +628,17 @@
             </div>
           </div>
 
-          <!-- ページネーション -->
+          <!-- 修正: ページネーション部分（スマホで桁数が増えても崩れないようflex-col対応 & 順番制御） -->
           <div
             v-if="totalPages > 1"
-            class="flex items-center justify-between pt-3 border-t border-slate-700/60 text-xs"
+            class="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-3 border-t border-slate-700/60 text-xs"
           >
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 order-2 sm:order-1">
               <button
                 type="button"
                 @click="goToPage(1)"
                 :disabled="currentPage <= 1"
-                class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
+                class="px-2 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
               >
                 « 最初
               </button>
@@ -642,18 +646,20 @@
                 type="button"
                 @click="goToPage(currentPage - 1)"
                 :disabled="currentPage <= 1"
-                class="px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
+                class="px-2 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed hover:border-slate-500 transition"
               >
                 ‹ 前へ
               </button>
             </div>
 
-            <span class="font-mono text-slate-300">
+            <span
+              class="font-mono text-slate-300 order-1 sm:order-2 whitespace-nowrap"
+            >
               {{ currentPage.toLocaleString() }} / {{
               totalPages.toLocaleString() }} ページ
             </span>
 
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 order-3 sm:order-3">
               <button
                 type="button"
                 @click="goToPage(currentPage + 1)"
