@@ -14,6 +14,7 @@ monst/
 ├── rank-calc/                  # ランク計算ツール
 ├── status-calc/                # ステータス計算ツール
 ├── src/
+│   ├── components/             # 汎用UIコンポーネント
 │   └── input.css               # スタイル(Tailwind CSS)
 ├── Dockerfile                  # Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
