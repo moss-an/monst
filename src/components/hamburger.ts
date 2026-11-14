@@ -76,31 +76,31 @@ function generateMenuItems(): MenuItem[] {
  * 現在のスクリプトのURLからリポジトリルートのベースURLを算出する
  */
 function resolveRootUrl(): string {
-  const scripts = document.querySelectorAll<HTMLScriptElement>(
-    'script[type="module"]',
-  );
-  for (const s of Array.from(scripts)) {
-    const rawSrc = s.getAttribute("src") || "";
-    if (rawSrc.includes("hamburger")) {
-      const match = rawSrc.match(
-        /^((?:\.\.\/|\.\/)*)src\/components\/hamburger/,
-      );
+  try {
+    const currentPath = window.location.pathname;
+    const modules = import.meta.glob(
+      ["../../index.html", "../../**/index.html"],
+      { eager: true, query: "?raw" },
+    );
+
+    for (const path in modules) {
+      if (path.includes("dist/")) continue;
+      const match = path.match(/\/([^\/]+)\/index\.html$/);
       if (match) {
-        return match[1] === "" ? "./" : match[1];
+        const dirName = match[1];
+        if (
+          currentPath.includes(`/${dirName}/`) ||
+          currentPath.endsWith(`/${dirName}`)
+        ) {
+          return "../";
+        }
       }
     }
+  } catch (e) {
+    console.warn("Failed to resolve root URL:", e);
   }
 
-  // URLの階層構造（深度）からルートまでの相対パスを動的算出
-  const pathname = window.location.pathname;
-  const cleanPath = pathname.replace(/\/[^\/]*\.html$/, "").replace(/\/+$/, "");
-  const segments = cleanPath.split("/").filter(Boolean);
-
-  if (segments.length === 0) {
-    return "./";
-  }
-
-  return "../".repeat(segments.length);
+  return "./";
 }
 
 function initHamburgerMenu(): void {
