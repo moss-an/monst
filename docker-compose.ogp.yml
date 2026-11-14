@@ -1,0 +1,9 @@
+# OGP画像作成用
+services:
+  ogp:
+    build:
+      context: .
+      dockerfile: ogp/Dockerfile.ogp
+    image: monst-ogp
+    volumes:
+      - .:/app
