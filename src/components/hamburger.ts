@@ -40,7 +40,6 @@ function generateMenuItems(): MenuItem[] {
 
     pathFromRoot = pathFromRoot.replace(/^\/+/, "");
 
-    // パスの深さを自動算出
     const depth =
       pathFromRoot === "" ? 0 : pathFromRoot.split("/").filter(Boolean).length;
 
@@ -74,17 +73,43 @@ function generateMenuItems(): MenuItem[] {
   return items;
 }
 
+/**
+ * 現在のページのURLと自動収集したメニュー情報を照らし合わせ、
+ * ルートに戻るための相対プレフィックス（./ または ../ など）を動的に算出する
+ */
+function getCurrentRootPrefix(menuItems: MenuItem[]): string {
+  const currentPath = window.location.pathname;
+
+  // 深い階層のパスから優先的にマッチングさせるため、depthの降順でソート
+  const sortedItems = [...menuItems].sort((a, b) => b.depth - a.depth);
+
+  for (const item of sortedItems) {
+    if (item.depth === 0) continue;
+
+    const targetDir = item.pathFromRoot.replace(/\/$/, "");
+    if (
+      currentPath.includes(`/${targetDir}/`) ||
+      currentPath.endsWith(`/${targetDir}`)
+    ) {
+      return "../".repeat(item.depth);
+    }
+  }
+
+  return "./";
+}
+
 function initHamburgerMenu(): void {
   if (document.getElementById("common-hamburger-container")) return;
 
-  const base = import.meta.env.BASE_URL;
   const currentPath = window.location.pathname;
   const menuItems = generateMenuItems();
+  const rootPrefix = getCurrentRootPrefix(menuItems);
 
   const navLinksHtml = menuItems
     .map((item) => {
+      // ルートプレフィックスと各ページの pathFromRoot を結合して完全な相対パスを生成
       const cleanPath = item.pathFromRoot.replace(/^\/+/, "");
-      const href = `${base}${cleanPath}`;
+      const href = `${rootPrefix}${cleanPath}`;
 
       const targetDir = cleanPath.replace(/\/$/, "");
       const isCurrent =
@@ -92,9 +117,15 @@ function initHamburgerMenu(): void {
           ? !menuItems.some(
               (m) =>
                 m.pathFromRoot !== "" &&
-                currentPath.includes(`/${m.pathFromRoot.replace(/\/$/, "")}`),
+                (currentPath.includes(
+                  `/${m.pathFromRoot.replace(/\/$/, "")}/`,
+                ) ||
+                  currentPath.endsWith(
+                    `/${m.pathFromRoot.replace(/\/$/, "")}`,
+                  )),
             )
-          : currentPath.includes(`/${targetDir}`);
+          : currentPath.includes(`/${targetDir}/`) ||
+            currentPath.endsWith(`/${targetDir}`);
 
       const activeClass = isCurrent
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
