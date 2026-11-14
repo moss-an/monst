@@ -40,7 +40,9 @@ function generateMenuItems(): MenuItem[] {
 
     pathFromRoot = pathFromRoot.replace(/^\/+/, "");
 
-    const depth = pathFromRoot === "" ? 0 : 1;
+    // パスの深さを自動算出
+    const depth =
+      pathFromRoot === "" ? 0 : pathFromRoot.split("/").filter(Boolean).length;
 
     const titleMatch = rawContent.match(/<title>(.*?)<\/title>/i);
     let label = titleMatch ? titleMatch[1].trim() : "";
@@ -72,62 +74,27 @@ function generateMenuItems(): MenuItem[] {
   return items;
 }
 
-/**
- * 現在のスクリプトのURLからリポジトリルートのベースURLを算出する
- */
-function resolveRootUrl(): string {
-  try {
-    const currentPath = window.location.pathname;
-    const modules = import.meta.glob(
-      ["../../index.html", "../../**/index.html"],
-      { eager: true, query: "?raw" },
-    );
-
-    for (const path in modules) {
-      if (path.includes("dist/")) continue;
-      const match = path.match(/\/([^\/]+)\/index\.html$/);
-      if (match) {
-        const dirName = match[1];
-        if (
-          currentPath.includes(`/${dirName}/`) ||
-          currentPath.endsWith(`/${dirName}`)
-        ) {
-          return "../";
-        }
-      }
-    }
-  } catch (e) {
-    console.warn("Failed to resolve root URL:", e);
-  }
-
-  return "./";
-}
-
 function initHamburgerMenu(): void {
   if (document.getElementById("common-hamburger-container")) return;
 
-  const rootPrefix = resolveRootUrl();
+  const base = import.meta.env.BASE_URL;
   const currentPath = window.location.pathname;
   const menuItems = generateMenuItems();
 
   const navLinksHtml = menuItems
     .map((item) => {
-      const href = `${rootPrefix}${item.pathFromRoot}`;
-      const targetDir = item.pathFromRoot.replace(/\/$/, "");
+      const cleanPath = item.pathFromRoot.replace(/^\/+/, "");
+      const href = `${base}${cleanPath}`;
+
+      const targetDir = cleanPath.replace(/\/$/, "");
       const isCurrent =
         targetDir === ""
           ? !menuItems.some(
               (m) =>
                 m.pathFromRoot !== "" &&
-                (currentPath.includes(
-                  `/${m.pathFromRoot.replace(/\/$/, "")}/`,
-                ) ||
-                  currentPath.endsWith(
-                    `/${m.pathFromRoot.replace(/\/$/, "")}`,
-                  )),
+                currentPath.includes(`/${m.pathFromRoot.replace(/\/$/, "")}`),
             )
-          : currentPath.includes(`/${targetDir}/`) ||
-            currentPath.endsWith(`/${targetDir}`);
+          : currentPath.includes(`/${targetDir}`);
 
       const activeClass = isCurrent
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
