@@ -176,7 +176,7 @@
                   </div>
                   <div class="text-xs">
                     <label class="block text-[11px] text-slate-400 mb-0.5"
-                      >必要経験値（1ランクあたり）</label
+                      >必要経験値</label
                     >
                     <input
                       type="text"
@@ -272,7 +272,7 @@
                 v-if="lastRowPattern === 'onlyMaxEmpty'"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
-                ※終了ランクが未入力の場合は行を追加できず、ランク{{
+                ※終了ランクが未入力の場合は要素を追加できず、ランク{{
                 lastRowMinRank }}以降は
                 <span class="font-mono">{{ lastRowExpFormatted }}</span>
                 Expを適用して計算します。
@@ -282,7 +282,7 @@
                 v-else-if="lastRowPattern === 'onlyExpEmpty'"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
-                ※必要経験値が未入力の場合は行を追加できず、ランク{{
+                ※必要経験値が未入力の場合は要素を追加できず、ランク{{
                 lastRowMaxRankFormatted }}以降は
                 <span class="font-mono">{{ prevRowExpFormatted }}</span>
                 Expを適用して計算します。
@@ -292,7 +292,7 @@
                 v-else-if="lastRowPattern === 'bothEmpty'"
                 class="text-amber-400 text-[11px] font-medium leading-relaxed"
               >
-                ※終了ランク・必要経験値が未入力の場合は行を追加できず、ランク{{
+                ※終了ランク・必要経験値が未入力の場合は要素を追加できず、ランク{{
                 lastRowMinRank }}以降は
                 <span class="font-mono">{{ prevRowExpFormatted }}</span>
                 Expを適用して計算します。
