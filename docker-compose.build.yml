@@ -4,6 +4,7 @@ version: "3.8"
 services:
   builder:
     build: .
+    image: my-app-builder:latest
     volumes:
       - ./dist:/app/dist
     command: npm run build
