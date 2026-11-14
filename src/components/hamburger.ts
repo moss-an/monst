@@ -24,6 +24,7 @@ function generateMenuItems(): MenuItem[] {
   const items: MenuItem[] = [];
 
   for (const path in modules) {
+    // ビルド成果物は除外
     if (path.includes("dist/")) {
       continue;
     }
