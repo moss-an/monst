@@ -66,6 +66,7 @@
             </div>
           </div>
 
+          <!-- 攻撃力の許容範囲 -->
           <div
             class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
           >
@@ -110,8 +111,16 @@
                 ・{{ err }}
               </p>
             </div>
+            <!-- スピードのみ指定時（攻撃力が未設定のとき）のヒント -->
+            <p
+              v-if="spdFilterHintMessage"
+              class="pt-1 text-xs text-amber-300/90"
+            >
+              {{ spdFilterHintMessage }}
+            </p>
           </div>
 
+          <!-- スピードの許容範囲 -->
           <div
             class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
           >
@@ -156,6 +165,13 @@
                 ・{{ err }}
               </p>
             </div>
+            <!-- 攻撃力のみ指定時（スピードが未設定のとき）のヒント -->
+            <p
+              v-if="atkFilterHintMessage"
+              class="pt-1 text-xs text-amber-300/90"
+            >
+              {{ atkFilterHintMessage }}
+            </p>
           </div>
         </section>
 
