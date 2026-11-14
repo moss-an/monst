@@ -63,6 +63,7 @@ createApp({
     const allRankSteps = ref<RankStepRow[]>([]);
     const initialDefaultParsedSteps = ref<RankStepRow[]>([]);
     const tableVersion = ref<number>(0);
+    const mobileRankStepList = ref<HTMLElement | null>(null);
 
     const formatNumber = (val: string | number | null | undefined): string => {
       if (val === "" || val === null || val === undefined) return "";
@@ -114,6 +115,12 @@ createApp({
 
         isLoaded.value = true;
         updateStepInfo();
+        nextTick(() => {
+          if (mobileRankStepList.value) {
+            mobileRankStepList.value.scrollTop =
+              mobileRankStepList.value.scrollHeight;
+          }
+        });
       } catch (e) {
         console.warn("CSVの初期化に失敗しました:", e);
       }
@@ -499,8 +506,18 @@ createApp({
       updateStepInfo();
     };
 
+    const scrollStepContainersToBottom = (): void => {
+      const containers = document.querySelectorAll(".overflow-y-auto");
+      containers.forEach((container) => {
+        container.scrollTop = container.scrollHeight;
+      });
+    };
+
     const addRankStepRow = (): void => {
       if (isAddRowBlocked.value) {
+        nextTick(() => {
+          scrollStepContainersToBottom();
+        });
         return;
       }
 
@@ -529,10 +546,7 @@ createApp({
       updateRankSteps();
 
       nextTick(() => {
-        const containers = document.querySelectorAll(".overflow-y-auto");
-        containers.forEach((container) => {
-          container.scrollTop = container.scrollHeight;
-        });
+        scrollStepContainersToBottom();
 
         const maxRankInputs = document.querySelectorAll(
           'input[placeholder="未入力"]',
@@ -996,6 +1010,7 @@ createApp({
       handleStepExpFocus,
       handleStepExpInput,
       handleStepExpBlur,
+      mobileRankStepList,
       addRankStepRow,
       removeRankStepRow,
       resetRankSteps,

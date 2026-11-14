@@ -124,7 +124,10 @@
                 ランク帯と、1ランク上げるのに必要な経験値を設定してください。
               </p>
               <!-- スマホ用カードレイアウト (md:hidden) -->
-              <div class="md:hidden space-y-3 max-h-80 overflow-y-auto pr-1">
+              <div
+                ref="mobileRankStepList"
+                class="md:hidden space-y-3 max-h-80 overflow-y-auto pr-1"
+              >
                 <div
                   v-for="row in visibleRankSteps"
                   :key="'mob-' + row.originalIndex"
