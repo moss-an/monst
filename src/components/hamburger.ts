@@ -91,15 +91,15 @@ function resolveRootUrl(): string {
     }
   }
 
-  // スクリプトタグから特定できなかった場合のフォールバック：
-  // URLのパス階層（セグメント数）からルートまでの相対パスを完全に動的算出する
+  // URLの階層構造（深度）からルートまでの相対パスを動的算出
   const pathname = window.location.pathname;
-  const cleanPath = pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
+  const cleanPath = pathname.replace(/\/[^\/]*\.html$/, "").replace(/\/+$/, "");
   const segments = cleanPath.split("/").filter(Boolean);
 
   if (segments.length === 0) {
     return "./";
   }
+
   return "../".repeat(segments.length);
 }
 
