@@ -127,6 +127,7 @@ createApp({
     };
 
     const handleAtkInput = (field: AtkFieldKey, e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeAtkString(target.value);
       target.value = sanitized;
@@ -141,6 +142,7 @@ createApp({
     };
 
     const handleSpdInput = (field: SpdFieldKey, e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeSpdString(target.value);
       target.value = sanitized;
