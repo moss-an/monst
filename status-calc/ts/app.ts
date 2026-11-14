@@ -215,7 +215,7 @@ createApp({
         }
       }
       if (excludedCategories.size === 0) return "";
-      return `スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実(${excludedCategories.size}種)を除外して検索します`;
+      return `スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実（${excludedCategories.size}種）を除外して検索します`;
     });
 
     // スピードのみ指定時：攻撃力のみに影響を与える実の種別数とメッセージ
@@ -231,7 +231,7 @@ createApp({
         }
       }
       if (excludedCategories.size === 0) return "";
-      return `攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実(${excludedCategories.size}種)を除外して検索します`;
+      return `攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実（${excludedCategories.size}種）を除外して検索します`;
     });
 
     const selectedSpot = computed<SPOTS.SpotOption>(() => {
