@@ -568,10 +568,10 @@
                     class="py-2.5 px-3 text-right font-mono whitespace-nowrap"
                   >
                     <div class="font-bold text-amber-300">
-                      {{ row.finalAtk }}
+                      {{ row.finalAtk.toLocaleString() }}
                     </div>
                     <div class="text-[11px] text-emerald-400">
-                      +{{ row.totalAtkBonus }}
+                      +{{ row.totalAtkBonus.toLocaleString() }}
                     </div>
                   </td>
                   <td
@@ -605,10 +605,10 @@
                 <div>
                   <span class="text-slate-400 text-[10px]">攻:</span>
                   <span class="text-amber-300 font-bold ml-1"
-                    >{{ row.finalAtk }}</span
+                    >{{ row.finalAtk.toLocaleString() }}</span
                   >
                   <span class="text-emerald-400 text-[10px] ml-0.5"
-                    >(+{{ row.totalAtkBonus }})</span
+                    >(+{{ row.totalAtkBonus.toLocaleString() }})</span
                   >
                 </div>
                 <div>
