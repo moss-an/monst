@@ -78,7 +78,7 @@
                 inputmode="numeric"
                 :value="atkMinInput"
                 @input="e => handleAtkInput('atkMin', e)"
-                placeholder="下限値"
+                placeholder="例: 32500"
                 :class="validationErrors.atkMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
@@ -88,7 +88,7 @@
                 inputmode="numeric"
                 :value="atkMaxInput"
                 @input="e => handleAtkInput('atkMax', e)"
-                placeholder="上限値"
+                placeholder="例: 36000"
                 :class="validationErrors.atkMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
@@ -124,7 +124,7 @@
                 inputmode="decimal"
                 :value="spdMinInput"
                 @input="e => handleSpdInput('spdMin', e)"
-                placeholder="下限値"
+                placeholder="例: 360.50"
                 :class="validationErrors.spdMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
@@ -134,7 +134,7 @@
                 inputmode="decimal"
                 :value="spdMaxInput"
                 @input="e => handleSpdInput('spdMax', e)"
-                placeholder="上限値"
+                placeholder="例: 420.25"
                 :class="validationErrors.spdMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
                 class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
               />
