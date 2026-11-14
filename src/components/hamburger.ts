@@ -107,7 +107,6 @@ function initHamburgerMenu(): void {
 
   const navLinksHtml = menuItems
     .map((item) => {
-      // ルートプレフィックスと各ページの pathFromRoot を結合して完全な相対パスを生成
       const cleanPath = item.pathFromRoot.replace(/^\/+/, "");
       const href = `${rootPrefix}${cleanPath}`;
 
