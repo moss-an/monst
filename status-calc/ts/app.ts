@@ -187,6 +187,53 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
+    // 攻撃力・スピードそれぞれの条件指定有無
+    const hasAtkCondition = computed<boolean>(() => {
+      const baseAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
+      const atkMin = parseIntOrNull(atkMinInput.value);
+      const atkMax = parseIntOrNull(atkMaxInput.value);
+      return (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
+    });
+
+    const hasSpdCondition = computed<boolean>(() => {
+      const baseSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
+      const spdMin = parseFloatOrNull(spdMinInput.value);
+      const spdMax = parseFloatOrNull(spdMaxInput.value);
+      return (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
+    });
+
+    // 攻撃力のみ指定時：スピードのみに影響を与える実の種別数とメッセージ
+    const atkFilterHintMessage = computed<string>(() => {
+      if (!hasAtkCondition.value || hasSpdCondition.value) return "";
+      const excludedCategories = new Set<FRUITS.FruitCategory>();
+      for (const spec of FRUITS.ALL_FRUIT_SPECS) {
+        if (spec.category === FRUITS.OTHER_CATEGORY_NAME) continue;
+        if (!selectedGrades.value.includes(spec.grade)) continue;
+        if (!selectedCategories.value.includes(spec.category)) continue;
+        if (spec.atkBonus === 0) {
+          excludedCategories.add(spec.category);
+        }
+      }
+      if (excludedCategories.size === 0) return "";
+      return `スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実(${excludedCategories.size}種)を除外して検索します`;
+    });
+
+    // スピードのみ指定時：攻撃力のみに影響を与える実の種別数とメッセージ
+    const spdFilterHintMessage = computed<string>(() => {
+      if (!hasSpdCondition.value || hasAtkCondition.value) return "";
+      const excludedCategories = new Set<FRUITS.FruitCategory>();
+      for (const spec of FRUITS.ALL_FRUIT_SPECS) {
+        if (spec.category === FRUITS.OTHER_CATEGORY_NAME) continue;
+        if (!selectedGrades.value.includes(spec.grade)) continue;
+        if (!selectedCategories.value.includes(spec.category)) continue;
+        if (spec.spdBonus === 0) {
+          excludedCategories.add(spec.category);
+        }
+      }
+      if (excludedCategories.size === 0) return "";
+      return `攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実(${excludedCategories.size}種)を除外して検索します`;
+    });
+
     const selectedSpot = computed<SPOTS.SpotOption>(() => {
       return (
         spotOptions.find((s) => s.id === selectedSpotId.value) ?? spotOptions[0]
@@ -389,6 +436,8 @@ createApp({
       handleSpdInput,
       validationErrors,
       hasValidationError,
+      atkFilterHintMessage,
+      spdFilterHintMessage,
       maxSlots,
       selectedSpotId,
       selectedGrades,
