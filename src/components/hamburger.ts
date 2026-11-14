@@ -42,15 +42,13 @@ function generateMenuItems(): MenuItem[] {
     const depth = pathFromRoot === "" ? 0 : 1;
 
     const titleMatch = rawContent.match(/<title>(.*?)<\/title>/i);
-    let label = titleMatch
-      ? titleMatch[1].trim()
-      : pathFromRoot
-        ? pathFromRoot.replace(/\/$/, "")
-        : "ホーム";
+    let label = titleMatch ? titleMatch[1].trim() : "";
 
+    // 「モンスト 」などのプレフィックスを除去
     label = label.replace(/^モンスト\s*/, "");
-    if (label === "お役立ちツール" || label === "") {
-      label = depth === 0 ? "ホーム" : label;
+
+    if (!label) {
+      label = depth === 0 ? "ホーム" : pathFromRoot.replace(/\/$/, "");
     }
 
     items.push({
@@ -66,7 +64,6 @@ function generateMenuItems(): MenuItem[] {
     return a.pathFromRoot.localeCompare(b.pathFromRoot);
   });
 
-  // 万が一の場合はホームのみを返す
   if (items.length === 0) {
     return [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
   }
@@ -93,16 +90,16 @@ function resolveRootUrl(): string {
     }
   }
 
+  // スクリプトタグから特定できなかった場合のフォールバック：
+  // URLのパス階層（セグメント数）からルートまでの相対パスを完全に動的算出する
   const pathname = window.location.pathname;
-  if (
-    pathname.includes("/rank-calc/") ||
-    pathname.endsWith("/rank-calc") ||
-    pathname.includes("/status-calc/") ||
-    pathname.endsWith("/status-calc")
-  ) {
-    return "../";
+  const cleanPath = pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
+  const segments = cleanPath.split("/").filter(Boolean);
+
+  if (segments.length === 0) {
+    return "./";
   }
-  return "./";
+  return "../".repeat(segments.length);
 }
 
 function initHamburgerMenu(): void {
