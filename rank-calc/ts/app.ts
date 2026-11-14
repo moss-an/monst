@@ -366,6 +366,7 @@ createApp({
     };
 
     const handleStepMaxRankInput = (row: VisibleRankStep, e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       let raw = target.value.replace(/[^0-9]/g, "");
       const maxRankInputLength = String(maxRank).length + 1;
@@ -435,6 +436,7 @@ createApp({
     };
 
     const handleStepExpInput = (row: VisibleRankStep, e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       let raw = target.value.replace(/[^0-9]/g, "");
       const limitDigits = String(maxStepExp).length + 2;
@@ -587,6 +589,7 @@ createApp({
     };
 
     const handleCurrentRankInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       activeCurrentMode.value = "rank";
       currentRank.value = parseNaturalRank(target.value);
@@ -605,6 +608,7 @@ createApp({
     };
 
     const handleCurrentExpInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       activeCurrentMode.value = "exp";
       const raw = target.value.replace(/[^0-9]/g, "");
@@ -668,6 +672,7 @@ createApp({
     };
 
     const handleTargetRankInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       activeTargetMode.value = "rank";
       targetRank.value = parseNaturalRank(target.value);
@@ -686,6 +691,7 @@ createApp({
     };
 
     const handleTargetExpInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       activeTargetMode.value = "exp";
       const raw = target.value.replace(/[^0-9]/g, "");
@@ -779,6 +785,7 @@ createApp({
     const customMultiplier = ref<string>("");
 
     const handleCustomMultiplierInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       let val = target.value;
       val = val.replace(/[^0-9.]/g, "");
@@ -836,6 +843,7 @@ createApp({
     };
 
     const handleBaseExpInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       let raw = target.value.replace(/[^0-9]/g, "");
 
