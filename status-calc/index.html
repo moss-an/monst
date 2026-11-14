@@ -11,9 +11,12 @@
     <link rel="stylesheet" href="../src/input.css" />
   </head>
   <body
-    class="bg-slate-900 text-slate-100 min-h-screen py-4 px-3 sm:p-6 md:p-8 flex flex-col justify-between"
+    class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans"
   >
-    <div id="app" class="max-w-4xl mx-auto space-y-4 sm:space-y-6 w-full">
+    <div
+      id="app"
+      class="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 w-full flex-grow"
+    >
       <header class="text-center pl-11 pr-2 sm:px-0">
         <h1 class="text-2xl sm:text-3xl font-bold text-amber-400">
           モンスト ステータス計算ツール
@@ -674,7 +677,7 @@
     </div>
 
     <footer
-      class="mt-8 pt-4 pb-2 border-t border-slate-800 text-center text-xs text-slate-400 space-y-1"
+      class="py-6 text-center text-slate-400 text-xs border-t border-slate-800/80 mt-auto"
     >
       <p>
         <a
@@ -692,8 +695,8 @@
         </a>
       </p>
     </footer>
-
     <script type="module" src="../src/components/hamburger.ts"></script>
+    <script type="module" src="../src/components/footer.ts"></script>
     <script type="module" src="./ts/app.ts"></script>
   </body>
 </html>

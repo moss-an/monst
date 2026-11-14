@@ -11,9 +11,12 @@
     <link rel="stylesheet" href="../src/input.css" />
   </head>
   <body
-    class="bg-slate-900 text-slate-100 min-h-screen py-4 px-3 sm:p-6 md:p-8 flex flex-col justify-between"
+    class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans"
   >
-    <div id="app" class="max-w-3xl mx-auto space-y-4 sm:space-y-6 w-full">
+    <div
+      id="app"
+      class="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 w-full flex-grow"
+    >
       <header class="text-center pl-11 pr-2 sm:px-0">
         <h1 class="text-2xl sm:text-3xl font-bold text-amber-400">
           モンスト ランク計算ツール
@@ -171,7 +174,7 @@
                           :disabled="!row.isLast"
                           placeholder="未入力"
                           :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono text-slate-300 focus:outline-none focus:border-amber-400"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200 focus:outline-none focus:border-amber-400"
                         />
                       </td>
                       <td class="py-1 px-1 text-center">
@@ -571,9 +574,8 @@
       </section>
     </div>
 
-    <!-- 画面下部フッター（問い合わせリンク） -->
     <footer
-      class="mt-8 pt-4 pb-2 border-t border-slate-800 text-center text-xs text-slate-400 space-y-1"
+      class="py-6 text-center text-slate-400 text-xs border-t border-slate-800/80 mt-auto"
     >
       <p>
         <a
@@ -591,8 +593,8 @@
         </a>
       </p>
     </footer>
-
     <script type="module" src="../src/components/hamburger.ts"></script>
+    <script type="module" src="../src/components/footer.ts"></script>
     <script type="module" src="./ts/app.ts"></script>
   </body>
 </html>
