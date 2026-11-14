@@ -65,6 +65,8 @@ export function initRankTableFromCSV(csvText: string): void {
 export function initRankStepTableFromCSV(csvText: string): void {
   if (!csvText) return;
   const lines = csvText.trim().split("\n");
+  let prevExp = 0;
+
   rankStepTable = lines
     .slice(1)
     .filter((line) => line.trim() !== "")
@@ -73,7 +75,17 @@ export function initRankStepTableFromCSV(csvText: string): void {
       const minRank = parseInt(parts[0].trim(), 10);
       const maxRankStr = parts[1] ? parts[1].trim() : "";
       const maxRank = maxRankStr === "" ? null : parseInt(maxRankStr, 10);
-      const expPerRank = parseInt(parts[2].trim(), 10);
+
+      const expStr = parts[2] ? parts[2].trim() : "";
+      const rawExp = expStr === "" ? null : parseInt(expStr, 10);
+
+      let expPerRank = rawExp ?? 0;
+      if (rawExp === null || isNaN(expPerRank) || expPerRank <= 0) {
+        expPerRank = prevExp;
+      } else {
+        prevExp = expPerRank;
+      }
+
       return { minRank, maxRank, expPerRank };
     });
 
