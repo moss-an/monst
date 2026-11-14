@@ -3,7 +3,7 @@
  * @description UIの状態制御
  */
 
-import { createApp, ref, computed, onMounted } from "vue";
+import { createApp, ref, computed, onMounted, nextTick } from "vue";
 import * as CONSTANTS from "./constants";
 import * as Logic from "./logic";
 
@@ -527,6 +527,25 @@ createApp({
         inputExpDisplay: "",
       });
       updateRankSteps();
+
+      nextTick(() => {
+        const containers = document.querySelectorAll(".overflow-y-auto");
+        containers.forEach((container) => {
+          container.scrollTop = container.scrollHeight;
+        });
+
+        const maxRankInputs = document.querySelectorAll(
+          'input[placeholder="未入力"]',
+        );
+        if (maxRankInputs.length >= 2) {
+          const targetInput = maxRankInputs[
+            maxRankInputs.length - 2
+          ] as HTMLInputElement;
+          if (targetInput) {
+            targetInput.focus();
+          }
+        }
+      });
     };
 
     const removeRankStepRow = (originalIndex: number): void => {
