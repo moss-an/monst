@@ -1,33 +1,81 @@
 /**
  * @file hamburger.ts
- * @description 全ページ共通のハンバーガーメニューコンポーネント
- *
- * 【使い方】
- * 各ページの HTML に `<script type="module" src="../src/components/hamburger.ts"></script>`
- * （ルート直下の場合は `./src/components/hamburger.ts`）を読み込むだけで自動的に左上にメニューボタンが描画されます。
- *
- * 【新しいツールを追加する場合】
- * 下の `MENU_ITEMS` 配列にオブジェクトを1つ追加するだけで全ページのメニューに反映されます。
- * `depth` に階層の深さ（0: ホーム、1: ホーム配下の各ツール）を指定すると自動でインデント表示されます。
+ * @description 全ページ共通のハンバーガーメニュー
  */
 
 export interface MenuItem {
   label: string;
-  /** リポジトリルートからの相対パス（例: "", "rank-calc/", "status-calc/"） */
   pathFromRoot: string;
-  /** メニュー表示時の階層インデント（0: トップレベル, 1: 1段インデント） */
-  depth?: number;
+  depth: number;
 }
 
-export const MENU_ITEMS: MenuItem[] = [
-  { label: "ホーム", pathFromRoot: "", depth: 0 },
-  { label: "ランク計算ツール", pathFromRoot: "rank-calc/", depth: 1 },
-  { label: "ステータス計算ツール", pathFromRoot: "status-calc/", depth: 1 },
-];
+/**
+ * プロジェクト内の全 index.html を自動収集してメニューリストを動的生成する
+ */
+function generateMenuItems(): MenuItem[] {
+  const modules = import.meta.glob(
+    ["../../index.html", "../../**/index.html"],
+    {
+      eager: true,
+      query: "?raw",
+    },
+  );
+
+  const items: MenuItem[] = [];
+
+  for (const path in modules) {
+    if (path.includes("dist/")) {
+      continue;
+    }
+
+    const rawContent =
+      (modules[path] as { default?: string }).default ||
+      (modules[path] as string) ||
+      "";
+
+    let pathFromRoot = path
+      .replace(/^(\.\.\/)+/, "")
+      .replace(/index\.html$/, "");
+
+    pathFromRoot = pathFromRoot.replace(/^\/+/, "");
+
+    const depth = pathFromRoot === "" ? 0 : 1;
+
+    const titleMatch = rawContent.match(/<title>(.*?)<\/title>/i);
+    let label = titleMatch
+      ? titleMatch[1].trim()
+      : pathFromRoot
+        ? pathFromRoot.replace(/\/$/, "")
+        : "ホーム";
+
+    label = label.replace(/^モンスト\s*/, "");
+    if (label === "お役立ちツール" || label === "") {
+      label = depth === 0 ? "ホーム" : label;
+    }
+
+    items.push({
+      label,
+      pathFromRoot,
+      depth,
+    });
+  }
+
+  // ホーム (depth 0) を先頭にし、残りを深さ順・名前順にソート
+  items.sort((a, b) => {
+    if (a.depth !== b.depth) return a.depth - b.depth;
+    return a.pathFromRoot.localeCompare(b.pathFromRoot);
+  });
+
+  // 万が一の場合はホームのみを返す
+  if (items.length === 0) {
+    return [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
+  }
+
+  return items;
+}
 
 /**
  * 現在のスクリプトのURLからリポジトリルートのベースURLを算出する
- * これにより、どの階層のページから読み込まれても正確な相対パスリンクを生成できる
  */
 function resolveRootUrl(): string {
   const scripts = document.querySelectorAll<HTMLScriptElement>(
@@ -45,57 +93,55 @@ function resolveRootUrl(): string {
     }
   }
 
-  // ビルド後（Viteでバンドルされた場合）のフォールバック
   const pathname = window.location.pathname;
-  for (const item of MENU_ITEMS) {
-    if (item.pathFromRoot) {
-      const dirName = item.pathFromRoot.replace(/\/$/, "");
-      if (
-        pathname.includes(`/${dirName}/`) ||
-        pathname.endsWith(`/${dirName}`)
-      ) {
-        return "../";
-      }
-    }
+  if (
+    pathname.includes("/rank-calc/") ||
+    pathname.endsWith("/rank-calc") ||
+    pathname.includes("/status-calc/") ||
+    pathname.endsWith("/status-calc")
+  ) {
+    return "../";
   }
   return "./";
 }
 
 function initHamburgerMenu(): void {
-  // 二重初期化防止
   if (document.getElementById("common-hamburger-container")) return;
 
   const rootPrefix = resolveRootUrl();
   const currentPath = window.location.pathname;
+  const menuItems = generateMenuItems();
 
-  const navLinksHtml = MENU_ITEMS.map((item) => {
-    const href = `${rootPrefix}${item.pathFromRoot}`;
-    const targetDir = item.pathFromRoot.replace(/\/$/, "");
-    const depth = item.depth ?? (targetDir === "" ? 0 : 1);
+  const navLinksHtml = menuItems
+    .map((item) => {
+      const href = `${rootPrefix}${item.pathFromRoot}`;
+      const targetDir = item.pathFromRoot.replace(/\/$/, "");
+      const isCurrent =
+        targetDir === ""
+          ? !menuItems.some(
+              (m) =>
+                m.pathFromRoot !== "" &&
+                (currentPath.includes(
+                  `/${m.pathFromRoot.replace(/\/$/, "")}/`,
+                ) ||
+                  currentPath.endsWith(
+                    `/${m.pathFromRoot.replace(/\/$/, "")}`,
+                  )),
+            )
+          : currentPath.includes(`/${targetDir}/`) ||
+            currentPath.endsWith(`/${targetDir}`);
 
-    const isCurrent =
-      targetDir === ""
-        ? !MENU_ITEMS.some(
-            (m) =>
-              m.pathFromRoot !== "" &&
-              (currentPath.includes(`/${m.pathFromRoot.replace(/\/$/, "")}/`) ||
-                currentPath.endsWith(`/${m.pathFromRoot.replace(/\/$/, "")}`)),
-          )
-        : currentPath.includes(`/${targetDir}/`) ||
-          currentPath.endsWith(`/${targetDir}`);
+      const activeClass = isCurrent
+        ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
+        : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
 
-    const activeClass = isCurrent
-      ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
-      : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
+      const indentWrapperClass = item.depth > 0 ? "pl-4 relative" : "";
+      const treeBranchHtml =
+        item.depth > 0
+          ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
+          : "";
 
-    // depth に応じたインデントとツリー記号の付与
-    const indentWrapperClass = depth > 0 ? "pl-4 relative" : "";
-    const treeBranchHtml =
-      depth > 0
-        ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
-        : "";
-
-    return `
+      return `
       <div class="${indentWrapperClass}">
         <a href="${href}" class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3">
           <span class="flex items-center">${treeBranchHtml}<span>${item.label}</span></span>
@@ -103,7 +149,8 @@ function initHamburgerMenu(): void {
         </a>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   const container = document.createElement("div");
   container.id = "common-hamburger-container";
@@ -115,7 +162,7 @@ function initHamburgerMenu(): void {
       aria-hidden="true"
     ></div>
 
-    <!-- ハンバーガーボタン＆展開メニュー（左上固定・アイコンを基点に開閉） -->
+    <!-- ハンバーガーボタン＆展開メニュー -->
     <div class="fixed top-3 left-3 z-50">
       <button
         id="hamburger-btn"
@@ -125,7 +172,6 @@ function initHamburgerMenu(): void {
         aria-expanded="false"
         aria-controls="hamburger-menu"
       >
-        <!-- 三本線 ⇔ バツ印 アニメーションアイコン -->
         <div class="w-5 h-4 relative flex flex-col justify-between">
           <span
             id="hamburger-line-1"
@@ -142,7 +188,6 @@ function initHamburgerMenu(): void {
         </div>
       </button>
 
-      <!-- アイコン直下から開くドロップダウンメニュー -->
       <div
         id="hamburger-menu"
         class="mt-2 w-72 sm:w-80 bg-slate-800/95 border border-slate-700 rounded-xl p-3.5 shadow-2xl backdrop-blur-md origin-top-left transition-all duration-200 ease-out opacity-0 scale-95 -translate-y-1 pointer-events-none"
@@ -182,14 +227,11 @@ function initHamburgerMenu(): void {
 
     if (open) {
       btn.classList.add("border-amber-400/70", "text-amber-300");
-
       line1.classList.add("translate-y-[7px]", "rotate-45");
       line2.classList.add("opacity-0", "scale-x-0");
       line3.classList.add("-translate-y-[7px]", "-rotate-45");
-
       backdrop.classList.remove("opacity-0", "pointer-events-none");
       backdrop.classList.add("opacity-100");
-
       menu.classList.remove(
         "opacity-0",
         "scale-95",
@@ -199,14 +241,11 @@ function initHamburgerMenu(): void {
       menu.classList.add("opacity-100", "scale-100", "translate-y-0");
     } else {
       btn.classList.remove("border-amber-400/70", "text-amber-300");
-
       line1.classList.remove("translate-y-[7px]", "rotate-45");
       line2.classList.remove("opacity-0", "scale-x-0");
       line3.classList.remove("-translate-y-[7px]", "-rotate-45");
-
       backdrop.classList.add("opacity-0", "pointer-events-none");
       backdrop.classList.remove("opacity-100");
-
       menu.classList.add(
         "opacity-0",
         "scale-95",
