@@ -42,41 +42,43 @@ export const DEFAULT_MULTI = 1.0;
 export const DEFAULT_CLEAR_SEC = 50;
 
 export const MANABI_OPTIONS: SelectOption[] = [
+  { label: "学び 特級EL", value: 1.65 },
+  { label: "学び 特級L", value: 1.6 },
+  { label: "学び 特級M", value: 1.55 },
+  { label: "学び 特級", value: 1.5 },
   { label: "なし", value: 1.0 },
-  { label: "学びの力 特級L", value: 1.6 },
-  { label: "学びの力 特級EL", value: 1.65 },
 ];
 
 export const SPOT_OPTIONS: SelectOption[] = [
+  { label: "学び メイン+（1.75倍）", value: 1.75 },
+  { label: "学び メイン（1.5倍）", value: 1.5 },
+  { label: "学び サブ（1.25倍）", value: 1.25 },
   { label: "なし", value: 1.0 },
-  { label: "サブスポット（1.25倍）", value: 1.25 },
-  { label: "メインスポット（1.5倍）", value: 1.5 },
-  { label: "メインスポット+（1.75倍）", value: 1.75 },
 ];
 
 export const EVENT_OPTIONS: SelectOption[] = [
-  { label: "通常", value: 1.0 },
-  { label: "キャンペーン（2倍）", value: 2.0 },
   { label: "エラベルベル（3倍）", value: 3.0 },
+  { label: "キャンペーン（2倍）", value: 2.0 },
+  { label: "通常", value: 1.0 },
 ];
 
 export const EXP_UP_MONSTER_OPTIONS: SelectOption[] = [
-  { label: "なし", value: 1.0 },
   { label: "あり（1.5倍）", value: 1.5 },
+  { label: "なし", value: 1.0 },
 ];
 
 export const LUCK_BONUS_OPTIONS: SelectOption[] = [
-  { label: "なし", value: 1.0 },
-  { label: "Lv1（1.01倍）", value: 1.01 },
-  { label: "Lv2（1.02倍）", value: 1.02 },
-  { label: "Lv3（1.03倍）", value: 1.03 },
-  { label: "Lv4（1.04倍）", value: 1.04 },
   { label: "Lv5（1.05倍）", value: 1.05 },
+  { label: "Lv4（1.04倍）", value: 1.04 },
+  { label: "Lv3（1.03倍）", value: 1.03 },
+  { label: "Lv2（1.02倍）", value: 1.02 },
+  { label: "Lv1（1.01倍）", value: 1.01 },
+  { label: "なし", value: 1.0 },
 ];
 
 export const MULTI_OPTIONS: SelectOption[] = [
-  { label: "ソロ", value: 1.0 },
   { label: "モンパスホスト", value: 1.05 },
+  { label: "ソロ", value: 1.0 },
 ];
 
 export const QUEST_PRESETS: QuestPreset[] = [

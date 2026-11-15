@@ -51,10 +51,10 @@ export const EVENT_OPTIONS: OptionItem[] = [
 ];
 
 export const WAKUWAKU_OPTIONS: OptionItem[] = [
-  { label: "特級EL", value: 120 },
-  { label: "特級L", value: 100 },
-  { label: "特級M", value: 80 },
-  { label: "特級", value: 60 },
+  { label: "スコア稼ぎ 特級EL", value: 120 },
+  { label: "スコア稼ぎ 特級L", value: 100 },
+  { label: "スコア稼ぎ 特級M", value: 80 },
+  { label: "スコア稼ぎ 特級", value: 60 },
   { label: "なし", value: 0 },
 ];
 
