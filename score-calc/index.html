@@ -52,7 +52,7 @@
             >クリアランク</label
           >
           <select
-            v-model="selectedRank"
+            v-model.number="selectedRank"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option
@@ -166,7 +166,7 @@
             >メダルアップモンスター</label
           >
           <select
-            v-model="selectedMedalUp"
+            v-model.number="selectedMedalUp"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option

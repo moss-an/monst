@@ -17,13 +17,13 @@ createApp({
     const monspotOptions = CONSTANTS.MONSPOT_OPTIONS;
     const medalUpOptions = CONSTANTS.MEDAL_UP_OPTIONS;
 
-    const selectedRank = ref<string>(CONSTANTS.CLEAR_RANKS[0].value);
+    const selectedRank = ref<number>(CONSTANTS.CLEAR_RANKS[0].value);
     const selectedRarity = ref<number>(CONSTANTS.RARITY_MULTIPLIERS[0].value);
-    const selectedMulti = ref<number>(CONSTANTS.MULTI_OPTIONS[3].value);
+    const selectedMulti = ref<number>(CONSTANTS.MULTI_OPTIONS[0].value);
     const selectedEvent = ref<number>(CONSTANTS.EVENT_OPTIONS[0].value);
     const selectedWakuwaku = ref<number>(CONSTANTS.WAKUWAKU_OPTIONS[0].value);
     const selectedMonspot = ref<number>(CONSTANTS.MONSPOT_OPTIONS[0].value);
-    const selectedMedalUp = ref<string>(CONSTANTS.MEDAL_UP_OPTIONS[0].value);
+    const selectedMedalUp = ref<number>(CONSTANTS.MEDAL_UP_OPTIONS[0].value);
 
     const calculatedMedals = computed(() => {
       return Logic.calculateMedals({
