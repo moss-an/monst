@@ -3,52 +3,46 @@
  * @description 計算ロジック
  */
 
-import * as CONSTANTS from "./constants";
-
 export interface CalculationCondition {
-  rankValue: string;
+  difficultyValue: number;
+  rankValue: number;
   rarityValue: number;
   multiValue: number;
   eventValue: number;
   wakuwakuValue: number;
   monspotValue: number;
-  medalUpValue: string;
+  medalUpValue: number;
+}
+
+export interface RewardResult {
+  totalMedals: number;
+  stones: number;
+  remainderMedals: number;
 }
 
 /**
- * クエストクリア時の獲得メダル数を計算する
+ * クエストクリア時の獲得メダル数を計算し、ストーンとメダルに変換する
  */
-export function calculateMedals(condition: CalculationCondition): number {
-  const rankItem = CONSTANTS.CLEAR_RANKS.find(
-    (r) => r.value === condition.rankValue,
-  );
-  const basePoints = rankItem?.points ?? 100;
+export function calculateRewards(
+  condition: CalculationCondition,
+): RewardResult {
+  const baseScore = condition.difficultyValue * condition.rankValue;
+  const subTotal = baseScore + condition.wakuwakuValue + condition.monspotValue;
 
-  const wakuwakuItem = CONSTANTS.WAKUWAKU_OPTIONS.find(
-    (w) => w.value === condition.wakuwakuValue,
-  );
-  const wakuwakuPoints = wakuwakuItem?.points ?? 0;
-
-  const subTotal = basePoints + wakuwakuPoints;
-
-  const multiItem = CONSTANTS.MULTI_OPTIONS.find(
-    (m) => m.value === condition.multiValue,
-  );
-  const multiMultiplier = multiItem?.multiplier ?? 1.0;
-
-  const medalUpItem = CONSTANTS.MEDAL_UP_OPTIONS.find(
-    (m) => m.value === condition.medalUpValue,
-  );
-  const medalUpMultiplier = medalUpItem?.multiplier ?? 1.0;
-
-  const total = Math.floor(
+  const totalMedals = Math.floor(
     subTotal *
       condition.rarityValue *
-      multiMultiplier *
+      condition.multiValue *
       condition.eventValue *
-      condition.monspotValue *
-      medalUpMultiplier,
+      condition.medalUpValue,
   );
 
-  return total;
+  const stones = Math.floor(totalMedals / 3000);
+  const remainderMedals = totalMedals % 3000;
+
+  return {
+    totalMedals,
+    stones,
+    remainderMedals,
+  };
 }

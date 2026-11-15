@@ -12,6 +12,7 @@ GitHub Pages上で公開されている、マルチページ構成のWebアプ�
 monst/
 ├── index.html                  # トップページのエントリーポイント
 ├── rank-calc/                  # ランク上げ計算ツール
+├── score-calc/                 # スコア計算ツール
 ├── status-calc/                # ステータス計算ツール
 ├── src/
 │   ├── components/             # 汎用UIコンポーネント

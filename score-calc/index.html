@@ -46,13 +46,32 @@
       <main
         class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 sm:p-6 shadow-xl space-y-5"
       >
+        <!-- クエスト難易度 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >クエスト難易度</label
+          >
+          <select
+            v-model.number="selectedDifficulty"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in difficultyOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
         <!-- クリアランク -->
         <div class="space-y-1.5">
           <label class="block text-sm font-medium text-slate-300"
             >クリアランク</label
           >
           <select
-            v-model="selectedRank"
+            v-model.number="selectedRank"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option
@@ -166,7 +185,7 @@
             >メダルアップモンスター</label
           >
           <select
-            v-model="selectedMedalUp"
+            v-model.number="selectedMedalUp"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option
@@ -180,15 +199,27 @@
         </div>
 
         <!-- 結果表示エリア -->
-        <div
-          class="mt-6 p-5 bg-indigo-950/40 border border-indigo-500/30 rounded-xl text-center space-y-1"
-        >
-          <span class="text-sm font-medium text-indigo-300"
-            >獲得メダル予測</span
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <!-- ストーン -->
+          <div
+            class="p-4 bg-amber-950/40 border border-amber-500/30 rounded-xl text-center space-y-1"
           >
-          <div class="text-3xl sm:text-4xl font-extrabold text-indigo-400">
-            {{ calculatedMedals.toLocaleString() }}
-            <span class="text-xl font-bold">枚</span>
+            <span class="text-sm font-medium text-amber-300">ストーン</span>
+            <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">
+              {{ calculatedStones.toLocaleString() }}
+              <span class="text-base font-bold">個</span>
+            </div>
+          </div>
+
+          <!-- メダル -->
+          <div
+            class="p-4 bg-amber-950/40 border border-amber-500/30 rounded-xl text-center space-y-1"
+          >
+            <span class="text-sm font-medium text-amber-300">メダル</span>
+            <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">
+              {{ calculatedRemainderMedals.toLocaleString() }}
+              <span class="text-base font-bold">枚</span>
+            </div>
           </div>
         </div>
       </main>
