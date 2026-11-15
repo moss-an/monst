@@ -36,7 +36,7 @@ createApp({
     const spdMaxInput = ref<string>(CONSTANTS.DEFAULT_SPD_MAX_STR);
 
     const maxSlots = ref<number>(CONSTANTS.DEFAULT_MAX_FRUIT_SLOTS);
-    const selectedSpotId = ref<string>(spotOptions[0].id);
+    const selectedSpotId = ref<string>(SPOTS.DEFAULT_SPOT_ID);
     const selectedGrades = ref<FRUITS.FruitGrade[]>([
       ...FRUITS.DEFAULT_SELECTED_GRADES,
     ]);
@@ -188,18 +188,24 @@ createApp({
     });
 
     // 攻撃力・スピードそれぞれの条件指定有無
-    const hasAtkCondition = computed<boolean>(() => {
-      const baseAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
-      const atkMin = parseIntOrNull(atkMinInput.value);
-      const atkMax = parseIntOrNull(atkMaxInput.value);
-      return (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
+    const hasAtkCondition = computed<boolean>({
+      get() {
+        const baseAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
+        const atkMin = parseIntOrNull(atkMinInput.value);
+        const atkMax = parseIntOrNull(atkMaxInput.value);
+        return (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
+      },
+      set() {},
     });
 
-    const hasSpdCondition = computed<boolean>(() => {
-      const baseSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
-      const spdMin = parseFloatOrNull(spdMinInput.value);
-      const spdMax = parseFloatOrNull(spdMaxInput.value);
-      return (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
+    const hasSpdCondition = computed<boolean>({
+      get() {
+        const baseSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
+        const spdMin = parseFloatOrNull(spdMinInput.value);
+        const spdMax = parseFloatOrNull(spdMaxInput.value);
+        return (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
+      },
+      set() {},
     });
 
     // 攻撃力のみ指定時：スピードのみに影響を与える実の種別数とメッセージ

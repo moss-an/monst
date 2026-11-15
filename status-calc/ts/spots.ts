@@ -10,6 +10,8 @@ export interface SpotOption {
   spdBonus: number;
 }
 
+export const DEFAULT_SPOT_ID = "none";
+
 export const SPOT_OPTIONS: SpotOption[] = [
   {
     id: "main_plus",
