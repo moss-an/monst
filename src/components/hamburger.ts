@@ -103,12 +103,14 @@ function initHamburgerMenu(): void {
   const container = document.createElement("div");
   container.id = "common-hamburger-container";
   container.innerHTML = `
+    <!-- 外側クリックで閉じるための透明バックドロップ -->
     <div
       id="hamburger-backdrop"
       class="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[1px] opacity-0 pointer-events-none transition-opacity duration-200"
       aria-hidden="true"
     ></div>
 
+    <!-- ハンバーガーボタン＆展開メニュー -->
     <div class="fixed top-3 left-3 z-50">
       <button
         id="hamburger-btn"
