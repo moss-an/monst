@@ -27,4 +27,4 @@ export const TOOLS: ToolItem[] = [
     description:
       "目標の攻撃力・スピード範囲に収まるわくわくの実の組み合わせを逆算します。",
   },
-].sort((a, b) => a.path.localeCompare(b.path));
+];

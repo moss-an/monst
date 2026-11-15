@@ -15,18 +15,17 @@ function generateMenuItems(): MenuItem[] {
   const items: MenuItem[] = [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
 
   for (const tool of TOOLS) {
+    // パスに含まれるスラッシュの数から階層の深さ（depth）を自動計算する
+    const cleanPath = tool.path.replace(/^\/+/, "").replace(/\/$/, "");
+    const depth =
+      cleanPath === "" ? 0 : cleanPath.split("/").filter(Boolean).length;
+
     items.push({
       label: tool.name,
       pathFromRoot: tool.path,
-      depth: 1,
+      depth,
     });
   }
-
-  // パスのアルファベット順にソート
-  items.sort((a, b) => {
-    if (a.depth !== b.depth) return a.depth - b.depth;
-    return a.pathFromRoot.localeCompare(b.pathFromRoot);
-  });
 
   return items;
 }
@@ -82,7 +81,9 @@ function initHamburgerMenu(): void {
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
         : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
 
-      const indentWrapperClass = item.depth > 0 ? "pl-4 relative" : "";
+      // 階層の深さに応じてインデント幅を可変にする（depth 1ならpl-4、depth 2ならpl-8...）
+      const indentWrapperClass =
+        item.depth > 0 ? `pl-${item.depth * 4} relative` : "";
       const treeBranchHtml =
         item.depth > 0
           ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
