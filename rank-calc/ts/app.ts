@@ -39,7 +39,7 @@ createApp({
     const maxBaseExp = CONSTANTS.MAX_BASE_EXP;
     const maxClearSec = CONSTANTS.MAX_CLEAR_SEC;
 
-    const manabiOptions = CONSTANTS.MANABI_OPTIONS;
+    const wakuwakuOptions = CONSTANTS.WAKUWAKU_OPTIONS;
     const spotOptions = CONSTANTS.SPOT_OPTIONS;
     const eventOptions = CONSTANTS.EVENT_OPTIONS;
     const expUpMonsterOptions = CONSTANTS.EXP_UP_MONSTER_OPTIONS;
@@ -52,8 +52,8 @@ createApp({
     const currentExpInput = ref<string>("");
     const targetExpInput = ref<string>("");
 
-    const activeCurrentMode = ref<InputMode>("rank"); // "rank" または "exp"
-    const activeTargetMode = ref<InputMode>("rank"); // "rank" または "exp"
+    const activeCurrentMode = ref<InputMode>("rank");
+    const activeTargetMode = ref<InputMode>("rank");
 
     const isLoaded = ref<boolean>(false);
     const lastStepExp = ref<number>(0);
@@ -809,7 +809,7 @@ createApp({
       }
     });
 
-    const selectedManabi = ref<number>(CONSTANTS.DEFAULT_MANABI);
+    const selectedWakuwaku = ref<number>(CONSTANTS.DEFAULT_WAKUWAKU);
     const selectedSpot = ref<number>(CONSTANTS.DEFAULT_SPOT);
     const selectedEvent = ref<number>(CONSTANTS.DEFAULT_EVENT);
     const selectedExpUpMonster = ref<number>(CONSTANTS.DEFAULT_EXP_UP_MONSTER);
@@ -930,7 +930,7 @@ createApp({
 
     const multiplierObj = computed<Logic.Multipliers>(() => {
       return {
-        manabi: selectedManabi.value,
+        wakuwaku: selectedWakuwaku.value,
         spot: selectedSpot.value,
         event: selectedEvent.value,
         expUpMonster: selectedExpUpMonster.value,
@@ -981,7 +981,7 @@ createApp({
       maxCustomDecDigits,
       maxBaseExp,
       maxClearSec,
-      manabiOptions,
+      wakuwakuOptions,
       spotOptions,
       eventOptions,
       expUpMonsterOptions,
@@ -1030,7 +1030,7 @@ createApp({
       validateCustomMultiplier,
       baseMultiplier,
       totalMultiplier,
-      selectedManabi,
+      selectedWakuwaku,
       selectedSpot,
       selectedEvent,
       selectedExpUpMonster,

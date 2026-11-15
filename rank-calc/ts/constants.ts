@@ -33,7 +33,7 @@ export const MAX_BASE_EXP = 999999999; // 基礎獲得経験値の上限
 export const MAX_CLEAR_SEC = 999999; // 1周の平均時間の上限
 
 // UI上のデフォルト値
-export const DEFAULT_MANABI = 1.65;
+export const DEFAULT_WAKUWAKU = 1.65;
 export const DEFAULT_SPOT = 1.75;
 export const DEFAULT_EVENT = 3.0;
 export const DEFAULT_EXP_UP_MONSTER = 1.5;
@@ -41,7 +41,7 @@ export const DEFAULT_LUCK_BONUS = 1.05;
 export const DEFAULT_MULTI = 1.0;
 export const DEFAULT_CLEAR_SEC = 50;
 
-export const MANABI_OPTIONS: SelectOption[] = [
+export const WAKUWAKU_OPTIONS: SelectOption[] = [
   { label: "学び 特級EL", value: 1.65 },
   { label: "学び 特級L", value: 1.6 },
   { label: "学び 特級M", value: 1.55 },
