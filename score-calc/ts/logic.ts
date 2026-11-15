@@ -17,14 +17,14 @@ export interface CalculationCondition {
  * クエストクリア時の獲得メダル数を計算する
  */
 export function calculateMedals(condition: CalculationCondition): number {
-  const subTotal = condition.rankValue + condition.wakuwakuValue;
+  const subTotal =
+    condition.rankValue + condition.wakuwakuValue + condition.monspotValue;
 
   const total = Math.floor(
     subTotal *
       condition.rarityValue *
       condition.multiValue *
       condition.eventValue *
-      condition.monspotValue *
       condition.medalUpValue,
   );
 
