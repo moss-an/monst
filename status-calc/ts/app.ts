@@ -188,24 +188,18 @@ createApp({
     });
 
     // 攻撃力・スピードそれぞれの条件指定有無
-    const hasAtkCondition = computed<boolean>({
-      get() {
-        const baseAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
-        const atkMin = parseIntOrNull(atkMinInput.value);
-        const atkMax = parseIntOrNull(atkMaxInput.value);
-        return (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
-      },
-      set() {},
+    const hasAtkCondition = computed<boolean>(() => {
+      const baseAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
+      const atkMin = parseIntOrNull(atkMinInput.value);
+      const atkMax = parseIntOrNull(atkMaxInput.value);
+      return (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
     });
 
-    const hasSpdCondition = computed<boolean>({
-      get() {
-        const baseSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
-        const spdMin = parseFloatOrNull(spdMinInput.value);
-        const spdMax = parseFloatOrNull(spdMaxInput.value);
-        return (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
-      },
-      set() {},
+    const hasSpdCondition = computed<boolean>(() => {
+      const baseSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
+      const spdMin = parseFloatOrNull(spdMinInput.value);
+      const spdMax = parseFloatOrNull(spdMaxInput.value);
+      return (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
     });
 
     // 攻撃力のみ指定時：スピードのみに影響を与える実の種別数とメッセージ
