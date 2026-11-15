@@ -16,10 +16,13 @@ monst/
 ├── status-calc/                # ステータス計算ツール
 ├── src/
 │   ├── components/             # 汎用UIコンポーネント
+│   ├── tools.ts                # ツール一覧の定義
 │   └── input.css               # スタイル(Tailwind CSS)
+├── ogp/                        # OGP画像作成用ディレクトリ
 ├── Dockerfile                  # Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
 ├── docker-compose.build.yml    # ビルド用Docker Compose
+├── docker-compose.ogp.yml      # OGP画像作成用Docker Compose
 ├── vite.config.mjs             # Viteの設定ファイル(マルチページ対応)
 └── package.json                # 依存関係とスクリプト定義
 ```
@@ -72,6 +75,15 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 2. プロジェクトを VS Code で開きます。
 3. 画面左下のアイコン (またはコマンドパレット) から `Dev Containers: Reopen in Container` を実行します。
 4. 自動的にコンテナがビルドされ、接続と同時に依存関係のインストールや開発サーバーの起動が行われます。
+
+## ツール一覧の仕組み
+
+- **`src/tools.ts`**:
+  ツール一覧情報を定義しています。ここを編集するだけで、他に自動反映されます。
+- **`src/index-renderer.ts`**:
+  `src/tools.ts` をもとに、トップページのツール一覧リンクを動的に生成します。
+- **`src/components/hamburger.ts`**:
+  `src/tools.ts` をもとに、ハンバーガーメニューのツリー構造を動的に生成します。
 
 ## Viteのマルチページ自動検出
 

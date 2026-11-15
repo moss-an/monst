@@ -3,84 +3,35 @@
  * @description 全ページ共通のハンバーガーメニュー
  */
 
+import { TOOLS, ToolItem } from "../tools";
+
 export interface MenuItem {
   label: string;
   pathFromRoot: string;
   depth: number;
 }
 
-/**
- * プロジェクト内の全 index.html を自動収集してメニューリストを動的生成する
- */
 function generateMenuItems(): MenuItem[] {
-  const modules = import.meta.glob(
-    ["../../index.html", "../../**/index.html"],
-    {
-      eager: true,
-      query: "?raw",
-    },
-  );
+  const items: MenuItem[] = [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
 
-  const items: MenuItem[] = [];
-
-  for (const path in modules) {
-    // ビルド成果物は除外
-    if (path.includes("dist/")) {
-      continue;
-    }
-
-    const rawContent =
-      (modules[path] as { default?: string }).default ||
-      (modules[path] as string) ||
-      "";
-
-    let pathFromRoot = path
-      .replace(/^(\.\.\/)+/, "")
-      .replace(/index\.html$/, "");
-
-    pathFromRoot = pathFromRoot.replace(/^\/+/, "");
-
+  for (const tool of TOOLS) {
+    // パスに含まれるスラッシュの数から階層の深さ（depth）を自動計算する
+    const cleanPath = tool.path.replace(/^\/+/, "").replace(/\/$/, "");
     const depth =
-      pathFromRoot === "" ? 0 : pathFromRoot.split("/").filter(Boolean).length;
-
-    const titleMatch = rawContent.match(/<title>(.*?)<\/title>/i);
-    let label = titleMatch ? titleMatch[1].trim() : "";
-
-    // 「モンスト 」などのプレフィックスを除去
-    label = label.replace(/^モンスト\s*/, "");
-
-    if (!label) {
-      label = depth === 0 ? "ホーム" : pathFromRoot.replace(/\/$/, "");
-    }
+      cleanPath === "" ? 0 : cleanPath.split("/").filter(Boolean).length;
 
     items.push({
-      label,
-      pathFromRoot,
+      label: tool.name,
+      pathFromRoot: tool.path,
       depth,
     });
-  }
-
-  // ホーム (depth 0) を先頭にし、残りを深さ順・名前順にソート
-  items.sort((a, b) => {
-    if (a.depth !== b.depth) return a.depth - b.depth;
-    return a.pathFromRoot.localeCompare(b.pathFromRoot);
-  });
-
-  if (items.length === 0) {
-    return [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
   }
 
   return items;
 }
 
-/**
- * 現在のページのURLと自動収集したメニュー情報を照らし合わせ、
- * ルートに戻るための相対プレフィックス（./ または ../ など）を動的に算出する
- */
 function getCurrentRootPrefix(menuItems: MenuItem[]): string {
   const currentPath = window.location.pathname;
-
-  // 深い階層のパスから優先的にマッチングさせるため、depthの降順でソート
   const sortedItems = [...menuItems].sort((a, b) => b.depth - a.depth);
 
   for (const item of sortedItems) {
@@ -130,7 +81,9 @@ function initHamburgerMenu(): void {
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
         : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
 
-      const indentWrapperClass = item.depth > 0 ? "pl-4 relative" : "";
+      // 階層の深さに応じてインデント幅を可変にする（depth 1ならpl-4、depth 2ならpl-8...）
+      const indentWrapperClass =
+        item.depth > 0 ? `pl-${item.depth * 4} relative` : "";
       const treeBranchHtml =
         item.depth > 0
           ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
@@ -168,18 +121,9 @@ function initHamburgerMenu(): void {
         aria-controls="hamburger-menu"
       >
         <div class="w-5 h-4 relative flex flex-col justify-between">
-          <span
-            id="hamburger-line-1"
-            class="block h-0.5 w-full bg-current rounded-full transition-all duration-200 origin-center"
-          ></span>
-          <span
-            id="hamburger-line-2"
-            class="block h-0.5 w-full bg-current rounded-full transition-all duration-200"
-          ></span>
-          <span
-            id="hamburger-line-3"
-            class="block h-0.5 w-full bg-current rounded-full transition-all duration-200 origin-center"
-          ></span>
+          <span id="hamburger-line-1" class="block h-0.5 w-full bg-current rounded-full transition-all duration-200 origin-center"></span>
+          <span id="hamburger-line-2" class="block h-0.5 w-full bg-current rounded-full transition-all duration-200"></span>
+          <span id="hamburger-line-3" class="block h-0.5 w-full bg-current rounded-full transition-all duration-200 origin-center"></span>
         </div>
       </button>
 
@@ -254,9 +198,7 @@ function initHamburgerMenu(): void {
   btn?.addEventListener("click", () => setMenuState(!isOpen));
   backdrop?.addEventListener("click", () => setMenuState(false));
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen) {
-      setMenuState(false);
-    }
+    if (e.key === "Escape" && isOpen) setMenuState(false);
   });
 }
 
