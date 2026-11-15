@@ -1,0 +1,4 @@
+/* 初期ロード時の画面ちらつき防止  */
+.preload-hidden {
+  visibility: hidden;
+}

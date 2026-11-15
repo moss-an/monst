@@ -1053,3 +1053,6 @@ createApp({
     };
   },
 }).mount("#app");
+
+// 初期化・バインド完了後に非表示クラスを削除して表示する
+document.getElementById("app")?.classList.remove("preload-hidden");
