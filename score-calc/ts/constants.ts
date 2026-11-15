@@ -59,9 +59,9 @@ export const WAKUWAKU_OPTIONS: OptionItem[] = [
 ];
 
 export const MONSPOT_OPTIONS: OptionItem[] = [
-  { label: "スコア稼ぎ メイン+", value: 60 },
-  { label: "スコア稼ぎ メイン", value: 40 },
-  { label: "スコア稼ぎ サブ", value: 20 },
+  { label: "スコア稼ぎ メイン+（+60）", value: 60 },
+  { label: "スコア稼ぎ メイン（+40）", value: 40 },
+  { label: "スコア稼ぎ サブ（+20）", value: 20 },
   { label: "なし", value: 0 },
 ];
 
