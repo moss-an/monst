@@ -10,8 +10,8 @@ export interface CalculationCondition {
   multiValue: number;
   eventValue: number;
   wakuwakuValue: number;
-  monspotValue: number;
-  medalUpValue: number;
+  spotValue: number;
+  medalUpMonsterValue: number;
 }
 
 export interface RewardResult {
@@ -27,14 +27,14 @@ export function calculateRewards(
   condition: CalculationCondition,
 ): RewardResult {
   const baseScore = condition.difficultyValue * condition.rankValue;
-  const subTotal = baseScore + condition.wakuwakuValue + condition.monspotValue;
+  const subTotal = baseScore + condition.wakuwakuValue + condition.spotValue;
 
   const totalMedals = Math.floor(
     subTotal *
       condition.rarityValue *
       condition.multiValue *
       condition.eventValue *
-      condition.medalUpValue,
+      condition.medalUpMonsterValue,
   );
 
   const stones = Math.floor(totalMedals / 3000);

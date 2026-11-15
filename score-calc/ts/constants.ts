@@ -15,8 +15,8 @@ export const DEFAULT_RARITY = 1.8;
 export const DEFAULT_MULTI = 1.3;
 export const DEFAULT_EVENT = 5.0;
 export const DEFAULT_WAKUWAKU = 120;
-export const DEFAULT_MONSPOT = 0;
-export const DEFAULT_MEDAL_UP = 2.0;
+export const DEFAULT_SPOT = 0;
+export const DEFAULT_MEDAL_UP_MONSTER = 2.0;
 
 export const QUEST_DIFFICULTIES: OptionItem[] = [
   { label: "究極", value: 100 },
@@ -58,14 +58,14 @@ export const WAKUWAKU_OPTIONS: OptionItem[] = [
   { label: "なし", value: 0 },
 ];
 
-export const MONSPOT_OPTIONS: OptionItem[] = [
+export const SPOT_OPTIONS: OptionItem[] = [
   { label: "スコア稼ぎ メイン+（+60）", value: 60 },
   { label: "スコア稼ぎ メイン（+40）", value: 40 },
   { label: "スコア稼ぎ サブ（+20）", value: 20 },
   { label: "なし", value: 0 },
 ];
 
-export const MEDAL_UP_OPTIONS: OptionItem[] = [
+export const MEDAL_UP_MONSTER_OPTIONS: OptionItem[] = [
   { label: "あり（2.0倍）", value: 2.0 },
   { label: "なし", value: 1.0 },
 ];

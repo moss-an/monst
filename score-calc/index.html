@@ -166,11 +166,11 @@
             >モンスポット</label
           >
           <select
-            v-model.number="selectedMonspot"
+            v-model.number="selectedSpot"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-amber-400"
           >
             <option
-              v-for="item in monspotOptions"
+              v-for="item in spotOptions"
               :key="item.value"
               :value="item.value"
             >
@@ -185,11 +185,11 @@
             >メダルアップモンスター</label
           >
           <select
-            v-model.number="selectedMedalUp"
+            v-model.number="selectedMedalUpMonster"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:border-amber-400"
           >
             <option
-              v-for="item in medalUpOptions"
+              v-for="item in medalUpMonsterOptions"
               :key="item.value"
               :value="item.value"
             >

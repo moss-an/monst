@@ -19,7 +19,7 @@ export interface RankStepInput {
 }
 
 export interface Multipliers {
-  manabi?: number;
+  wakuwaku?: number;
   spot?: number;
   event?: number;
   expUpMonster?: number;
@@ -267,12 +267,12 @@ export function getLastStepMinRank(): number {
  */
 export function calculateBaseMultiplier(multipliers: Multipliers): number {
   const {
-    manabi = 1.0,
+    wakuwaku = 1.0,
     spot = 1.0,
     event = 1.0,
     expUpMonster = 1.0,
   } = multipliers;
-  return manabi * spot * event * expUpMonster;
+  return wakuwaku * spot * event * expUpMonster;
 }
 
 /**
@@ -280,7 +280,7 @@ export function calculateBaseMultiplier(multipliers: Multipliers): number {
  */
 export function calculateTotalMultiplier(multipliers: Multipliers): number {
   const {
-    manabi = 1.0,
+    wakuwaku = 1.0,
     spot = 1.0,
     event = 1.0,
     expUpMonster = 1.0,
@@ -296,7 +296,7 @@ export function calculateTotalMultiplier(multipliers: Multipliers): number {
       ? 1.0
       : Number(custom);
   return (
-    manabi * spot * event * expUpMonster * luckBonus * multi * numericCustom
+    wakuwaku * spot * event * expUpMonster * luckBonus * multi * numericCustom
   );
 }
 
@@ -310,7 +310,7 @@ export function calculateEarnedExpPerRun(
   if (baseExp <= 0) return 0;
 
   const {
-    manabi = 1.0,
+    wakuwaku = 1.0,
     spot = 1.0,
     event = 1.0,
     expUpMonster = 1.0,
@@ -332,7 +332,7 @@ export function calculateEarnedExpPerRun(
   //HACK: ゲーム内処理が不明のため、暫定ロジック
   // 各倍率を都度乗算し、EPSILONを適用して切り上げ
   currentExp = Math.ceil(
-    currentExp * manabi - CONSTANTS.FLOATING_POINT_EPSILON,
+    currentExp * wakuwaku - CONSTANTS.FLOATING_POINT_EPSILON,
   );
   currentExp = Math.ceil(currentExp * spot - CONSTANTS.FLOATING_POINT_EPSILON);
   currentExp = Math.ceil(currentExp * event - CONSTANTS.FLOATING_POINT_EPSILON);

@@ -15,8 +15,8 @@ createApp({
     const multiOptions = CONSTANTS.MULTI_OPTIONS;
     const eventOptions = CONSTANTS.EVENT_OPTIONS;
     const wakuwakuOptions = CONSTANTS.WAKUWAKU_OPTIONS;
-    const monspotOptions = CONSTANTS.MONSPOT_OPTIONS;
-    const medalUpOptions = CONSTANTS.MEDAL_UP_OPTIONS;
+    const spotOptions = CONSTANTS.SPOT_OPTIONS;
+    const medalUpMonsterOptions = CONSTANTS.MEDAL_UP_MONSTER_OPTIONS;
 
     const selectedDifficulty = ref<number>(CONSTANTS.DEFAULT_DIFFICULTY);
     const selectedRank = ref<number>(CONSTANTS.DEFAULT_RANK);
@@ -24,8 +24,10 @@ createApp({
     const selectedMulti = ref<number>(CONSTANTS.DEFAULT_MULTI);
     const selectedEvent = ref<number>(CONSTANTS.DEFAULT_EVENT);
     const selectedWakuwaku = ref<number>(CONSTANTS.DEFAULT_WAKUWAKU);
-    const selectedMonspot = ref<number>(CONSTANTS.DEFAULT_MONSPOT);
-    const selectedMedalUp = ref<number>(CONSTANTS.DEFAULT_MEDAL_UP);
+    const selectedSpot = ref<number>(CONSTANTS.DEFAULT_SPOT);
+    const selectedMedalUpMonster = ref<number>(
+      CONSTANTS.DEFAULT_MEDAL_UP_MONSTER,
+    );
 
     const rewardResult = computed(() => {
       return Logic.calculateRewards({
@@ -35,8 +37,8 @@ createApp({
         multiValue: selectedMulti.value,
         eventValue: selectedEvent.value,
         wakuwakuValue: selectedWakuwaku.value,
-        monspotValue: selectedMonspot.value,
-        medalUpValue: selectedMedalUp.value,
+        spotValue: selectedSpot.value,
+        medalUpMonsterValue: selectedMedalUpMonster.value,
       });
     });
 
@@ -52,16 +54,16 @@ createApp({
       multiOptions,
       eventOptions,
       wakuwakuOptions,
-      monspotOptions,
-      medalUpOptions,
+      spotOptions,
+      medalUpMonsterOptions,
       selectedDifficulty,
       selectedRank,
       selectedRarity,
       selectedMulti,
       selectedEvent,
       selectedWakuwaku,
-      selectedMonspot,
-      selectedMedalUp,
+      selectedSpot,
+      selectedMedalUpMonster,
       calculatedStones,
       calculatedRemainderMedals,
     };
