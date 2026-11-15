@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>モンスト スコア・メダル計算</title>
+    <meta
+      name="description"
+      content="モンスターストライクにおけるメダル獲得数シミュレーターです。クエスト1周あたりの合計獲得メダル数を簡単に計算できます。"
+    />
+    <link rel="stylesheet" href="../src/input.css" />
+    <script type="module" src="../src/components/favicon.ts"></script>
+  </head>
+  <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+    <div id="app" class="flex-1 max-w-xl w-full mx-auto p-4 sm:p-6 space-y-6">
+      <header class="text-center space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
+          スコア・メダル計算
+        </h1>
+        <p class="text-sm text-slate-400">
+          クエストクリア時の獲得メダル数を詳細にシミュレーションします。
+        </p>
+      </header>
+
+      <main
+        class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 sm:p-6 shadow-xl space-y-5"
+      >
+        <!-- クリアランク -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >クリアランク</label
+          >
+          <select
+            v-model="selectedRank"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in rankOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- 合計レアリティ -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >合計レアリティ</label
+          >
+          <select
+            v-model.number="selectedRarity"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in rarityOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- マルチ人数 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >マルチ人数</label
+          >
+          <select
+            v-model.number="selectedMulti"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in multiOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- イベント倍率 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >イベント</label
+          >
+          <select
+            v-model.number="selectedEvent"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in eventOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- スコア稼ぎの実 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >スコア稼ぎの実</label
+          >
+          <select
+            v-model.number="selectedWakuwaku"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in wakuwakuOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- モンスポット -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >モンスポット</label
+          >
+          <select
+            v-model.number="selectedMonspot"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in monspotOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- メダルアップモンスター -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >メダルアップモンスター</label
+          >
+          <select
+            v-model="selectedMedalUp"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in medalUpOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- 結果表示エリア -->
+        <div
+          class="mt-6 p-5 bg-indigo-950/40 border border-indigo-500/30 rounded-xl text-center space-y-1"
+        >
+          <span class="text-sm font-medium text-indigo-300"
+            >獲得メダル予測</span
+          >
+          <div class="text-3xl sm:text-4xl font-extrabold text-indigo-400">
+            {{ calculatedMedals.toLocaleString() }}
+            <span class="text-xl font-bold">枚</span>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="./ts/app.ts"></script>
+  </body>
+</html>
