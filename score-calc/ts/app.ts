@@ -18,16 +18,14 @@ createApp({
     const monspotOptions = CONSTANTS.MONSPOT_OPTIONS;
     const medalUpOptions = CONSTANTS.MEDAL_UP_OPTIONS;
 
-    const selectedDifficulty = ref<number>(
-      CONSTANTS.QUEST_DIFFICULTIES[0].value,
-    );
-    const selectedRank = ref<number>(CONSTANTS.CLEAR_RANKS[0].value);
-    const selectedRarity = ref<number>(CONSTANTS.RARITY_MULTIPLIERS[0].value);
-    const selectedMulti = ref<number>(CONSTANTS.MULTI_OPTIONS[0].value);
-    const selectedEvent = ref<number>(CONSTANTS.EVENT_OPTIONS[0].value);
-    const selectedWakuwaku = ref<number>(CONSTANTS.WAKUWAKU_OPTIONS[0].value);
-    const selectedMonspot = ref<number>(CONSTANTS.MONSPOT_OPTIONS[0].value);
-    const selectedMedalUp = ref<number>(CONSTANTS.MEDAL_UP_OPTIONS[0].value);
+    const selectedDifficulty = ref<number>(CONSTANTS.DEFAULT_DIFFICULTY);
+    const selectedRank = ref<number>(CONSTANTS.DEFAULT_RANK);
+    const selectedRarity = ref<number>(CONSTANTS.DEFAULT_RARITY);
+    const selectedMulti = ref<number>(CONSTANTS.DEFAULT_MULTI);
+    const selectedEvent = ref<number>(CONSTANTS.DEFAULT_EVENT);
+    const selectedWakuwaku = ref<number>(CONSTANTS.DEFAULT_WAKUWAKU);
+    const selectedMonspot = ref<number>(CONSTANTS.DEFAULT_MONSPOT);
+    const selectedMedalUp = ref<number>(CONSTANTS.DEFAULT_MEDAL_UP);
 
     const rewardResult = computed(() => {
       return Logic.calculateRewards({

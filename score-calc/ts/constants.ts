@@ -8,6 +8,16 @@ export interface OptionItem {
   value: number;
 }
 
+// UI上のデフォルト値
+export const DEFAULT_DIFFICULTY = 100;
+export const DEFAULT_RANK = 4.0;
+export const DEFAULT_RARITY = 1.8;
+export const DEFAULT_MULTI = 1.3;
+export const DEFAULT_EVENT = 5.0;
+export const DEFAULT_WAKUWAKU = 120;
+export const DEFAULT_MONSPOT = 0;
+export const DEFAULT_MEDAL_UP = 2.0;
+
 export const QUEST_DIFFICULTIES: OptionItem[] = [
   { label: "究極", value: 100 },
   { label: "極", value: 20 },
