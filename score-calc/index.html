@@ -199,29 +199,38 @@
         </div>
 
         <!-- 結果表示エリア -->
-        <div class="mt-6 grid grid-cols-2 gap-3">
-          <!-- ストーン -->
-          <div
-            class="p-4 bg-amber-950/40 border border-amber-500/30 rounded-xl text-center space-y-1"
-          >
-            <span class="text-sm font-medium text-amber-300">ストーン</span>
-            <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">
-              {{ calculatedStones.toLocaleString() }}
-              <span class="text-base font-bold">個</span>
+        <section
+          class="bg-amber-950/40 border border-amber-500/40 p-4 sm:p-6 rounded-xl space-y-4 mt-6"
+        >
+          <h2 class="text-xl font-bold text-amber-400 text-center">計算結果</h2>
+          <div class="grid grid-cols-2 gap-3">
+            <!-- ストーン -->
+            <div
+              class="bg-slate-800/80 p-3 sm:p-4 rounded-lg border border-slate-700 text-center space-y-1 overflow-hidden"
+            >
+              <p class="text-xs text-slate-400">ストーン</p>
+              <p
+                class="text-lg sm:text-xl md:text-2xl font-bold text-amber-300 font-mono break-all"
+              >
+                {{ calculatedStones.toLocaleString() }}
+                <span class="text-xs sm:text-sm font-sans">個</span>
+              </p>
             </div>
-          </div>
 
-          <!-- メダル -->
-          <div
-            class="p-4 bg-amber-950/40 border border-amber-500/30 rounded-xl text-center space-y-1"
-          >
-            <span class="text-sm font-medium text-amber-300">メダル</span>
-            <div class="text-2xl sm:text-3xl font-extrabold text-amber-400">
-              {{ calculatedRemainderMedals.toLocaleString() }}
-              <span class="text-base font-bold">枚</span>
+            <!-- メダル -->
+            <div
+              class="bg-slate-800/80 p-3 sm:p-4 rounded-lg border border-slate-700 text-center space-y-1 overflow-hidden"
+            >
+              <p class="text-xs text-slate-400">メダル</p>
+              <p
+                class="text-lg sm:text-xl md:text-2xl font-bold text-amber-300 font-mono break-all"
+              >
+                {{ calculatedRemainderMedals.toLocaleString() }}
+                <span class="text-xs sm:text-sm font-sans">枚</span>
+              </p>
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </div>
 
