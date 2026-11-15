@@ -1,6 +1,4 @@
 # ローカル環境での開発サーバー構築用 (http://localhost:5173)
-version: "3.8"
-
 services:
   dev:
     build: .
