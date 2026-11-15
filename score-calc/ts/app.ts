@@ -29,8 +29,8 @@ createApp({
     const selectedMonspot = ref<number>(CONSTANTS.MONSPOT_OPTIONS[0].value);
     const selectedMedalUp = ref<number>(CONSTANTS.MEDAL_UP_OPTIONS[0].value);
 
-    const calculatedMedals = computed(() => {
-      return Logic.calculateMedals({
+    const rewardResult = computed(() => {
+      return Logic.calculateRewards({
         difficultyValue: selectedDifficulty.value,
         rankValue: selectedRank.value,
         rarityValue: selectedRarity.value,
@@ -41,6 +41,11 @@ createApp({
         medalUpValue: selectedMedalUp.value,
       });
     });
+
+    const calculatedStones = computed(() => rewardResult.value.stones);
+    const calculatedRemainderMedals = computed(
+      () => rewardResult.value.remainderMedals,
+    );
 
     return {
       difficultyOptions,
@@ -59,7 +64,8 @@ createApp({
       selectedWakuwaku,
       selectedMonspot,
       selectedMedalUp,
-      calculatedMedals,
+      calculatedStones,
+      calculatedRemainderMedals,
     };
   },
 }).mount("#app");

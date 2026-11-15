@@ -56,6 +56,6 @@ export const MONSPOT_OPTIONS: OptionItem[] = [
 ];
 
 export const MEDAL_UP_OPTIONS: OptionItem[] = [
-  { label: "なし", value: 1.0 },
   { label: "あり（2.0倍）", value: 2.0 },
+  { label: "なし", value: 1.0 },
 ];

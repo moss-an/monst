@@ -14,15 +14,22 @@ export interface CalculationCondition {
   medalUpValue: number;
 }
 
-/**
- * クエストクリア時の獲得メダル数を計算する
- */
-export function calculateMedals(condition: CalculationCondition): number {
-  const baseScore = condition.difficultyValue * condition.rankValue;
+export interface RewardResult {
+  totalMedals: number;
+  stones: number;
+  remainderMedals: number;
+}
 
+/**
+ * クエストクリア時の獲得メダル数を計算し、ストーンとメダルに変換する
+ */
+export function calculateRewards(
+  condition: CalculationCondition,
+): RewardResult {
+  const baseScore = condition.difficultyValue * condition.rankValue;
   const subTotal = baseScore + condition.wakuwakuValue + condition.monspotValue;
 
-  const total = Math.floor(
+  const totalMedals = Math.floor(
     subTotal *
       condition.rarityValue *
       condition.multiValue *
@@ -30,5 +37,12 @@ export function calculateMedals(condition: CalculationCondition): number {
       condition.medalUpValue,
   );
 
-  return total;
+  const stones = Math.floor(totalMedals / 3000);
+  const remainderMedals = totalMedals % 3000;
+
+  return {
+    totalMedals,
+    stones,
+    remainderMedals,
+  };
 }
