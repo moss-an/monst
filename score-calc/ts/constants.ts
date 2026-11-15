@@ -8,11 +8,16 @@ export interface OptionItem {
   value: number;
 }
 
+export const QUEST_DIFFICULTIES: OptionItem[] = [
+  { label: "究極", value: 100 },
+  { label: "極", value: 20 },
+];
+
 export const CLEAR_RANKS: OptionItem[] = [
-  { label: "Sランク", value: 400 },
-  { label: "Aランク", value: 300 },
-  { label: "Bランク", value: 200 },
-  { label: "Cランク", value: 100 },
+  { label: "Sランク", value: 4.0 },
+  { label: "Aランク", value: 2.0 },
+  { label: "Bランク", value: 1.5 },
+  { label: "Cランク", value: 1.0 },
 ];
 
 export const RARITY_MULTIPLIERS: OptionItem[] = [

@@ -46,6 +46,25 @@
       <main
         class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 sm:p-6 shadow-xl space-y-5"
       >
+        <!-- クエスト難易度 -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-medium text-slate-300"
+            >クエスト難易度</label
+          >
+          <select
+            v-model.number="selectedDifficulty"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option
+              v-for="item in difficultyOptions"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </option>
+          </select>
+        </div>
+
         <!-- クリアランク -->
         <div class="space-y-1.5">
           <label class="block text-sm font-medium text-slate-300"

@@ -4,6 +4,7 @@
  */
 
 export interface CalculationCondition {
+  difficultyValue: number;
   rankValue: number;
   rarityValue: number;
   multiValue: number;
@@ -17,8 +18,9 @@ export interface CalculationCondition {
  * クエストクリア時の獲得メダル数を計算する
  */
 export function calculateMedals(condition: CalculationCondition): number {
-  const subTotal =
-    condition.rankValue + condition.wakuwakuValue + condition.monspotValue;
+  const baseScore = condition.difficultyValue * condition.rankValue;
+
+  const subTotal = baseScore + condition.wakuwakuValue + condition.monspotValue;
 
   const total = Math.floor(
     subTotal *
