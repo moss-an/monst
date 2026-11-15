@@ -52,8 +52,8 @@ createApp({
     const currentExpInput = ref<string>("");
     const targetExpInput = ref<string>("");
 
-    const activeCurrentMode = ref<InputMode>("rank");
-    const activeTargetMode = ref<InputMode>("rank");
+    const activeCurrentMode = ref<InputMode>("rank"); // "rank" または "exp"
+    const activeTargetMode = ref<InputMode>("rank"); // "rank" または "exp"
 
     const isLoaded = ref<boolean>(false);
     const lastStepExp = ref<number>(0);

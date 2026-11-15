@@ -329,6 +329,8 @@ export function calculateEarnedExpPerRun(
 
   let currentExp = baseExp;
 
+  //HACK: ゲーム内処理が不明のため、暫定ロジック
+  // 各倍率を都度乗算し、EPSILONを適用して切り上げ
   currentExp = Math.ceil(
     currentExp * wakuwaku - CONSTANTS.FLOATING_POINT_EPSILON,
   );
