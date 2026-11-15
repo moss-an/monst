@@ -9,8 +9,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("tool-list-container");
   if (!container) return;
 
-  container.innerHTML = TOOLS.map(
-    (tool) => `
+  // トップページには、depthが 1 のツール（トップレベル）のみを表示する
+  const topLevelTools = TOOLS.filter((tool) => {
+    const cleanPath = tool.path.replace(/^\/+/, "").replace(/\/$/, "");
+    const depth =
+      cleanPath === "" ? 0 : cleanPath.split("/").filter(Boolean).length;
+    return depth === 1;
+  });
+
+  container.innerHTML = topLevelTools
+    .map(
+      (tool) => `
     <a
       href="./${tool.path}"
       class="block p-5 bg-slate-800 hover:bg-slate-700/70 rounded-lg border border-slate-700 transition group"
@@ -26,5 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </p>
     </a>
   `,
-  ).join("");
+    )
+    .join("");
 });
