@@ -81,16 +81,19 @@ function initHamburgerMenu(): void {
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
         : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
 
-      // 階層の深さに応じてインデント幅を可変にする（depth 1ならpl-4、depth 2ならpl-8...）
-      const indentWrapperClass =
-        item.depth > 0 ? `pl-${item.depth * 4} relative` : "";
+      // 階層の深さに応じてインデント幅をインラインスタイル（px）で動的に指定
+      const indentPx = item.depth > 0 ? item.depth * 16 : 0;
+      const indentWrapperClass = item.depth > 0 ? "relative" : "";
+      const indentStyle =
+        indentPx > 0 ? `style="padding-left: ${indentPx}px;"` : "";
+
       const treeBranchHtml =
         item.depth > 0
           ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
           : "";
 
       return `
-      <div class="${indentWrapperClass}">
+      <div class="${indentWrapperClass}" ${indentStyle}>
         <a href="${href}" class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3">
           <span class="flex items-center">${treeBranchHtml}<span>${item.label}</span></span>
           <span class="${isCurrent ? "text-amber-400 text-xs font-bold shrink-0" : "text-slate-500 shrink-0"}">${isCurrent ? "表示中" : "→"}</span>
