@@ -1,6 +1,6 @@
 /**
  * @file app.ts
- * @description UIの状態制御
+ * @description コピペや自由入力を許可しつつ、自動的に数値・小数点のみを抽出して整形する状態制御
  */
 
 import { createApp, ref, computed, watch } from "vue";
@@ -73,6 +73,32 @@ createApp({
     const pcScrollContainer = ref<HTMLElement | null>(null);
     const mobileScrollContainer = ref<HTMLElement | null>(null);
 
+    // 整数系キーダウンガード（タイピング時、通常の数字や制御キーのみ許容）
+    const handleIntegerKeydown = (e: KeyboardEvent): void => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length > 1) return;
+      if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+      }
+    };
+
+    // 小数系キーダウンガード
+    const handleDecimalKeydown = (e: KeyboardEvent): void => {
+      if (e.ctrlKey || e.metaKey || e.altKey || e.key.length > 1) return;
+      const target = e.target as HTMLInputElement;
+      const val = target.value;
+
+      if (e.key === ".") {
+        if (val.includes(".") || val === "") {
+          e.preventDefault();
+        }
+        return;
+      }
+
+      if (!/^[0-9]$/.test(e.key)) {
+        e.preventDefault();
+      }
+    };
+
     const sanitizeHpString = (val: string): string => {
       let cleaned = val.replace(/[^0-9]/g, "");
       const maxDigits = String(maxHpInputValue).length + 1;
@@ -103,6 +129,9 @@ createApp({
 
     const sanitizeSpdString = (val: string): string => {
       let cleaned = val.replace(/[^0-9.]/g, "");
+      if (cleaned.startsWith(".") || cleaned === "") {
+        return "";
+      }
       const parts = cleaned.split(".");
       if (parts.length > 2) cleaned = parts[0] + "." + parts.slice(1).join("");
       const splitVal = cleaned.split(".");
@@ -122,20 +151,20 @@ createApp({
           decimalPart = decimalPart.slice(0, maxSpdDecDigits);
         cleaned = `${integerPart}.${decimalPart}`;
       } else if (cleaned.endsWith(".")) {
-        cleaned = integerPart === "" ? "0." : `${integerPart}.`;
+        if (integerPart === "") return "";
+        cleaned = `${integerPart}.`;
       } else {
         cleaned = integerPart;
       }
 
       if (cleaned === "") return "";
       const num = parseFloat(cleaned);
-      if (!isNaN(num) && num > maxSpdInputValue)
-        return String(maxSpdInputValue);
+      if (isNaN(num)) return "";
+      if (num > maxSpdInputValue) return String(maxSpdInputValue);
       return cleaned;
     };
 
     const handleHpInput = (field: HpFieldKey, e: Event): void => {
-      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeHpString(target.value);
       target.value = sanitized;
@@ -145,7 +174,6 @@ createApp({
     };
 
     const handleAtkInput = (field: AtkFieldKey, e: Event): void => {
-      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeAtkString(target.value);
       target.value = sanitized;
@@ -155,7 +183,6 @@ createApp({
     };
 
     const handleSpdInput = (field: SpdFieldKey, e: Event): void => {
-      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeSpdString(target.value);
       target.value = sanitized;
@@ -165,7 +192,6 @@ createApp({
     };
 
     const handleUseCountInput = (e: Event): void => {
-      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
       let cleaned = target.value.replace(/[^0-9]/g, "");
       if (cleaned.length > 4) cleaned = cleaned.slice(0, 4);
@@ -212,7 +238,6 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
-    // 6つの許容範囲テキストボックスのいずれかに値が入力されているか
     const isAnyInputted = computed<boolean>(() => {
       return (
         hpMinInput.value !== "" ||
@@ -224,7 +249,6 @@ createApp({
       );
     });
 
-    // 許容範囲が空欄で、かつどこかのテキストボックスに値が入っている場合にリアルタイム表示
     const hpFilterHintMessage = computed<string>(() => {
       if (hpMinInput.value !== "" || hpMaxInput.value !== "") return "";
       if (isAnyInputted.value) {
@@ -441,6 +465,8 @@ createApp({
       spdMinInput,
       spdMaxInput,
       useCountInput,
+      handleIntegerKeydown,
+      handleDecimalKeydown,
       handleHpInput,
       handleAtkInput,
       handleSpdInput,
@@ -484,5 +510,4 @@ createApp({
   },
 }).mount("#app");
 
-// 初期化・バインド完了後に非表示クラスを削除して表示する
 document.getElementById("app")?.classList.remove("preload-hidden");
