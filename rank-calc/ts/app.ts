@@ -494,25 +494,46 @@ createApp({
     };
 
     const updateRankSteps = (): void => {
-      allRankSteps.value.forEach((row, idx) => {
-        if (idx > 0) {
-          const prevRow = allRankSteps.value[idx - 1];
-          if (
-            prevRow.maxRank !== "" &&
-            prevRow.maxRank !== null &&
-            !isNaN(Number(prevRow.maxRank))
-          ) {
-            row.minRank = Math.min(
-              parseInt(String(prevRow.maxRank), 10) + 1,
-              maxRank,
-            );
-          } else {
-            row.minRank = "";
-          }
+      const steps = allRankSteps.value;
+      const len = steps.length;
+
+      for (let i = 0; i < len; i++) {
+        const row = steps[i];
+        if (i > 0) {
+          const prevMax = steps[i - 1].maxRank;
+          row.minRank =
+            prevMax !== "" && prevMax !== null && !isNaN(Number(prevMax))
+              ? Math.min(Number(prevMax) + 1, maxRank)
+              : "";
         }
-        validateAndSanitizeStepRow(row);
-      });
-      Logic.setFullRankStepTable(allRankSteps.value);
+
+        if (
+          row.minRank !== "" &&
+          row.minRank !== null &&
+          !isNaN(Number(row.minRank))
+        ) {
+          const num = Number(String(row.minRank).replace(/[^0-9]/g, ""));
+          row.minRank = num > maxRank ? maxRank : num;
+        }
+        if (
+          row.maxRank !== "" &&
+          row.maxRank !== null &&
+          !isNaN(Number(row.maxRank))
+        ) {
+          const num = Number(String(row.maxRank).replace(/[^0-9]/g, ""));
+          row.maxRank = num > maxRank ? maxRank : num;
+        }
+        if (
+          row.expPerRank !== "" &&
+          row.expPerRank !== null &&
+          !isNaN(Number(row.expPerRank))
+        ) {
+          const num = Number(String(row.expPerRank).replace(/[^0-9]/g, ""));
+          row.expPerRank = num > maxStepExp ? maxStepExp : num;
+        }
+      }
+
+      Logic.setFullRankStepTable(steps);
       updateStepInfo();
     };
 
