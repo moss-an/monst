@@ -52,9 +52,6 @@ createApp({
     const currentExpInput = ref<string>("");
     const targetExpInput = ref<string>("");
 
-    const activeCurrentMode = ref<InputMode>("rank"); // "rank" または "exp"
-    const activeTargetMode = ref<InputMode>("rank"); // "rank" または "exp"
-
     const isLoaded = ref<boolean>(false);
     const lastStepExp = ref<number>(0);
     const lastStepMinRank = ref<number>(CONSTANTS.DEFAULT_THRESHOLD_RANK);
@@ -307,12 +304,10 @@ createApp({
       if (currentRank.value !== "") {
         const r = getEffectiveRank(currentRank.value);
         currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
-        activeCurrentMode.value = "rank";
       }
       if (targetRank.value !== "") {
         const r = getEffectiveRank(targetRank.value);
         targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
-        activeTargetMode.value = "rank";
       }
     };
 
@@ -624,7 +619,7 @@ createApp({
     const handleCurrentRankInput = (e: Event): void => {
       if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
-      activeCurrentMode.value = "rank";
+
       currentRank.value = parseNaturalRank(target.value);
       if (currentRank.value === "") {
         currentExpInput.value = "";
@@ -643,7 +638,7 @@ createApp({
     const handleCurrentExpInput = (e: Event): void => {
       if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
-      activeCurrentMode.value = "exp";
+
       const raw = target.value.replace(/[^0-9]/g, "");
       currentExpInput.value = parseExpInput(raw);
       if (currentExpInput.value === "") {
@@ -707,7 +702,7 @@ createApp({
     const handleTargetRankInput = (e: Event): void => {
       if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
-      activeTargetMode.value = "rank";
+
       targetRank.value = parseNaturalRank(target.value);
       if (targetRank.value === "") {
         targetExpInput.value = "";
@@ -726,7 +721,7 @@ createApp({
     const handleTargetExpInput = (e: Event): void => {
       if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
-      activeTargetMode.value = "exp";
+
       const raw = target.value.replace(/[^0-9]/g, "");
       targetExpInput.value = parseExpInput(raw);
       if (targetExpInput.value === "") {
@@ -790,23 +785,13 @@ createApp({
     const currentExp = computed<number>(() => {
       tableVersion.value;
       if (!isLoaded.value) return 0;
-      if (currentRank.value === "" && currentExpInput.value === "") return 0;
-      if (activeCurrentMode.value === "exp") {
-        return getEffectiveExp(currentExpInput.value);
-      } else {
-        return Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value));
-      }
+      return getEffectiveExp(currentExpInput.value);
     });
 
     const targetExp = computed<number>(() => {
       tableVersion.value;
       if (!isLoaded.value) return 0;
-      if (targetRank.value === "" && targetExpInput.value === "") return 0;
-      if (activeTargetMode.value === "exp") {
-        return getEffectiveExp(targetExpInput.value);
-      } else {
-        return Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value));
-      }
+      return getEffectiveExp(targetExpInput.value);
     });
 
     // プログレスバーのパーセンテージを計算 (0% 〜 100%)
