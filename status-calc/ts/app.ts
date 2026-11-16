@@ -238,49 +238,80 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
-    const isAnyInputted = computed<boolean>(() => {
-      return (
-        hpMinInput.value !== "" ||
-        hpMaxInput.value !== "" ||
-        atkMinInput.value !== "" ||
-        atkMaxInput.value !== "" ||
-        spdMinInput.value !== "" ||
-        spdMaxInput.value !== ""
-      );
-    });
-
-    const hpFilterHintMessage = computed<string>(() => {
+    const hasHpCondition = computed<boolean>(() => {
       const bHp = parseIntOrNull(baseHpInput.value) ?? 0;
       const min = parseIntOrNull(hpMinInput.value);
       const max = parseIntOrNull(hpMaxInput.value);
-      const hasHpCond = (min !== null && min > bHp) || max !== null;
-      if (hasHpCond) return "";
-      if (isAnyInputted.value) {
-        return `※ 有効なHPの範囲が設定されていないため、加命のみの実（${FRUITS.hpOnlyCategoryCount}種）は検索から省かれます。`;
+      return (min !== null && min > bHp) || max !== null;
+    });
+
+    const hasAtkCondition = computed<boolean>(() => {
+      const bAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
+      const min = parseIntOrNull(atkMinInput.value);
+      const max = parseIntOrNull(atkMaxInput.value);
+      return (min !== null && min > bAtk) || max !== null;
+    });
+
+    const hasSpdCondition = computed<boolean>(() => {
+      const bSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
+      const min = parseFloatOrNull(spdMinInput.value);
+      const max = parseFloatOrNull(spdMaxInput.value);
+      return (min !== null && min > bSpd) || max !== null;
+    });
+
+    const hpFilterHintMessage = computed<string>(() => {
+      const hp = hasHpCondition.value;
+      const atk = hasAtkCondition.value;
+      const spd = hasSpdCondition.value;
+
+      if (hp && atk && spd) return "";
+
+      if (hp && !atk && !spd) {
+        return CONSTANTS.HINT_MSG_HP_ONLY;
+      }
+      if (hp && atk && !spd) {
+        return CONSTANTS.HINT_MSG_HP_ATK;
+      }
+      if (hp && !atk && spd) {
+        return CONSTANTS.HINT_MSG_HP_SPD;
       }
       return "";
     });
 
     const atkFilterHintMessage = computed<string>(() => {
-      const bAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
-      const min = parseIntOrNull(atkMinInput.value);
-      const max = parseIntOrNull(atkMaxInput.value);
-      const hasAtkCond = (min !== null && min > bAtk) || max !== null;
-      if (hasAtkCond) return "";
-      if (isAnyInputted.value) {
-        return `※ 有効な攻撃力の範囲が設定されていないため、加撃のみの実（${FRUITS.atkOnlyCategoryCount}種）は検索から省かれます。`;
+      const hp = hasHpCondition.value;
+      const atk = hasAtkCondition.value;
+      const spd = hasSpdCondition.value;
+
+      if (hp && atk && spd) return "";
+
+      if (!hp && atk && !spd) {
+        return CONSTANTS.HINT_MSG_ATK_ONLY;
+      }
+      if (hp && atk && !spd) {
+        return CONSTANTS.HINT_MSG_HP_ATK;
+      }
+      if (!hp && atk && spd) {
+        return CONSTANTS.HINT_MSG_ATK_SPD;
       }
       return "";
     });
 
     const spdFilterHintMessage = computed<string>(() => {
-      const bSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
-      const min = parseFloatOrNull(spdMinInput.value);
-      const max = parseFloatOrNull(spdMaxInput.value);
-      const hasSpdCond = (min !== null && min > bSpd) || max !== null;
-      if (hasSpdCond) return "";
-      if (isAnyInputted.value) {
-        return `※ 有効なスピードの範囲が設定されていないため、加速のみの実（${FRUITS.spdOnlyCategoryCount}種）は検索から省かれます。`;
+      const hp = hasHpCondition.value;
+      const atk = hasAtkCondition.value;
+      const spd = hasSpdCondition.value;
+
+      if (hp && atk && spd) return "";
+
+      if (!hp && !atk && spd) {
+        return CONSTANTS.HINT_MSG_SPD_ONLY;
+      }
+      if (hp && !atk && spd) {
+        return CONSTANTS.HINT_MSG_HP_SPD;
+      }
+      if (!hp && atk && spd) {
+        return CONSTANTS.HINT_MSG_ATK_SPD;
       }
       return "";
     });
