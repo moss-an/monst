@@ -267,13 +267,13 @@ createApp({
       if (hp && atk && spd) return "";
 
       if (hp && !atk && !spd) {
-        return `※ HPの範囲のみが設定されているため、HPが上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_HP_ONLY;
       }
       if (hp && atk && !spd) {
-        return `※ HPと攻撃力の範囲が設定されているため、HPも攻撃力も上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_HP_ATK;
       }
       if (hp && !atk && spd) {
-        return `※ HPとスピードの範囲が設定されているため、HPもスピードも上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_HP_SPD;
       }
       return "";
     });
@@ -286,13 +286,13 @@ createApp({
       if (hp && atk && spd) return "";
 
       if (!hp && atk && !spd) {
-        return `※ 攻撃力の範囲のみが設定されているため、攻撃力が上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_ATK_ONLY;
       }
       if (hp && atk && !spd) {
-        return `※ HPと攻撃力の範囲が設定されているため、HPも攻撃力も上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_HP_ATK;
       }
       if (!hp && atk && spd) {
-        return `※ 攻撃力とスピードの範囲が設定されているため、攻撃力もスピードも上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_ATK_SPD;
       }
       return "";
     });
@@ -305,13 +305,13 @@ createApp({
       if (hp && atk && spd) return "";
 
       if (!hp && !atk && spd) {
-        return `※ スピードの範囲のみが設定されているため、スピードが上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_SPD_ONLY;
       }
       if (hp && !atk && spd) {
-        return `※ HPとスピードの範囲が設定されているため、HPもスピードも上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_HP_SPD;
       }
       if (!hp && atk && spd) {
-        return `※ 攻撃力とスピードの範囲が設定されているため、攻撃力もスピードも上がらない実は検索から省かれます。`;
+        return CONSTANTS.HINT_MSG_ATK_SPD;
       }
       return "";
     });

@@ -31,10 +31,11 @@ export const DEFAULT_SPD_MIN_STR = "";
 export const DEFAULT_SPD_MAX_STR = "";
 export const DEFAULT_USE_COUNT_STR = "";
 
-// 特殊スロット・メッセージ定義
+// 特殊スロット定義
 export const NONE_SLOT_ID = "none_slot";
 export const NONE_SLOT_NAME = "空き枠 / 加命・加撃・加速なし";
 
+// エラーメッセージ定義
 export const ERROR_MSG_TOO_MANY_RESULTS = "適合パターンが多すぎます";
 export const ERROR_MSG_INVALID_CONDITION = "入力条件に誤りがあります";
 export const ERROR_MSG_HP_MIN_LOWER = "HP下限値 ≧ 基礎HP に設定してください";
@@ -52,3 +53,17 @@ export const ERROR_MSG_SPD_MAX_LOWER =
   "スピード上限値 ≧ 基礎スピード に設定してください";
 export const ERROR_MSG_SPD_MIN_MAX =
   "スピード下限値 ≦ スピード上限値 に設定してください";
+
+// フィルタヒントメッセージ定義
+export const HINT_MSG_HP_ONLY =
+  "※ HPの範囲のみが設定されているため、HPが上がらない実は検索から省かれます。";
+export const HINT_MSG_ATK_ONLY =
+  "※ 攻撃力の範囲のみが設定されているため、攻撃力が上がらない実は検索から省かれます。";
+export const HINT_MSG_SPD_ONLY =
+  "※ スピードの範囲のみが設定されているため、スピードが上がらない実は検索から省かれます。";
+export const HINT_MSG_HP_ATK =
+  "※ HPと攻撃力の範囲が設定されているため、HPも攻撃力も上がらない実は検索から省かれます。";
+export const HINT_MSG_HP_SPD =
+  "※ HPとスピードの範囲が設定されているため、HPもスピードも上がらない実は検索から省かれます。";
+export const HINT_MSG_ATK_SPD =
+  "※ 攻撃力とスピードの範囲が設定されているため、攻撃力もスピードも上がらない実は検索から省かれます。";
