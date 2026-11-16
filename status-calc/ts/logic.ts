@@ -132,7 +132,7 @@ export function validateSearchCondition(params: {
   }
 
   if (useCount < 0 || useCount > 1000) {
-    errors.useCount.push("使用回수는0〜1000の範囲で入力してください");
+    errors.useCount.push("使用回数は0〜1000の範囲で入力してください");
   }
 
   return errors;
