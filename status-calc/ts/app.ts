@@ -250,25 +250,37 @@ createApp({
     });
 
     const hpFilterHintMessage = computed<string>(() => {
-      if (hpMinInput.value !== "" || hpMaxInput.value !== "") return "";
+      const bHp = parseIntOrNull(baseHpInput.value) ?? 0;
+      const min = parseIntOrNull(hpMinInput.value);
+      const max = parseIntOrNull(hpMaxInput.value);
+      const hasHpCond = (min !== null && min > bHp) || max !== null;
+      if (hasHpCond) return "";
       if (isAnyInputted.value) {
-        return `※HPの許容範囲に値が設定されていないため、HPのみに影響を与える実（${FRUITS.hpOnlyCategoryCount}種）を除外して検索します`;
+        return `※ 有効なHPの範囲が設定されていないため、加命のみの実（${FRUITS.hpOnlyCategoryCount}種）は検索から省かれます。`;
       }
       return "";
     });
 
     const atkFilterHintMessage = computed<string>(() => {
-      if (atkMinInput.value !== "" || atkMaxInput.value !== "") return "";
+      const bAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
+      const min = parseIntOrNull(atkMinInput.value);
+      const max = parseIntOrNull(atkMaxInput.value);
+      const hasAtkCond = (min !== null && min > bAtk) || max !== null;
+      if (hasAtkCond) return "";
       if (isAnyInputted.value) {
-        return `※攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実（${FRUITS.atkOnlyCategoryCount}種）を除外して検索します`;
+        return `※ 有効な攻撃力の範囲が設定されていないため、加撃のみの実（${FRUITS.atkOnlyCategoryCount}種）は検索から省かれます。`;
       }
       return "";
     });
 
     const spdFilterHintMessage = computed<string>(() => {
-      if (spdMinInput.value !== "" || spdMaxInput.value !== "") return "";
+      const bSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
+      const min = parseFloatOrNull(spdMinInput.value);
+      const max = parseFloatOrNull(spdMaxInput.value);
+      const hasSpdCond = (min !== null && min > bSpd) || max !== null;
+      if (hasSpdCond) return "";
       if (isAnyInputted.value) {
-        return `※スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実（${FRUITS.spdOnlyCategoryCount}種）を除外して検索します`;
+        return `※ 有効なスピードの範囲が設定されていないため、加速のみの実（${FRUITS.spdOnlyCategoryCount}種）は検索から省かれます。`;
       }
       return "";
     });
