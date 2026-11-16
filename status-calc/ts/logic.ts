@@ -151,7 +151,7 @@ export function hasAnyValidationError(errors: ValidationErrors): boolean {
 }
 
 export function calculateUseCountHpBonus(useCount: number): number {
-  return useCount * 10;
+  return useCount;
 }
 
 export function findMatchingCombinations(
