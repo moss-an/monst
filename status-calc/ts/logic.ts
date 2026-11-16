@@ -274,7 +274,7 @@ export function findMatchingCombinations(
     currentFruitAtk: number,
     currentFruitSpd: number,
   ) => {
-    const totalHpBonus = currentFruitHp + useCountHpBonus + spot.hpBonus;
+    const totalHpBonus = currentFruitHp + spot.hpBonus + useCountHpBonus;
     const totalAtkBonus = currentFruitAtk + spot.atkBonus;
     const totalSpdBonus = roundSpeed(currentFruitSpd + spot.spdBonus);
     const finalHp = baseHp + totalHpBonus;
