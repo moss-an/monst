@@ -301,38 +301,24 @@ createApp({
         maxExp.value = maxRankExp;
       }
 
-      if (currentExpInput.value !== "") {
+      if (currentRank.value !== "") {
+        const r = getEffectiveRank(currentRank.value);
+        currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
+      } else if (currentExpInput.value !== "") {
         const exp = getEffectiveExp(currentExpInput.value);
         let calculatedRank = Logic.calculateRankFromExp(exp);
         if (calculatedRank > maxRank) calculatedRank = maxRank;
         currentRank.value = calculatedRank.toString();
-      } else if (currentRank.value !== "") {
-        const r = getEffectiveRank(currentRank.value);
-        currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
       }
 
-      if (targetExpInput.value !== "") {
+      if (targetRank.value !== "") {
+        const r = getEffectiveRank(targetRank.value);
+        targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
+      } else if (targetExpInput.value !== "") {
         const exp = getEffectiveExp(targetExpInput.value);
         let calculatedRank = Logic.calculateRankFromExp(exp);
         if (calculatedRank > maxRank) calculatedRank = maxRank;
         targetRank.value = calculatedRank.toString();
-      } else if (targetRank.value !== "") {
-        const r = getEffectiveRank(targetRank.value);
-        targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
-      }
-
-      // テーブル変更後に現在ランク > 目標ランクになっていないか検証・補正
-      if (currentRank.value !== "" && targetRank.value !== "") {
-        const currNum = parseInt(currentRank.value, 10);
-        const tgtNum = parseInt(targetRank.value, 10);
-        if (!isNaN(currNum) && !isNaN(tgtNum) && currNum > tgtNum) {
-          targetRank.value = String(currNum);
-          if (isLoaded.value) {
-            targetExpInput.value = formatNumber(
-              Logic.calculateExpFromRank1(currNum),
-            );
-          }
-        }
       }
     };
 
