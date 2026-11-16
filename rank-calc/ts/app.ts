@@ -304,15 +304,15 @@ createApp({
         maxExp.value = maxRankExp;
       }
 
-      if (currentRank.value !== "" && activeCurrentMode.value === "rank") {
-        currentExpInput.value = formatNumber(
-          Logic.calculateExpFromRank1(getEffectiveRank(currentRank.value)),
-        );
+      if (currentRank.value !== "") {
+        const r = getEffectiveRank(currentRank.value);
+        currentExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
+        activeCurrentMode.value = "rank";
       }
-      if (targetRank.value !== "" && activeTargetMode.value === "rank") {
-        targetExpInput.value = formatNumber(
-          Logic.calculateExpFromRank1(getEffectiveRank(targetRank.value)),
-        );
+      if (targetRank.value !== "") {
+        const r = getEffectiveRank(targetRank.value);
+        targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
+        activeTargetMode.value = "rank";
       }
     };
 
@@ -809,6 +809,33 @@ createApp({
       }
     });
 
+    // プログレスバーのパーセンテージを計算 (0% 〜 100%)
+    const currentProgressPercent = computed<number>(() => {
+      tableVersion.value;
+      if (!isLoaded.value || currentRank.value === "") return 0;
+      const r = getEffectiveRank(currentRank.value);
+      const baseExpOfRank = Logic.calculateExpFromRank1(r);
+      const nextExpOfRank = Logic.calculateExpFromRank1(r + 1);
+      const needed = nextExpOfRank - baseExpOfRank;
+      if (needed <= 0) return 0;
+      const current = currentExp.value - baseExpOfRank;
+      const percent = (current / needed) * 100;
+      return Math.max(0, Math.min(100, percent));
+    });
+
+    const targetProgressPercent = computed<number>(() => {
+      tableVersion.value;
+      if (!isLoaded.value || targetRank.value === "") return 0;
+      const r = getEffectiveRank(targetRank.value);
+      const baseExpOfRank = Logic.calculateExpFromRank1(r);
+      const nextExpOfRank = Logic.calculateExpFromRank1(r + 1);
+      const needed = nextExpOfRank - baseExpOfRank;
+      if (needed <= 0) return 0;
+      const current = targetExp.value - baseExpOfRank;
+      const percent = (current / needed) * 100;
+      return Math.max(0, Math.min(100, percent));
+    });
+
     const selectedWakuwaku = ref<number>(CONSTANTS.DEFAULT_WAKUWAKU);
     const selectedSpot = ref<number>(CONSTANTS.DEFAULT_SPOT);
     const selectedEvent = ref<number>(CONSTANTS.DEFAULT_EVENT);
@@ -991,6 +1018,8 @@ createApp({
       currentRank,
       targetRank,
       currentExpInput,
+      currentProgressPercent,
+      targetProgressPercent,
       targetExpInput,
       isLoaded,
       lastStepExp,
