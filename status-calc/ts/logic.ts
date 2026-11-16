@@ -1,6 +1,6 @@
 /**
  * @file logic.ts
- * @description 計算ロジック（HP・攻撃力・スピードの3ステータス対応版）
+ * @description 計算ロジック
  */
 
 import * as CONSTANTS from "./constants";

@@ -271,7 +271,7 @@ export const FRUIT_CATEGORY_MASTER = [
     },
   },
   {
-    name: "その他（HP・加撃・加速なし）",
+    name: "その他（加命・加撃・加速なし）",
     group: "その他",
     isNoneSlot: true,
     grades: {
@@ -335,7 +335,7 @@ export const FRUIT_GROUP_ORDER: FruitGroup[] = [
 
 export const OTHER_CATEGORY_NAME: FruitCategory =
   FRUIT_CATEGORY_MASTER.find((item) => "isNoneSlot" in item && item.isNoneSlot)
-    ?.name ?? "その他（HP・加撃・加速なし）";
+    ?.name ?? "その他（加命・加撃・加速なし）";
 
 export const SELECTABLE_FRUIT_CATEGORIES: FruitCategoryOption[] =
   FRUIT_CATEGORY_MASTER.filter(

@@ -32,7 +32,7 @@ export const DEFAULT_SPD_MAX_STR = "";
 
 // 特殊スロット・メッセージ定義
 export const NONE_SLOT_ID = "none_slot";
-export const NONE_SLOT_NAME = "空き枠 / HP・加撃・加速なし";
+export const NONE_SLOT_NAME = "空き枠 / 加命・加撃・加速なし";
 
 export const ERROR_MSG_TOO_MANY_RESULTS = "適合パターンが多すぎます";
 export const ERROR_MSG_INVALID_CONDITION = "入力条件に誤りがあります";

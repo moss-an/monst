@@ -1,6 +1,6 @@
 /**
  * @file app.ts
- * @description UIの状態制御（HP・攻撃力・スピードの3ステータス対応版・リアルタイムヒント対応）
+ * @description UIの状態制御
  */
 
 import { createApp, ref, computed, watch } from "vue";
@@ -484,4 +484,5 @@ createApp({
   },
 }).mount("#app");
 
+// 初期化・バインド完了後に非表示クラスを削除して表示する
 document.getElementById("app")?.classList.remove("preload-hidden");
