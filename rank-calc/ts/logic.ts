@@ -186,10 +186,30 @@ export function calculateExpFromRank1(targetRank: number): number {
   }
 
   let totalExp = rankExpTable[rankExpTable.length - 1];
+  let currentRank = CONSTANTS.DEFAULT_THRESHOLD_RANK;
 
-  for (let r = CONSTANTS.DEFAULT_THRESHOLD_RANK; r < targetRank; r++) {
-    totalExp += getExpForNextRank(r);
+  for (const step of rankStepTable) {
+    if (targetRank <= currentRank) break;
+
+    const stepMin = Math.max(step.minRank, currentRank);
+    const stepMax =
+      step.maxRank !== null && step.maxRank !== undefined
+        ? Math.min(step.maxRank, targetRank - 1)
+        : targetRank - 1;
+
+    if (stepMin <= stepMax) {
+      const count = stepMax - stepMin + 1;
+      totalExp += count * step.expPerRank;
+      currentRank = stepMax + 1;
+    }
   }
+
+  // 万が一、rankStepTableのカバー範囲を超えている場合のフォールバック（最後のステップのexpPerRankを使う）
+  if (targetRank > currentRank && rankStepTable.length > 0) {
+    const lastExp = rankStepTable[rankStepTable.length - 1].expPerRank;
+    totalExp += (targetRank - currentRank) * lastExp;
+  }
+
   return totalExp;
 }
 
@@ -209,15 +229,42 @@ export function calculateRankFromExp(exp: number): number {
   }
 
   let currentTotal = maxTableExp;
-  let r = CONSTANTS.DEFAULT_THRESHOLD_RANK;
-  while (true) {
-    const nextExp = getExpForNextRank(r);
-    if (exp < currentTotal + nextExp) {
-      return r;
+  let currentRank = CONSTANTS.DEFAULT_THRESHOLD_RANK;
+
+  for (const step of rankStepTable) {
+    const stepMin = Math.max(step.minRank, currentRank);
+    const stepMax =
+      step.maxRank !== null && step.maxRank !== undefined
+        ? step.maxRank
+        : CONSTANTS.MAX_RANK;
+
+    if (stepMin <= stepMax) {
+      const count = stepMax - stepMin + 1;
+      const stepTotalExp = count * step.expPerRank;
+
+      if (exp < currentTotal + stepTotalExp) {
+        // この区間の中に収まっている
+        const diff = exp - currentTotal;
+        const addRanks = Math.floor(diff / step.expPerRank);
+        return stepMin + addRanks;
+      }
+
+      currentTotal += stepTotalExp;
+      currentRank = stepMax + 1;
     }
-    currentTotal += nextExp;
-    r++;
   }
+
+  // それでも超える場合のフォールバック
+  if (rankStepTable.length > 0) {
+    const lastExp = rankStepTable[rankStepTable.length - 1].expPerRank;
+    if (lastExp > 0) {
+      const diff = exp - currentTotal;
+      const addRanks = Math.floor(diff / lastExp);
+      return currentRank + addRanks;
+    }
+  }
+
+  return CONSTANTS.MAX_RANK;
 }
 
 /**
