@@ -377,3 +377,31 @@ export const ALL_FRUIT_SPECS: FruitSpec[] = (() => {
   }
   return list;
 })();
+
+// 単一ステータスのみに影響を与える実の種類数を動的に算出
+export const hpOnlyCategoryCount = FRUIT_CATEGORY_MASTER.filter((item) => {
+  if ("isNoneSlot" in item && item.isNoneSlot) return false;
+  const grades = Object.values(item.grades) as FruitBonus[];
+  return (
+    grades.length > 0 &&
+    grades.every((b) => b.hp > 0 && b.atk === 0 && b.spd === 0)
+  );
+}).length;
+
+export const atkOnlyCategoryCount = FRUIT_CATEGORY_MASTER.filter((item) => {
+  if ("isNoneSlot" in item && item.isNoneSlot) return false;
+  const grades = Object.values(item.grades) as FruitBonus[];
+  return (
+    grades.length > 0 &&
+    grades.every((b) => b.hp === 0 && b.atk > 0 && b.spd === 0)
+  );
+}).length;
+
+export const spdOnlyCategoryCount = FRUIT_CATEGORY_MASTER.filter((item) => {
+  if ("isNoneSlot" in item && item.isNoneSlot) return false;
+  const grades = Object.values(item.grades) as FruitBonus[];
+  return (
+    grades.length > 0 &&
+    grades.every((b) => b.hp === 0 && b.atk === 0 && b.spd > 0)
+  );
+}).length;
