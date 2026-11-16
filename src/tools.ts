@@ -25,6 +25,6 @@ export const TOOLS: ToolItem[] = [
     name: "ステータス計算",
     path: "status-calc/",
     description:
-      "目標の攻撃力・スピード範囲に収まるわくわくの実の組み合わせを逆算します。",
+      "目標のHP・攻撃力・スピード範囲に収まるわくわくの実の組み合わせを計算します。",
   },
 ];

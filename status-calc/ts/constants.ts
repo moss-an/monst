@@ -14,24 +14,32 @@ export const MAX_SEARCH_RESULTS_LIMIT = 3000; // 検索結果の最大許容数
 export const CALC_LOADING_DELAY_MS = 50; // ロード遅延時間（ミリ秒）
 
 // ステータス・許容範囲の入力上限値
+export const MAX_HP_INPUT_VALUE = 9999999; // HP（基礎・下限・上限）の入力上限
 export const MAX_ATK_INPUT_VALUE = 9999999; // 攻撃力（基礎・下限・上限）の入力上限
 export const MAX_SPD_INPUT_VALUE = 9999; // スピード（基礎・下限・上限）の入力上限
 export const MAX_SPD_DEC_DIGITS = 2; // スピードの小数部桁数上限
 
 // デフォルト入力値
+export const DEFAULT_BASE_HP_STR = "";
 export const DEFAULT_BASE_ATK_STR = "";
 export const DEFAULT_BASE_SPD_STR = "";
+export const DEFAULT_HP_MIN_STR = "";
+export const DEFAULT_HP_MAX_STR = "";
 export const DEFAULT_ATK_MIN_STR = "";
 export const DEFAULT_ATK_MAX_STR = "";
 export const DEFAULT_SPD_MIN_STR = "";
 export const DEFAULT_SPD_MAX_STR = "";
+export const DEFAULT_USE_COUNT_STR = "";
 
 // 特殊スロット・メッセージ定義
 export const NONE_SLOT_ID = "none_slot";
-export const NONE_SLOT_NAME = "空き枠 / 加撃・加速なし";
+export const NONE_SLOT_NAME = "空き枠 / 加命・加撃・加速なし";
 
 export const ERROR_MSG_TOO_MANY_RESULTS = "適合パターンが多すぎます";
 export const ERROR_MSG_INVALID_CONDITION = "入力条件に誤りがあります";
+export const ERROR_MSG_HP_MIN_LOWER = "HP下限値 ≧ 基礎HP に設定してください";
+export const ERROR_MSG_HP_MAX_LOWER = "HP上限値 ≧ 基礎HP に設定してください";
+export const ERROR_MSG_HP_MIN_MAX = "HP下限値 ≦ HP上限値 に設定してください";
 export const ERROR_MSG_ATK_MIN_LOWER =
   "攻撃下限値 ≧ 基礎攻撃力 に設定してください";
 export const ERROR_MSG_ATK_MAX_LOWER =
