@@ -74,16 +74,24 @@
               <label class="block text-xs text-slate-400"
                 >現在の累計経験値</label
               >
-              <input
-                type="text"
-                inputmode="numeric"
-                v-model="currentExpInput"
-                @focus="handleCurrentExpFocus"
-                @input="handleCurrentExpInput"
-                @blur="validateCurrentExp"
-                placeholder="数値を入力"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 mt-1 text-sm font-mono text-slate-300 focus:outline-none focus:border-amber-400"
-              />
+              <div
+                class="relative w-full bg-slate-900 border border-slate-700 rounded mt-1 overflow-hidden"
+              >
+                <div
+                  class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-150 pointer-events-none"
+                  :style="{ width: currentProgressPercent + '%' }"
+                ></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  v-model="currentExpInput"
+                  @focus="handleCurrentExpFocus"
+                  @input="handleCurrentExpInput"
+                  @blur="validateCurrentExp"
+                  placeholder="数値を入力"
+                  class="relative w-full bg-transparent px-3 py-1.5 text-sm font-mono text-slate-300 focus:outline-none focus:border-amber-400"
+                />
+              </div>
             </div>
           </div>
 
@@ -107,16 +115,24 @@
               <label class="block text-xs text-slate-400"
                 >目標の累計経験値</label
               >
-              <input
-                type="text"
-                inputmode="numeric"
-                v-model="targetExpInput"
-                @focus="handleTargetExpFocus"
-                @input="handleTargetExpInput"
-                @blur="validateTargetExp"
-                placeholder="数値を入力"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 mt-1 text-sm font-mono text-slate-300 focus:outline-none focus:border-amber-400"
-              />
+              <div
+                class="relative w-full bg-slate-900 border border-slate-700 rounded mt-1 overflow-hidden"
+              >
+                <div
+                  class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-150 pointer-events-none"
+                  :style="{ width: targetProgressPercent + '%' }"
+                ></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  v-model="targetExpInput"
+                  @focus="handleTargetExpFocus"
+                  @input="handleTargetExpInput"
+                  @blur="validateTargetExp"
+                  placeholder="数値を入力"
+                  class="relative w-full bg-transparent px-3 py-1.5 text-sm font-mono text-slate-300 focus:outline-none focus:border-amber-400"
+                />
+              </div>
             </div>
           </div>
 
