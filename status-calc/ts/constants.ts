@@ -29,6 +29,7 @@ export const DEFAULT_ATK_MIN_STR = "";
 export const DEFAULT_ATK_MAX_STR = "";
 export const DEFAULT_SPD_MIN_STR = "";
 export const DEFAULT_SPD_MAX_STR = "";
+export const DEFAULT_USE_COUNT_STR = "";
 
 // 特殊スロット・メッセージ定義
 export const NONE_SLOT_ID = "none_slot";

@@ -40,7 +40,7 @@ createApp({
     const spdMinInput = ref<string>(CONSTANTS.DEFAULT_SPD_MIN_STR);
     const spdMaxInput = ref<string>(CONSTANTS.DEFAULT_SPD_MAX_STR);
 
-    const useCountInput = ref<string>("0");
+    const useCountInput = ref<string>(CONSTANTS.DEFAULT_USE_COUNT_STR);
     const maxSlots = ref<number>(CONSTANTS.DEFAULT_MAX_FRUIT_SLOTS);
     const selectedSpotId = ref<string>(SPOTS.DEFAULT_SPOT_ID);
     const selectedGrades = ref<FRUITS.FruitGrade[]>([
@@ -228,7 +228,7 @@ createApp({
     const hpFilterHintMessage = computed<string>(() => {
       if (hpMinInput.value !== "" || hpMaxInput.value !== "") return "";
       if (isAnyInputted.value) {
-        return `※HPの許容範囲に値が設定されていないため、HPのみに影響を与える実（${FRUITS.hpOnlyCategoryCount}種）を除外して検索します`;
+        return "※HPの許容範囲に値が設定されていないため、HPのみに影響を与える実を除外して検索します";
       }
       return "";
     });
@@ -236,7 +236,7 @@ createApp({
     const atkFilterHintMessage = computed<string>(() => {
       if (atkMinInput.value !== "" || atkMaxInput.value !== "") return "";
       if (isAnyInputted.value) {
-        return `※攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実（${FRUITS.atkOnlyCategoryCount}種）を除外して検索します`;
+        return "※攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実を除外して検索します";
       }
       return "";
     });
@@ -244,7 +244,7 @@ createApp({
     const spdFilterHintMessage = computed<string>(() => {
       if (spdMinInput.value !== "" || spdMaxInput.value !== "") return "";
       if (isAnyInputted.value) {
-        return `※スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実（${FRUITS.spdOnlyCategoryCount}種）を除外して検索します`;
+        return "※スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実（6種）を除外して検索します";
       }
       return "";
     });
