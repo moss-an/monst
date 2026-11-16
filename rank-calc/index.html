@@ -592,12 +592,13 @@
               >1周の平均時間（秒）</label
             >
             <input
-              type="number"
-              :value="clearSec"
+              type="text"
+              inputmode="numeric"
+              v-model="clearSecInput"
+              @focus="handleClearSecFocus"
               @input="handleClearSecInput"
-              @blur="handleClearSecInput"
-              min="0"
-              :max="maxClearSec"
+              @blur="handleClearSecBlur"
+              placeholder="数値を入力"
               class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
             />
           </div>
