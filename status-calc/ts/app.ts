@@ -1,6 +1,6 @@
 /**
  * @file app.ts
- * @description UIの状態制御
+ * @description UIの状態制御（HP・攻撃力・スピードの3ステータス対応版・リアルタイムヒント対応）
  */
 
 import { createApp, ref, computed, watch } from "vue";
@@ -9,8 +9,9 @@ import * as FRUITS from "./fruits";
 import * as SPOTS from "./spots";
 import * as Logic from "./logic";
 
-type SortKey = "fruitCount" | "finalAtk" | "finalSpd";
+type SortKey = "fruitCount" | "finalHp" | "finalAtk" | "finalSpd";
 type SortOrder = "asc" | "desc";
+type HpFieldKey = "baseHp" | "hpMin" | "hpMax";
 type AtkFieldKey = "baseAtk" | "atkMin" | "atkMax";
 type SpdFieldKey = "baseSpd" | "spdMin" | "spdMax";
 
@@ -23,18 +24,23 @@ createApp({
     const slotOptions = CONSTANTS.MAX_FRUIT_SLOTS_OPTIONS;
     const pageSizeOptions = CONSTANTS.PAGE_SIZE_OPTIONS;
 
+    const maxHpInputValue = CONSTANTS.MAX_HP_INPUT_VALUE;
     const maxAtkInputValue = CONSTANTS.MAX_ATK_INPUT_VALUE;
     const maxSpdInputValue = CONSTANTS.MAX_SPD_INPUT_VALUE;
     const maxSpdDecDigits = CONSTANTS.MAX_SPD_DEC_DIGITS;
 
+    const baseHpInput = ref<string>(CONSTANTS.DEFAULT_BASE_HP_STR);
     const baseAtkInput = ref<string>(CONSTANTS.DEFAULT_BASE_ATK_STR);
     const baseSpdInput = ref<string>(CONSTANTS.DEFAULT_BASE_SPD_STR);
 
+    const hpMinInput = ref<string>(CONSTANTS.DEFAULT_HP_MIN_STR);
+    const hpMaxInput = ref<string>(CONSTANTS.DEFAULT_HP_MAX_STR);
     const atkMinInput = ref<string>(CONSTANTS.DEFAULT_ATK_MIN_STR);
     const atkMaxInput = ref<string>(CONSTANTS.DEFAULT_ATK_MAX_STR);
     const spdMinInput = ref<string>(CONSTANTS.DEFAULT_SPD_MIN_STR);
     const spdMaxInput = ref<string>(CONSTANTS.DEFAULT_SPD_MAX_STR);
 
+    const useCountInput = ref<string>("0");
     const maxSlots = ref<number>(CONSTANTS.DEFAULT_MAX_FRUIT_SLOTS);
     const selectedSpotId = ref<string>(SPOTS.DEFAULT_SPOT_ID);
     const selectedGrades = ref<FRUITS.FruitGrade[]>([
@@ -63,17 +69,14 @@ createApp({
     const currentPage = ref<number>(1);
     const pageSize = ref<number>(CONSTANTS.DEFAULT_PAGE_SIZE);
 
-    // スクロール制御用の参照
     const resultSection = ref<HTMLElement | null>(null);
     const pcScrollContainer = ref<HTMLElement | null>(null);
     const mobileScrollContainer = ref<HTMLElement | null>(null);
 
-    const sanitizeAtkString = (val: string): string => {
+    const sanitizeHpString = (val: string): string => {
       let cleaned = val.replace(/[^0-9]/g, "");
-      const maxDigits = String(maxAtkInputValue).length + 1;
-      if (cleaned.length > maxDigits) {
-        cleaned = cleaned.slice(0, maxDigits);
-      }
+      const maxDigits = String(maxHpInputValue).length + 1;
+      if (cleaned.length > maxDigits) cleaned = cleaned.slice(0, maxDigits);
       if (cleaned.length > 1) {
         cleaned = cleaned.replace(/^0+/, "");
         if (cleaned === "") cleaned = "0";
@@ -81,36 +84,42 @@ createApp({
       if (cleaned === "") return "";
       const num = parseInt(cleaned, 10);
       if (isNaN(num)) return "";
-      if (num > maxAtkInputValue) {
-        return String(maxAtkInputValue);
+      return String(Math.min(num, maxHpInputValue));
+    };
+
+    const sanitizeAtkString = (val: string): string => {
+      let cleaned = val.replace(/[^0-9]/g, "");
+      const maxDigits = String(maxAtkInputValue).length + 1;
+      if (cleaned.length > maxDigits) cleaned = cleaned.slice(0, maxDigits);
+      if (cleaned.length > 1) {
+        cleaned = cleaned.replace(/^0+/, "");
+        if (cleaned === "") cleaned = "0";
       }
-      return String(num);
+      if (cleaned === "") return "";
+      const num = parseInt(cleaned, 10);
+      if (isNaN(num)) return "";
+      return String(Math.min(num, maxAtkInputValue));
     };
 
     const sanitizeSpdString = (val: string): string => {
       let cleaned = val.replace(/[^0-9.]/g, "");
       const parts = cleaned.split(".");
-      if (parts.length > 2) {
-        cleaned = parts[0] + "." + parts.slice(1).join("");
-      }
-
+      if (parts.length > 2) cleaned = parts[0] + "." + parts.slice(1).join("");
       const splitVal = cleaned.split(".");
       let integerPart = splitVal[0];
       let decimalPart = splitVal[1];
 
       const maxIntDigits = String(Math.floor(maxSpdInputValue)).length + 1;
-      if (integerPart.length > maxIntDigits) {
+      if (integerPart.length > maxIntDigits)
         integerPart = integerPart.slice(0, maxIntDigits);
-      }
       if (integerPart.length > 1) {
         integerPart = integerPart.replace(/^0+/, "");
         if (integerPart === "") integerPart = "0";
       }
 
       if (decimalPart !== undefined) {
-        if (decimalPart.length > maxSpdDecDigits) {
+        if (decimalPart.length > maxSpdDecDigits)
           decimalPart = decimalPart.slice(0, maxSpdDecDigits);
-        }
         cleaned = `${integerPart}.${decimalPart}`;
       } else if (cleaned.endsWith(".")) {
         cleaned = integerPart === "" ? "0." : `${integerPart}.`;
@@ -120,10 +129,19 @@ createApp({
 
       if (cleaned === "") return "";
       const num = parseFloat(cleaned);
-      if (!isNaN(num) && num > maxSpdInputValue) {
+      if (!isNaN(num) && num > maxSpdInputValue)
         return String(maxSpdInputValue);
-      }
       return cleaned;
+    };
+
+    const handleHpInput = (field: HpFieldKey, e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
+      const target = e.target as HTMLInputElement;
+      const sanitized = sanitizeHpString(target.value);
+      target.value = sanitized;
+      if (field === "baseHp") baseHpInput.value = sanitized;
+      else if (field === "hpMin") hpMinInput.value = sanitized;
+      else hpMaxInput.value = sanitized;
     };
 
     const handleAtkInput = (field: AtkFieldKey, e: Event): void => {
@@ -131,14 +149,9 @@ createApp({
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeAtkString(target.value);
       target.value = sanitized;
-
-      if (field === "baseAtk") {
-        baseAtkInput.value = sanitized;
-      } else if (field === "atkMin") {
-        atkMinInput.value = sanitized;
-      } else {
-        atkMaxInput.value = sanitized;
-      }
+      if (field === "baseAtk") baseAtkInput.value = sanitized;
+      else if (field === "atkMin") atkMinInput.value = sanitized;
+      else atkMaxInput.value = sanitized;
     };
 
     const handleSpdInput = (field: SpdFieldKey, e: Event): void => {
@@ -146,40 +159,52 @@ createApp({
       const target = e.target as HTMLInputElement;
       const sanitized = sanitizeSpdString(target.value);
       target.value = sanitized;
-
-      if (field === "baseSpd") {
-        baseSpdInput.value = sanitized;
-      } else if (field === "spdMin") {
-        spdMinInput.value = sanitized;
-      } else {
-        spdMaxInput.value = sanitized;
-      }
+      if (field === "baseSpd") baseSpdInput.value = sanitized;
+      else if (field === "spdMin") spdMinInput.value = sanitized;
+      else spdMaxInput.value = sanitized;
     };
 
-    const parseIntOrNull = (val: string): number | null => {
-      const cleaned = val.replace(/[^0-9]/g, "");
+    const handleUseCountInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
+      const target = e.target as HTMLInputElement;
+      let cleaned = target.value.replace(/[^0-9]/g, "");
+      if (cleaned.length > 4) cleaned = cleaned.slice(0, 4);
+      if (cleaned !== "") {
+        const num = parseInt(cleaned, 10);
+        if (num > 1000) cleaned = "1000";
+      }
+      target.value = cleaned;
+      useCountInput.value = cleaned;
+    };
+
+    const parseIntOrNull = (val: any): number | null => {
+      if (val === null || val === undefined) return null;
+      const cleaned = String(val).replace(/[^0-9]/g, "");
       if (cleaned === "") return null;
       const num = parseInt(cleaned, 10);
-      if (isNaN(num)) return null;
-      return Math.min(num, maxAtkInputValue);
+      return isNaN(num) ? null : num;
     };
 
-    const parseFloatOrNull = (val: string): number | null => {
-      const cleaned = val.replace(/[^0-9.]/g, "");
+    const parseFloatOrNull = (val: any): number | null => {
+      if (val === null || val === undefined) return null;
+      const cleaned = String(val).replace(/[^0-9.]/g, "");
       if (cleaned === "") return null;
       const num = parseFloat(cleaned);
-      if (isNaN(num)) return null;
-      return Math.min(num, maxSpdInputValue);
+      return isNaN(num) ? null : num;
     };
 
     const validationErrors = computed<Logic.ValidationErrors>(() => {
       return Logic.validateSearchCondition({
+        baseHp: parseIntOrNull(baseHpInput.value) ?? 0,
         baseAtk: parseIntOrNull(baseAtkInput.value) ?? 0,
         baseSpd: parseFloatOrNull(baseSpdInput.value) ?? 0,
+        hpMin: parseIntOrNull(hpMinInput.value),
+        hpMax: parseIntOrNull(hpMaxInput.value),
         atkMin: parseIntOrNull(atkMinInput.value),
         atkMax: parseIntOrNull(atkMaxInput.value),
         spdMin: parseFloatOrNull(spdMinInput.value),
         spdMax: parseFloatOrNull(spdMaxInput.value),
+        useCount: parseIntOrNull(useCountInput.value) ?? 0,
       });
     });
 
@@ -187,51 +212,41 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
-    // 攻撃力・スピードそれぞれの条件指定有無
-    const hasAtkCondition = computed<boolean>(() => {
-      const baseAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
-      const atkMin = parseIntOrNull(atkMinInput.value);
-      const atkMax = parseIntOrNull(atkMaxInput.value);
-      return (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
+    // 6つの許容範囲テキストボックスのいずれかに値が入力されているか
+    const isAnyInputted = computed<boolean>(() => {
+      return (
+        hpMinInput.value !== "" ||
+        hpMaxInput.value !== "" ||
+        atkMinInput.value !== "" ||
+        atkMaxInput.value !== "" ||
+        spdMinInput.value !== "" ||
+        spdMaxInput.value !== ""
+      );
     });
 
-    const hasSpdCondition = computed<boolean>(() => {
-      const baseSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
-      const spdMin = parseFloatOrNull(spdMinInput.value);
-      const spdMax = parseFloatOrNull(spdMaxInput.value);
-      return (spdMin !== null && spdMin > baseSpd) || spdMax !== null;
+    // 許容範囲が空欄で、かつどこかのテキストボックスに値が入っている場合にリアルタイム表示
+    const hpFilterHintMessage = computed<string>(() => {
+      if (hpMinInput.value !== "" || hpMaxInput.value !== "") return "";
+      if (isAnyInputted.value) {
+        return "※HPの許容範囲に値が設定されていないため、HPのみに影響を与える実を除外して検索します";
+      }
+      return "";
     });
 
-    // 攻撃力のみ指定時：スピードのみに影響を与える実の種別数とメッセージ
     const atkFilterHintMessage = computed<string>(() => {
-      if (!hasAtkCondition.value || hasSpdCondition.value) return "";
-      const excludedCategories = new Set<FRUITS.FruitCategory>();
-      for (const spec of FRUITS.ALL_FRUIT_SPECS) {
-        if (spec.category === FRUITS.OTHER_CATEGORY_NAME) continue;
-        if (!selectedGrades.value.includes(spec.grade)) continue;
-        if (!selectedCategories.value.includes(spec.category)) continue;
-        if (spec.atkBonus === 0) {
-          excludedCategories.add(spec.category);
-        }
+      if (atkMinInput.value !== "" || atkMaxInput.value !== "") return "";
+      if (isAnyInputted.value) {
+        return "※攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実を除外して検索します";
       }
-      if (excludedCategories.size === 0) return "";
-      return `スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実（${excludedCategories.size}種）を除外して検索します`;
+      return "";
     });
 
-    // スピードのみ指定時：攻撃力のみに影響を与える実の種別数とメッセージ
     const spdFilterHintMessage = computed<string>(() => {
-      if (!hasSpdCondition.value || hasAtkCondition.value) return "";
-      const excludedCategories = new Set<FRUITS.FruitCategory>();
-      for (const spec of FRUITS.ALL_FRUIT_SPECS) {
-        if (spec.category === FRUITS.OTHER_CATEGORY_NAME) continue;
-        if (!selectedGrades.value.includes(spec.grade)) continue;
-        if (!selectedCategories.value.includes(spec.category)) continue;
-        if (spec.spdBonus === 0) {
-          excludedCategories.add(spec.category);
-        }
+      if (spdMinInput.value !== "" || spdMaxInput.value !== "") return "";
+      if (isAnyInputted.value) {
+        return "※スピードの許容範囲に値が設定されていないため、スピードのみに影響を与える実（6種）を除外して検索します";
       }
-      if (excludedCategories.size === 0) return "";
-      return `攻撃力の許容範囲に値が設定されていないため、攻撃力のみに影響を与える実（${excludedCategories.size}種）を除外して検索します`;
+      return "";
     });
 
     const selectedSpot = computed<SPOTS.SpotOption>(() => {
@@ -242,20 +257,14 @@ createApp({
 
     const toggleGrade = (grade: FRUITS.FruitGrade): void => {
       const idx = selectedGrades.value.indexOf(grade);
-      if (idx >= 0) {
-        selectedGrades.value.splice(idx, 1);
-      } else {
-        selectedGrades.value.push(grade);
-      }
+      if (idx >= 0) selectedGrades.value.splice(idx, 1);
+      else selectedGrades.value.push(grade);
     };
 
     const toggleCategory = (category: FRUITS.FruitCategory): void => {
       const idx = selectedCategories.value.indexOf(category);
-      if (idx >= 0) {
-        selectedCategories.value.splice(idx, 1);
-      } else {
-        selectedCategories.value.push(category);
-      }
+      if (idx >= 0) selectedCategories.value.splice(idx, 1);
+      else selectedCategories.value.push(category);
     };
 
     const selectAllCategories = (): void => {
@@ -301,12 +310,16 @@ createApp({
       setTimeout(() => {
         try {
           const condition: Logic.SearchCondition = {
+            baseHp: parseIntOrNull(baseHpInput.value) ?? 0,
             baseAtk: parseIntOrNull(baseAtkInput.value) ?? 0,
             baseSpd: parseFloatOrNull(baseSpdInput.value) ?? 0,
+            hpMin: parseIntOrNull(hpMinInput.value),
+            hpMax: parseIntOrNull(hpMaxInput.value),
             atkMin: parseIntOrNull(atkMinInput.value),
             atkMax: parseIntOrNull(atkMaxInput.value),
             spdMin: parseFloatOrNull(spdMinInput.value),
             spdMax: parseFloatOrNull(spdMaxInput.value),
+            useCount: parseIntOrNull(useCountInput.value) ?? 0,
             maxSlots: maxSlots.value,
             spot: selectedSpot.value,
             allowedGrades: selectedGrades.value,
@@ -340,20 +353,19 @@ createApp({
 
       list.sort((a, b) => {
         if (sortKey.value === "fruitCount") {
-          if (a.fruitCount !== b.fruitCount) {
+          if (a.fruitCount !== b.fruitCount)
             return (a.fruitCount - b.fruitCount) * dir;
-          }
           return b.finalAtk - a.finalAtk;
         }
-        if (sortKey.value === "finalAtk") {
-          if (a.finalAtk !== b.finalAtk) {
-            return (a.finalAtk - b.finalAtk) * dir;
-          }
+        if (sortKey.value === "finalHp") {
+          if (a.finalHp !== b.finalHp) return (a.finalHp - b.finalHp) * dir;
           return a.fruitCount - b.fruitCount;
         }
-        if (a.finalSpd !== b.finalSpd) {
-          return (a.finalSpd - b.finalSpd) * dir;
+        if (sortKey.value === "finalAtk") {
+          if (a.finalAtk !== b.finalAtk) return (a.finalAtk - b.finalAtk) * dir;
+          return a.fruitCount - b.fruitCount;
         }
+        if (a.finalSpd !== b.finalSpd) return (a.finalSpd - b.finalSpd) * dir;
         return a.fruitCount - b.fruitCount;
       });
 
@@ -385,21 +397,13 @@ createApp({
     });
 
     const goToPage = (page: number): void => {
-      if (page < 1) {
-        currentPage.value = 1;
-      } else if (page > totalPages.value) {
-        currentPage.value = totalPages.value;
-      } else {
-        currentPage.value = page;
-      }
+      if (page < 1) currentPage.value = 1;
+      else if (page > totalPages.value) currentPage.value = totalPages.value;
+      else currentPage.value = page;
 
-      // ページ切り替え時にスクロール位置を最上部にリセット
-      if (pcScrollContainer.value) {
-        pcScrollContainer.value.scrollTop = 0;
-      }
-      if (mobileScrollContainer.value) {
+      if (pcScrollContainer.value) pcScrollContainer.value.scrollTop = 0;
+      if (mobileScrollContainer.value)
         mobileScrollContainer.value.scrollTop = 0;
-      }
       if (resultSection.value) {
         resultSection.value.scrollIntoView({
           behavior: "smooth",
@@ -424,18 +428,26 @@ createApp({
       selectableFruitCategories,
       slotOptions,
       pageSizeOptions,
+      maxHpInputValue,
       maxAtkInputValue,
       maxSpdInputValue,
+      baseHpInput,
       baseAtkInput,
       baseSpdInput,
+      hpMinInput,
+      hpMaxInput,
       atkMinInput,
       atkMaxInput,
       spdMinInput,
       spdMaxInput,
+      useCountInput,
+      handleHpInput,
       handleAtkInput,
       handleSpdInput,
+      handleUseCountInput,
       validationErrors,
       hasValidationError,
+      hpFilterHintMessage,
       atkFilterHintMessage,
       spdFilterHintMessage,
       maxSlots,
@@ -472,5 +484,4 @@ createApp({
   },
 }).mount("#app");
 
-// 初期化・バインド完了後に非表示クラスを削除して表示する
 document.getElementById("app")?.classList.remove("preload-hidden");

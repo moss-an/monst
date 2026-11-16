@@ -1,6 +1,6 @@
 /**
  * @file logic.ts
- * @description 計算ロジック
+ * @description 計算ロジック（HP・攻撃力・スピードの3ステータス対応版）
  */
 
 import * as CONSTANTS from "./constants";
@@ -8,12 +8,16 @@ import * as FRUITS from "./fruits";
 import * as SPOTS from "./spots";
 
 export interface SearchCondition {
+  baseHp: number;
   baseAtk: number;
   baseSpd: number;
+  hpMin: number | null;
+  hpMax: number | null;
   atkMin: number | null;
   atkMax: number | null;
   spdMin: number | null;
   spdMax: number | null;
+  useCount: number;
   maxSlots: number;
   spot: SPOTS.SpotOption;
   allowedGrades: FRUITS.FruitGrade[];
@@ -24,19 +28,25 @@ export interface FruitCombinationResult {
   id: string;
   fruits: FRUITS.FruitSpec[];
   fruitCount: number;
+  fruitHpBonus: number;
   fruitAtkBonus: number;
   fruitSpdBonus: number;
+  totalHpBonus: number;
   totalAtkBonus: number;
   totalSpdBonus: number;
+  finalHp: number;
   finalAtk: number;
   finalSpd: number;
 }
 
 export interface ValidationErrors {
+  hpMin: string[];
+  hpMax: string[];
   atkMin: string[];
   atkMax: string[];
   spdMin: string[];
   spdMax: string[];
+  useCount: string[];
 }
 
 export class TooManyResultsError extends Error {
@@ -58,51 +68,71 @@ export function roundSpeed(val: number): number {
 }
 
 export function validateSearchCondition(params: {
+  baseHp: number;
   baseAtk: number;
   baseSpd: number;
+  hpMin: number | null;
+  hpMax: number | null;
   atkMin: number | null;
   atkMax: number | null;
   spdMin: number | null;
   spdMax: number | null;
+  useCount: number;
 }): ValidationErrors {
-  const { baseAtk, baseSpd, atkMin, atkMax, spdMin, spdMax } = params;
+  const {
+    baseHp,
+    baseAtk,
+    baseSpd,
+    hpMin,
+    hpMax,
+    atkMin,
+    atkMax,
+    spdMin,
+    spdMax,
+    useCount,
+  } = params;
   const errors: ValidationErrors = {
+    hpMin: [],
+    hpMax: [],
     atkMin: [],
     atkMax: [],
     spdMin: [],
     spdMax: [],
+    useCount: [],
   };
 
-  if (atkMin !== null) {
-    if (atkMin < baseAtk) {
-      errors.atkMin.push(CONSTANTS.ERROR_MSG_ATK_MIN_LOWER);
-    }
+  if (hpMin !== null && hpMin < baseHp) {
+    errors.hpMin.push(CONSTANTS.ERROR_MSG_HP_MIN_LOWER);
+  }
+  if (hpMax !== null && hpMax < baseHp) {
+    errors.hpMax.push(CONSTANTS.ERROR_MSG_HP_MAX_LOWER);
+  }
+  if (hpMin !== null && hpMax !== null && hpMin > hpMax) {
+    errors.hpMin.push(CONSTANTS.ERROR_MSG_HP_MIN_MAX);
   }
 
-  if (atkMax !== null) {
-    if (atkMax < baseAtk) {
-      errors.atkMax.push(CONSTANTS.ERROR_MSG_ATK_MAX_LOWER);
-    }
+  if (atkMin !== null && atkMin < baseAtk) {
+    errors.atkMin.push(CONSTANTS.ERROR_MSG_ATK_MIN_LOWER);
   }
-
+  if (atkMax !== null && atkMax < baseAtk) {
+    errors.atkMax.push(CONSTANTS.ERROR_MSG_ATK_MAX_LOWER);
+  }
   if (atkMin !== null && atkMax !== null && atkMin > atkMax) {
     errors.atkMin.push(CONSTANTS.ERROR_MSG_ATK_MIN_MAX);
   }
 
-  if (spdMin !== null) {
-    if (spdMin < baseSpd) {
-      errors.spdMin.push(CONSTANTS.ERROR_MSG_SPD_MIN_LOWER);
-    }
+  if (spdMin !== null && spdMin < baseSpd) {
+    errors.spdMin.push(CONSTANTS.ERROR_MSG_SPD_MIN_LOWER);
   }
-
-  if (spdMax !== null) {
-    if (spdMax < baseSpd) {
-      errors.spdMax.push(CONSTANTS.ERROR_MSG_SPD_MAX_LOWER);
-    }
+  if (spdMax !== null && spdMax < baseSpd) {
+    errors.spdMax.push(CONSTANTS.ERROR_MSG_SPD_MAX_LOWER);
   }
-
   if (spdMin !== null && spdMax !== null && spdMin > spdMax) {
     errors.spdMin.push(CONSTANTS.ERROR_MSG_SPD_MIN_MAX);
+  }
+
+  if (useCount < 0 || useCount > 1000) {
+    errors.useCount.push("使用回数は0〜1000の範囲で入力してください");
   }
 
   return errors;
@@ -110,23 +140,34 @@ export function validateSearchCondition(params: {
 
 export function hasAnyValidationError(errors: ValidationErrors): boolean {
   return (
+    errors.hpMin.length > 0 ||
+    errors.hpMax.length > 0 ||
     errors.atkMin.length > 0 ||
     errors.atkMax.length > 0 ||
     errors.spdMin.length > 0 ||
-    errors.spdMax.length > 0
+    errors.spdMax.length > 0 ||
+    errors.useCount.length > 0
   );
+}
+
+export function calculateUseCountHpBonus(useCount: number): number {
+  return useCount * 10;
 }
 
 export function findMatchingCombinations(
   condition: SearchCondition,
 ): FruitCombinationResult[] {
   const {
+    baseHp,
     baseAtk,
     baseSpd,
+    hpMin,
+    hpMax,
     atkMin,
     atkMax,
     spdMin,
     spdMax,
+    useCount,
     maxSlots,
     spot,
     allowedGrades,
@@ -134,20 +175,27 @@ export function findMatchingCombinations(
   } = condition;
 
   const validationErrors = validateSearchCondition({
+    baseHp,
     baseAtk,
     baseSpd,
+    hpMin,
+    hpMax,
     atkMin,
     atkMax,
     spdMin,
     spdMax,
+    useCount,
   });
 
   if (hasAnyValidationError(validationErrors)) {
     const firstMessage =
+      validationErrors.hpMin[0] ||
+      validationErrors.hpMax[0] ||
       validationErrors.atkMin[0] ||
       validationErrors.atkMax[0] ||
       validationErrors.spdMin[0] ||
-      validationErrors.spdMax[0];
+      validationErrors.spdMax[0] ||
+      validationErrors.useCount[0];
     throw new InvalidConditionError(firstMessage);
   }
 
@@ -155,6 +203,9 @@ export function findMatchingCombinations(
     return [];
   }
 
+  const useCountHpBonus = calculateUseCountHpBonus(useCount);
+
+  const hasHpCondition = (hpMin !== null && hpMin > baseHp) || hpMax !== null;
   const hasAtkCondition =
     (atkMin !== null && atkMin > baseAtk) || atkMax !== null;
   const hasSpdCondition =
@@ -184,10 +235,28 @@ export function findMatchingCombinations(
       continue;
     }
 
-    if (hasAtkCondition && !hasSpdCondition && spec.atkBonus === 0) {
+    if (
+      hasHpCondition &&
+      !hasAtkCondition &&
+      !hasSpdCondition &&
+      spec.hpBonus === 0
+    ) {
       continue;
     }
-    if (hasSpdCondition && !hasAtkCondition && spec.spdBonus === 0) {
+    if (
+      hasAtkCondition &&
+      !hasHpCondition &&
+      !hasSpdCondition &&
+      spec.atkBonus === 0
+    ) {
+      continue;
+    }
+    if (
+      hasSpdCondition &&
+      !hasHpCondition &&
+      !hasAtkCondition &&
+      spec.spdBonus === 0
+    ) {
       continue;
     }
 
@@ -201,14 +270,20 @@ export function findMatchingCombinations(
 
   const backtrack = (
     startIndex: number,
+    currentFruitHp: number,
     currentFruitAtk: number,
     currentFruitSpd: number,
   ) => {
+    const totalHpBonus = currentFruitHp + useCountHpBonus;
     const totalAtkBonus = currentFruitAtk + spot.atkBonus;
     const totalSpdBonus = roundSpeed(currentFruitSpd + spot.spdBonus);
+    const finalHp = baseHp + totalHpBonus;
     const finalAtk = baseAtk + totalAtkBonus;
     const finalSpd = roundSpeed(baseSpd + totalSpdBonus);
 
+    if (hpMax !== null && finalHp > hpMax) {
+      return;
+    }
     if (atkMax !== null && finalAtk > atkMax) {
       return;
     }
@@ -216,10 +291,11 @@ export function findMatchingCombinations(
       return;
     }
 
+    const isHpOk = hpMin === null || finalHp >= hpMin;
     const isAtkOk = atkMin === null || finalAtk >= atkMin;
     const isSpdOk = spdMin === null || finalSpd >= spdMin;
 
-    if (isAtkOk && isSpdOk) {
+    if (isHpOk && isAtkOk && isSpdOk) {
       const effectiveFruits = current.filter(
         (f) => f.category !== FRUITS.OTHER_CATEGORY_NAME,
       );
@@ -234,10 +310,13 @@ export function findMatchingCombinations(
           id: signature,
           fruits: [...effectiveFruits],
           fruitCount: effectiveFruits.length,
+          fruitHpBonus: currentFruitHp,
           fruitAtkBonus: currentFruitAtk,
           fruitSpdBonus: roundSpeed(currentFruitSpd),
+          totalHpBonus,
           totalAtkBonus,
           totalSpdBonus,
+          finalHp,
           finalAtk,
           finalSpd,
         });
@@ -265,6 +344,7 @@ export function findMatchingCombinations(
       current.push(nextFruit);
       backtrack(
         i,
+        currentFruitHp + nextFruit.hpBonus,
         currentFruitAtk + nextFruit.atkBonus,
         currentFruitSpd + nextFruit.spdBonus,
       );
@@ -272,7 +352,7 @@ export function findMatchingCombinations(
     }
   };
 
-  backtrack(0, 0, 0);
+  backtrack(0, 0, 0, 0);
 
   return results;
 }

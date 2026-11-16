@@ -6,12 +6,12 @@
     <title>モンスト ステータス計算</title>
     <meta
       name="description"
-      content="モンスターストライクにおけるモンスターのステータス（攻撃力とスピード）シミュレーターです。ステータスの許容範囲・モンスポット・実の種類や等級などの条件指定から、それを満たすわくわくの実の組み合わせパターンを一覧で検索できます。"
+      content="モンスターストライクにおけるモンスターのステータス（HP・攻撃力・スピード）シミュレーターです。ステータスの許容範囲・モンスポット・実の種類や等級などの条件指定から、それを満たすわくわくの実の組み合わせパターンを一覧で検索できます。"
     />
     <meta property="og:title" content="モンスト ステータス計算" />
     <meta
       property="og:description"
-      content="モンスターストライクにおけるモンスターのステータス（攻撃力とスピード）シミュレーターです。ステータスの許容範囲・モンスポット・実の種類や等級などの条件指定から、それを満たすわくわくの実の組み合わせパターンを一覧で検索できます。"
+      content="モンスターストライクにおけるモンスターのステータス（HP・攻撃力・スピード）シミュレーターです。"
     />
     <meta
       property="og:image"
@@ -55,8 +55,19 @@
           </h2>
 
           <div
-            class="grid grid-cols-2 gap-3 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+            class="grid grid-cols-3 gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
           >
+            <div>
+              <label class="block text-xs text-slate-400">基礎HP</label>
+              <input
+                type="text"
+                inputmode="numeric"
+                :value="baseHpInput"
+                @input="e => handleHpInput('baseHp', e)"
+                placeholder="例: 20000"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-400"
+              />
+            </div>
             <div>
               <label class="block text-xs text-slate-400">基礎攻撃力</label>
               <input
@@ -65,7 +76,7 @@
                 :value="baseAtkInput"
                 @input="e => handleAtkInput('baseAtk', e)"
                 placeholder="例: 30000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-400"
               />
             </div>
             <div>
@@ -76,9 +87,63 @@
                 :value="baseSpdInput"
                 @input="e => handleSpdInput('baseSpd', e)"
                 placeholder="例: 350.00"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-400"
               />
             </div>
+          </div>
+
+          <!-- HPの許容範囲 -->
+          <div
+            class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+          >
+            <label class="block text-xs text-slate-400"
+              >HPの許容範囲（空欄は制限なし）</label
+            >
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                inputmode="numeric"
+                :value="hpMinInput"
+                @input="e => handleHpInput('hpMin', e)"
+                placeholder="例: 22000"
+                :class="validationErrors.hpMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+              />
+              <span class="text-slate-400">〜</span>
+              <input
+                type="text"
+                inputmode="numeric"
+                :value="hpMaxInput"
+                @input="e => handleHpInput('hpMax', e)"
+                placeholder="例: 26000"
+                :class="validationErrors.hpMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+              />
+            </div>
+            <div
+              v-if="validationErrors.hpMin.length > 0 || validationErrors.hpMax.length > 0"
+              class="space-y-0.5 pt-1 text-xs text-rose-400"
+            >
+              <p
+                v-for="(err, idx) in validationErrors.hpMin"
+                :key="'hpMin-' + idx"
+              >
+                ・{{ err }}
+              </p>
+              <p
+                v-for="(err, idx) in validationErrors.hpMax"
+                :key="'hpMax-' + idx"
+              >
+                ・{{ err }}
+              </p>
+            </div>
+            <!-- HP以外の条件がある場合に表示されるヒント -->
+            <p
+              v-if="hpFilterHintMessage"
+              class="pt-1 text-xs text-amber-300/90 leading-relaxed"
+            >
+              {{ hpFilterHintMessage }}
+            </p>
           </div>
 
           <!-- 攻撃力の許容範囲 -->
@@ -126,12 +191,12 @@
                 ・{{ err }}
               </p>
             </div>
-            <!-- スピードのみ指定時（攻撃力が未設定のとき）のヒント -->
+            <!-- 攻撃力以外の条件がある場合に表示されるヒント -->
             <p
-              v-if="spdFilterHintMessage"
-              class="pt-1 text-xs text-amber-300/90"
+              v-if="atkFilterHintMessage"
+              class="pt-1 text-xs text-amber-300/90 leading-relaxed"
             >
-              {{ spdFilterHintMessage }}
+              {{ atkFilterHintMessage }}
             </p>
           </div>
 
@@ -180,17 +245,17 @@
                 ・{{ err }}
               </p>
             </div>
-            <!-- 攻撃力のみ指定時（スピードが未設定のとき）のヒント -->
+            <!-- スピード以外の条件がある場合に表示されるヒント -->
             <p
-              v-if="atkFilterHintMessage"
-              class="pt-1 text-xs text-amber-300/90"
+              v-if="spdFilterHintMessage"
+              class="pt-1 text-xs text-amber-300/90 leading-relaxed"
             >
-              {{ atkFilterHintMessage }}
+              {{ spdFilterHintMessage }}
             </p>
           </div>
         </section>
 
-        <!-- 2. わくわくの実・モンスポット条件 -->
+        <!-- 2. 検索条件 -->
         <section
           class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4 flex flex-col justify-between"
         >
@@ -198,10 +263,54 @@
             <h2
               class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
             >
-              2. わくわくの実・スポット条件
+              2. 検索条件
             </h2>
 
+            <!-- モンスポット（単独行） -->
+            <div>
+              <label class="block text-sm text-slate-400">モンスポット</label>
+              <select
+                v-model="selectedSpotId"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
+              >
+                <option
+                  v-for="spot in spotOptions"
+                  :key="spot.id"
+                  :value="spot.id"
+                >
+                  {{ spot.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- 使用回数 ＆ 実の上限数（横並び） -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm text-slate-400"
+                  >使用回数（0〜1000）</label
+                >
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  :value="useCountInput"
+                  @input="handleUseCountInput"
+                  placeholder="例: 100"
+                  :class="validationErrors.useCount.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono text-sm focus:outline-none"
+                />
+                <div
+                  v-if="validationErrors.useCount.length > 0"
+                  class="pt-1 text-xs text-rose-400"
+                >
+                  <p
+                    v-for="(err, idx) in validationErrors.useCount"
+                    :key="'useCount-' + idx"
+                  >
+                    ・{{ err }}
+                  </p>
+                </div>
+              </div>
+
               <div>
                 <label class="block text-sm text-slate-400">実の上限数</label>
                 <select
@@ -213,24 +322,9 @@
                   </option>
                 </select>
               </div>
-
-              <div>
-                <label class="block text-sm text-slate-400">モンスポット</label>
-                <select
-                  v-model="selectedSpotId"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
-                >
-                  <option
-                    v-for="spot in spotOptions"
-                    :key="spot.id"
-                    :value="spot.id"
-                  >
-                    {{ spot.label }}
-                  </option>
-                </select>
-              </div>
             </div>
 
+            <!-- 実の等級 -->
             <div>
               <label class="block text-sm text-slate-400 mb-1.5"
                 >実の等級</label
@@ -473,6 +567,15 @@
               </button>
               <button
                 type="button"
+                @click="changeSort('finalHp')"
+                :class="sortKey === 'finalHp' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
+                class="px-2 py-1 rounded border transition"
+              >
+                HP {{ sortKey === 'finalHp' ? (sortOrder === 'asc' ? '▲' : '▼')
+                : '' }}
+              </button>
+              <button
+                type="button"
                 @click="changeSort('finalAtk')"
                 :class="sortKey === 'finalAtk' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
                 class="px-2 py-1 rounded border transition"
@@ -546,6 +649,9 @@
                     わくわくの実の組み合わせ
                   </th>
                   <th class="py-2.5 px-3 font-medium text-right">
+                    HP (+ボーナス)
+                  </th>
+                  <th class="py-2.5 px-3 font-medium text-right">
                     攻撃力 (+加撃)
                   </th>
                   <th class="py-2.5 px-3 font-medium text-right">
@@ -567,7 +673,7 @@
                       v-if="row.fruits.length === 0"
                       class="text-slate-400 italic text-xs"
                     >
-                      わくわくの実なし（スポットのみ）
+                      わくわくの実なし（スポット・使用回数のみ）
                     </div>
                     <div v-else class="flex flex-wrap gap-1">
                       <span
@@ -577,6 +683,16 @@
                       >
                         {{ f.name }}
                       </span>
+                    </div>
+                  </td>
+                  <td
+                    class="py-2.5 px-3 text-right font-mono whitespace-nowrap"
+                  >
+                    <div class="font-bold text-amber-300">
+                      {{ row.finalHp.toLocaleString() }}
+                    </div>
+                    <div class="text-[11px] text-teal-400">
+                      +{{ row.totalHpBonus.toLocaleString() }}
                     </div>
                   </td>
                   <td
@@ -615,11 +731,20 @@
               class="bg-slate-900/70 border border-slate-700/80 rounded-lg p-3 space-y-1.5 hover:border-amber-500/40 transition"
             >
               <div
-                class="flex items-center justify-start gap-4 text-xs font-mono border-b border-slate-800 pb-1.5"
+                class="flex items-center justify-between gap-2 text-xs font-mono border-b border-slate-800 pb-1.5"
               >
                 <div>
+                  <span class="text-slate-400 text-[10px]">HP:</span>
+                  <span class="text-amber-300 font-bold ml-0.5"
+                    >{{ row.finalHp.toLocaleString() }}</span
+                  >
+                  <span class="text-teal-400 text-[10px] ml-0.5"
+                    >(+{{ row.totalHpBonus.toLocaleString() }})</span
+                  >
+                </div>
+                <div>
                   <span class="text-slate-400 text-[10px]">攻:</span>
-                  <span class="text-amber-300 font-bold ml-1"
+                  <span class="text-amber-300 font-bold ml-0.5"
                     >{{ row.finalAtk.toLocaleString() }}</span
                   >
                   <span class="text-emerald-400 text-[10px] ml-0.5"
@@ -628,7 +753,7 @@
                 </div>
                 <div>
                   <span class="text-slate-400 text-[10px]">速:</span>
-                  <span class="text-amber-300 font-bold ml-1"
+                  <span class="text-amber-300 font-bold ml-0.5"
                     >{{ row.finalSpd.toFixed(2) }}</span
                   >
                   <span class="text-sky-400 text-[10px] ml-0.5"
@@ -642,7 +767,7 @@
                   v-if="row.fruits.length === 0"
                   class="text-slate-400 italic text-xs"
                 >
-                  わくわくの実なし（スポットのみ）
+                  わくわくの実なし（スポット・使用回数のみ）
                 </div>
                 <div v-else class="flex flex-wrap gap-1">
                   <span
@@ -723,7 +848,7 @@
         >
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path
-              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+              d="M12 0C5.37 0 5.37 0 12 0c5.31 0 9.795 3.435 11.385 8.205.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
             />
           </svg>
           改善要望・不具合報告はこちら（GitHub Issue）
