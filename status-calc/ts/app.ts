@@ -259,7 +259,6 @@ createApp({
       return (min !== null && min > bSpd) || max !== null;
     });
 
-    // 修正案1：具体的な種類数を出さず、シンプルにする
     const hpFilterHintMessage = computed<string>(() => {
       const hp = hasHpCondition.value;
       const atk = hasAtkCondition.value;
