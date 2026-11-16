@@ -221,20 +221,11 @@ export function calculateRankFromExp(exp: number): number {
 
   const maxTableExp = rankExpTable[rankExpTable.length - 1];
   if (exp < maxTableExp) {
-    let low = 0;
-    let high = rankExpTable.length - 1;
-    let ans = rankExpTable.length;
-
-    while (low <= high) {
-      const mid = (low + high) >> 1;
-      if (rankExpTable[mid] > exp) {
-        ans = mid;
-        high = mid - 1;
-      } else {
-        low = mid + 1;
+    for (let i = 0; i < rankExpTable.length; i++) {
+      if (exp < rankExpTable[i]) {
+        return i;
       }
     }
-    return ans;
   }
 
   let currentTotal = maxTableExp;
