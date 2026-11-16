@@ -54,7 +54,7 @@ export const ERROR_MSG_SPD_MAX_LOWER =
 export const ERROR_MSG_SPD_MIN_MAX =
   "スピード下限値 ≦ スピード上限値 に設定してください";
 
-// フィルタヒントメッセージ定義
+// ヒントメッセージ定義
 export const HINT_MSG_HP_ONLY =
   "※ HPの範囲のみが設定されているため、HPが上がらない実は検索から省かれます。";
 export const HINT_MSG_ATK_ONLY =
