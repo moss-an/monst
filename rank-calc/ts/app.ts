@@ -394,6 +394,7 @@ createApp({
       if (raw === "") {
         row.itemRef.maxRank = "";
         row.itemRef.inputMaxRankDisplay = "";
+        target.value = "";
       } else {
         let numVal = Number(raw);
         if (numVal > maxRank) {
@@ -402,6 +403,7 @@ createApp({
         }
         row.itemRef.maxRank = numVal;
         row.itemRef.inputMaxRankDisplay = raw;
+        target.value = raw;
       }
       updateRankSteps();
     };
@@ -464,6 +466,7 @@ createApp({
       if (raw === "") {
         row.itemRef.expPerRank = "";
         row.itemRef.inputExpDisplay = "";
+        target.value = "";
       } else {
         let numVal = Number(raw);
         if (numVal > maxStepExp) {
@@ -472,6 +475,7 @@ createApp({
         }
         row.itemRef.expPerRank = numVal;
         row.itemRef.inputExpDisplay = raw;
+        target.value = raw;
       }
       updateRankSteps();
     };
@@ -632,6 +636,7 @@ createApp({
       const target = e.target as HTMLInputElement;
 
       currentRank.value = parseNaturalRank(target.value);
+      target.value = currentRank.value;
       if (currentRank.value === "") {
         currentExpInput.value = "";
       } else if (isLoaded.value) {
@@ -652,6 +657,7 @@ createApp({
 
       const raw = target.value.replace(/[^0-9]/g, "");
       currentExpInput.value = parseExpInput(raw);
+      target.value = currentExpInput.value;
       if (currentExpInput.value === "") {
         currentRank.value = "";
       } else if (isLoaded.value) {
@@ -715,6 +721,7 @@ createApp({
       const target = e.target as HTMLInputElement;
 
       targetRank.value = parseNaturalRank(target.value);
+      target.value = targetRank.value;
       if (targetRank.value === "") {
         targetExpInput.value = "";
       } else if (isLoaded.value) {
@@ -735,6 +742,7 @@ createApp({
 
       const raw = target.value.replace(/[^0-9]/g, "");
       targetExpInput.value = parseExpInput(raw);
+      target.value = targetExpInput.value;
       if (targetExpInput.value === "") {
         targetRank.value = "";
       } else if (isLoaded.value) {
@@ -846,6 +854,11 @@ createApp({
       let val = target.value;
       val = val.replace(/[^0-9.]/g, "");
 
+      // 冒頭小数点の禁止
+      if (val.startsWith(".")) {
+        val = val.replace(/^\.+/, "");
+      }
+
       const parts = val.split(".");
       if (parts.length > 2) {
         val = parts[0] + "." + parts.slice(1).join("");
@@ -869,11 +882,15 @@ createApp({
       }
 
       customMultiplier.value = val;
+      target.value = val;
     };
 
     const validateCustomMultiplier = (): void => {
       if (customMultiplier.value === "" || customMultiplier.value === null) {
         return;
+      }
+      if (customMultiplier.value.startsWith(".")) {
+        customMultiplier.value = customMultiplier.value.replace(/^\.+/, "");
       }
       let num = Number(customMultiplier.value);
       if (isNaN(num) || num < 1) {
@@ -891,6 +908,7 @@ createApp({
     const baseExp = ref<number>(questPresets[0].exp);
     const baseExpInput = ref<string>(formatNumber(questPresets[0].exp));
     const clearSec = ref<number>(CONSTANTS.DEFAULT_CLEAR_SEC);
+    const clearSecInput = ref<string>(String(CONSTANTS.DEFAULT_CLEAR_SEC));
 
     const handleBaseExpFocus = (): void => {
       if (baseExpInput.value !== "") {
@@ -916,6 +934,7 @@ createApp({
       if (raw === "") {
         baseExpInput.value = "";
         baseExp.value = 0;
+        target.value = "";
       } else {
         let numVal = Number(raw);
         if (numVal > maxBaseExp) {
@@ -923,6 +942,7 @@ createApp({
         }
         baseExp.value = numVal;
         baseExpInput.value = String(numVal);
+        target.value = String(numVal);
       }
     };
 
@@ -930,19 +950,47 @@ createApp({
       baseExpInput.value = formatNumber(baseExp.value);
     };
 
+    const handleClearSecFocus = (): void => {
+      if (clearSecInput.value !== "") {
+        clearSecInput.value = clearSecInput.value.replace(/[^0-9]/g, "");
+      }
+    };
+
     const handleClearSecInput = (e: Event): void => {
+      if ((e as InputEvent).isComposing) return;
       const target = e.target as HTMLInputElement;
-      const val = target.value;
-      if (val === "" || isNaN(Number(val)) || Number(val) < 0) {
+      let raw = target.value.replace(/[^0-9]/g, "");
+
+      if (raw.length > 1) {
+        raw = raw.replace(/^0+/, "");
+        if (raw === "") raw = "0";
+      }
+
+      if (raw === "" || isNaN(Number(raw)) || Number(raw) < 0) {
         clearSec.value = 0;
-        target.value = "0";
+        clearSecInput.value = "";
+        target.value = "";
       } else {
-        let numVal = Number(val);
+        let numVal = Number(raw);
         if (numVal > maxClearSec) {
           numVal = maxClearSec;
+          raw = String(maxClearSec);
         }
         clearSec.value = numVal;
-        target.value = String(numVal);
+        clearSecInput.value = raw;
+        target.value = raw;
+      }
+    };
+
+    const handleClearSecBlur = (): void => {
+      if (clearSecInput.value === "" || isNaN(Number(clearSecInput.value))) {
+        clearSec.value = 0;
+        clearSecInput.value = "0";
+      } else {
+        let numVal = Number(clearSecInput.value);
+        if (numVal > maxClearSec) numVal = maxClearSec;
+        clearSec.value = numVal;
+        clearSecInput.value = String(numVal);
       }
     };
 
@@ -1066,10 +1114,13 @@ createApp({
       baseExp,
       baseExpInput,
       clearSec,
+      clearSecInput,
       handleBaseExpFocus,
       handleBaseExpInput,
       handleBaseExpBlur,
+      handleClearSecFocus,
       handleClearSecInput,
+      handleClearSecBlur,
       handlePresetChange,
       earnedExpPerRun,
       requiredTotalExp,
