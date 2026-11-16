@@ -238,49 +238,81 @@ createApp({
       return Logic.hasAnyValidationError(validationErrors.value);
     });
 
-    const isAnyInputted = computed<boolean>(() => {
-      return (
-        hpMinInput.value !== "" ||
-        hpMaxInput.value !== "" ||
-        atkMinInput.value !== "" ||
-        atkMaxInput.value !== "" ||
-        spdMinInput.value !== "" ||
-        spdMaxInput.value !== ""
-      );
-    });
-
-    const hpFilterHintMessage = computed<string>(() => {
+    const hasHpCondition = computed<boolean>(() => {
       const bHp = parseIntOrNull(baseHpInput.value) ?? 0;
       const min = parseIntOrNull(hpMinInput.value);
       const max = parseIntOrNull(hpMaxInput.value);
-      const hasHpCond = (min !== null && min > bHp) || max !== null;
-      if (hasHpCond) return "";
-      if (isAnyInputted.value) {
-        return `※ 有効なHPの範囲が設定されていないため、加命のみの実（${FRUITS.hpOnlyCategoryCount}種）は検索から省かれます。`;
+      return (min !== null && min > bHp) || max !== null;
+    });
+
+    const hasAtkCondition = computed<boolean>(() => {
+      const bAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
+      const min = parseIntOrNull(atkMinInput.value);
+      const max = parseIntOrNull(atkMaxInput.value);
+      return (min !== null && min > bAtk) || max !== null;
+    });
+
+    const hasSpdCondition = computed<boolean>(() => {
+      const bSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
+      const min = parseFloatOrNull(spdMinInput.value);
+      const max = parseFloatOrNull(spdMaxInput.value);
+      return (min !== null && min > bSpd) || max !== null;
+    });
+
+    // 修正案1：具体的な種類数を出さず、シンプルにする
+    const hpFilterHintMessage = computed<string>(() => {
+      const hp = hasHpCondition.value;
+      const atk = hasAtkCondition.value;
+      const spd = hasSpdCondition.value;
+
+      if (hp && atk && spd) return "";
+
+      if (hp && !atk && !spd) {
+        return `※ HPの範囲のみが設定されているため、HPが上がらない実は検索から省かれます。`;
+      }
+      if (hp && atk && !spd) {
+        return `※ HPと攻撃力の範囲が設定されているため、HPも攻撃力も上がらない実は検索から省かれます。`;
+      }
+      if (hp && !atk && spd) {
+        return `※ HPとスピードの範囲が設定されているため、HPもスピードも上がらない実は検索から省かれます。`;
       }
       return "";
     });
 
     const atkFilterHintMessage = computed<string>(() => {
-      const bAtk = parseIntOrNull(baseAtkInput.value) ?? 0;
-      const min = parseIntOrNull(atkMinInput.value);
-      const max = parseIntOrNull(atkMaxInput.value);
-      const hasAtkCond = (min !== null && min > bAtk) || max !== null;
-      if (hasAtkCond) return "";
-      if (isAnyInputted.value) {
-        return `※ 有効な攻撃力の範囲が設定されていないため、加撃のみの実（${FRUITS.atkOnlyCategoryCount}種）は検索から省かれます。`;
+      const hp = hasHpCondition.value;
+      const atk = hasAtkCondition.value;
+      const spd = hasSpdCondition.value;
+
+      if (hp && atk && spd) return "";
+
+      if (!hp && atk && !spd) {
+        return `※ 攻撃力の範囲のみが設定されているため、攻撃力が上がらない実は検索から省かれます。`;
+      }
+      if (hp && atk && !spd) {
+        return `※ HPと攻撃力の範囲が設定されているため、HPも攻撃力も上がらない実は検索から省かれます。`;
+      }
+      if (!hp && atk && spd) {
+        return `※ 攻撃力とスピードの範囲が設定されているため、攻撃力もスピードも上がらない実は検索から省かれます。`;
       }
       return "";
     });
 
     const spdFilterHintMessage = computed<string>(() => {
-      const bSpd = parseFloatOrNull(baseSpdInput.value) ?? 0;
-      const min = parseFloatOrNull(spdMinInput.value);
-      const max = parseFloatOrNull(spdMaxInput.value);
-      const hasSpdCond = (min !== null && min > bSpd) || max !== null;
-      if (hasSpdCond) return "";
-      if (isAnyInputted.value) {
-        return `※ 有効なスピードの範囲が設定されていないため、加速のみの実（${FRUITS.spdOnlyCategoryCount}種）は検索から省かれます。`;
+      const hp = hasHpCondition.value;
+      const atk = hasAtkCondition.value;
+      const spd = hasSpdCondition.value;
+
+      if (hp && atk && spd) return "";
+
+      if (!hp && !atk && spd) {
+        return `※ スピードの範囲のみが設定されているため、スピードが上がらない実は検索から省かれます。`;
+      }
+      if (hp && !atk && spd) {
+        return `※ HPとスピードの範囲が設定されているため、HPもスピードも上がらない実は検索から省かれます。`;
+      }
+      if (!hp && atk && spd) {
+        return `※ 攻撃力とスピードの範囲が設定されているため、攻撃力もスピードも上がらない実は検索から省かれます。`;
       }
       return "";
     });

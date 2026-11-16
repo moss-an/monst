@@ -235,6 +235,7 @@ export function findMatchingCombinations(
       continue;
     }
 
+    // 1. HP条件だけがある場合：HPが上がらない実を省く
     if (
       hasHpCondition &&
       !hasAtkCondition &&
@@ -243,18 +244,67 @@ export function findMatchingCombinations(
     ) {
       continue;
     }
+
+    // 2. 攻撃力条件だけがある場合：攻撃力が上がらない実を省く
     if (
-      hasAtkCondition &&
       !hasHpCondition &&
+      hasAtkCondition &&
       !hasSpdCondition &&
       spec.atkBonus === 0
     ) {
       continue;
     }
+
+    // 3. スピード条件だけがある場合：スピードが上がらない実を省く
     if (
-      hasSpdCondition &&
       !hasHpCondition &&
       !hasAtkCondition &&
+      hasSpdCondition &&
+      spec.spdBonus === 0
+    ) {
+      continue;
+    }
+
+    // 4. HP条件と攻撃力条件だけがある場合：HPも攻撃力も上がらない実を省く
+    if (
+      hasHpCondition &&
+      hasAtkCondition &&
+      !hasSpdCondition &&
+      spec.hpBonus === 0 &&
+      spec.atkBonus === 0
+    ) {
+      continue;
+    }
+
+    // 5. HP条件とスピード条件だけがある場合：HPもスピードも上がらない実を省く
+    if (
+      hasHpCondition &&
+      !hasAtkCondition &&
+      hasSpdCondition &&
+      spec.hpBonus === 0 &&
+      spec.spdBonus === 0
+    ) {
+      continue;
+    }
+
+    // 6. 攻撃力条件とスピード条件だけがある場合：攻撃力もスピードも上がらない実を省く
+    if (
+      !hasHpCondition &&
+      hasAtkCondition &&
+      hasSpdCondition &&
+      spec.atkBonus === 0 &&
+      spec.spdBonus === 0
+    ) {
+      continue;
+    }
+
+    // 7. すべての条件がある場合：HPも攻撃力もスピードも上がらない実を省く
+    if (
+      hasHpCondition &&
+      hasAtkCondition &&
+      hasSpdCondition &&
+      spec.hpBonus === 0 &&
+      spec.atkBonus === 0 &&
       spec.spdBonus === 0
     ) {
       continue;
