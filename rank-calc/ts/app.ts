@@ -1055,8 +1055,19 @@ createApp({
     });
 
     // スケジュール計算用 computed
+    const isDateEmpty = computed<boolean>(() => {
+      return !fromDate.value || !toDate.value;
+    });
+
+    const isFromAfterTo = computed<boolean>(() => {
+      if (isDateEmpty.value) return false;
+      const start = new Date(fromDate.value);
+      const end = new Date(toDate.value);
+      return start.getTime() > end.getTime();
+    });
+
     const scheduleDaysCount = computed<number>(() => {
-      if (!fromDate.value || !toDate.value) return 1;
+      if (isDateEmpty.value) return 1;
       const start = new Date(fromDate.value);
       const end = new Date(toDate.value);
       const diffTime = end.getTime() - start.getTime();
@@ -1173,6 +1184,8 @@ createApp({
       requiredTotalExp,
       totalRuns,
       timeResult,
+      isFromAfterTo,
+      isDateEmpty,
       scheduleDaysCount,
       dailyRequiredRuns,
       dailyTimeResult,
