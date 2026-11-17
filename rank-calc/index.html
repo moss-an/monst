@@ -733,7 +733,13 @@
             v-if="isFromAfterTo"
             class="text-amber-400 text-[11px] font-medium leading-relaxed"
           >
-            ※from &gt; to のため、対象日数は1日として計算します。
+            ※開始日 &gt; 終了日のため、対象日数は1日として計算します。
+          </p>
+          <p
+            v-if="isDateEmpty"
+            class="text-amber-400 text-[11px] font-medium leading-relaxed"
+          >
+            ※開始日または終了日が未入力のため、対象日数は1日として計算します。
           </p>
 
           <div
