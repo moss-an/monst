@@ -316,6 +316,9 @@ export function findMatchingCombinations(
   const results: FruitCombinationResult[] = [];
   const uniqueIds = new Set<string>();
   const current: FRUITS.FruitSpec[] = [];
+
+  const selectedCategoriesSet = new Set<string>();
+
   const MAX_LIMIT = CONSTANTS.MAX_SEARCH_RESULTS_LIMIT;
 
   const backtrack = (
@@ -383,22 +386,28 @@ export function findMatchingCombinations(
 
     for (let i = startIndex; i < candidateFruits.length; i++) {
       const nextFruit = candidateFruits[i];
+      const isOther = nextFruit.category === FRUITS.OTHER_CATEGORY_NAME;
 
-      if (
-        nextFruit.category !== FRUITS.OTHER_CATEGORY_NAME &&
-        current.some((f) => f.category === nextFruit.category)
-      ) {
+      if (!isOther && selectedCategoriesSet.has(nextFruit.category)) {
         continue;
       }
 
+      if (!isOther) {
+        selectedCategoriesSet.add(nextFruit.category);
+      }
       current.push(nextFruit);
+
       backtrack(
         i,
         currentFruitHp + nextFruit.hpBonus,
         currentFruitAtk + nextFruit.atkBonus,
         currentFruitSpd + nextFruit.spdBonus,
       );
+
       current.pop();
+      if (!isOther) {
+        selectedCategoriesSet.delete(nextFruit.category);
+      }
     }
   };
 
