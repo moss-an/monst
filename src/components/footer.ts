@@ -27,9 +27,9 @@ function initFooter(): void {
   const isRoot = segments.length === 0;
 
   if (!isRoot) {
-    // 下層ページ（ツールや深いディレクトリ）の場合："request" とエントリーポイント末尾のセグメントをラベルに設定
+    // 下層ページ（ツールや深いディレクトリ）の場合："via-web" とエントリーポイント末尾のセグメントをラベルに設定
     const entryPointLeaf = segments[segments.length - 1];
-    const encodedLabels = encodeURIComponent(`request,${entryPointLeaf}`);
+    const encodedLabels = encodeURIComponent(`via-web,${entryPointLeaf}`);
 
     footer.innerHTML = `
       <p>
