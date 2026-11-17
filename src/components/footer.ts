@@ -27,14 +27,14 @@ function initFooter(): void {
   const isRoot = segments.length === 0;
 
   if (!isRoot) {
-    // 下層ページ（ツールや深いディレクトリ）の場合：残りのセグメントを結合してパスにする
-    const toolOrPath = segments.join("/");
-    const encodedTitle = encodeURIComponent(`【${toolOrPath}】`);
+    // 下層ページ（ツールや深いディレクトリ）の場合："request" とエントリーポイント末尾のセグメントをラベルに設定
+    const entryPointLeaf = segments[segments.length - 1];
+    const encodedLabels = encodeURIComponent(`request,${entryPointLeaf}`);
 
     footer.innerHTML = `
       <p>
         <a
-          href="https://github.com/moss-an/monst/issues/new?title=${encodedTitle}"
+          href="https://github.com/moss-an/monst/issues/new?labels=${encodedLabels}"
           target="_blank"
           rel="noopener noreferrer"
           class="text-slate-400 hover:text-slate-200 hover:underline transition inline-flex items-center gap-1"
