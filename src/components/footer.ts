@@ -53,7 +53,7 @@ function initFooter(): void {
     if (!footer.innerHTML.trim()) {
       footer.innerHTML = `
         <p>
-          © 2026 moss-an /
+          &copy; 2026 moss-an /
           <a
             href="https://github.com/moss-an/monst/blob/main/LICENSE"
             target="_blank"
