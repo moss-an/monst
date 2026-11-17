@@ -352,10 +352,16 @@ export function findMatchingCombinations(
       const effectiveFruits = current.filter(
         (f) => f.category !== FRUITS.OTHER_CATEGORY_NAME,
       );
-      const signature =
-        effectiveFruits.length === 0
-          ? "EMPTY"
-          : effectiveFruits.map((f) => f.id).join("+");
+
+      let signature = "EMPTY";
+      if (effectiveFruits.length > 0) {
+        let sig = "";
+        for (let j = 0; j < effectiveFruits.length; j++) {
+          if (j > 0) sig += "+";
+          sig += effectiveFruits[j].id;
+        }
+        signature = sig;
+      }
 
       if (!uniqueIds.has(signature)) {
         uniqueIds.add(signature);
