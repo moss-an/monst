@@ -707,24 +707,24 @@
           </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div class="min-w-0">
+            <div class="min-w-0 flex flex-col">
               <label class="block text-xs sm:text-sm text-slate-400 mb-1"
                 >from:（開始日）</label
               >
               <input
                 type="date"
                 v-model="fromDate"
-                class="w-full max-w-full box-border bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm sm:text-base text-slate-200 focus:outline-none focus:border-amber-400"
+                class="w-full min-w-0 max-w-full box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200 focus:outline-none focus:border-amber-400"
               />
             </div>
-            <div class="min-w-0">
+            <div class="min-w-0 flex flex-col">
               <label class="block text-xs sm:text-sm text-slate-400 mb-1"
                 >to:（終了日）</label
               >
               <input
                 type="date"
                 v-model="toDate"
-                class="w-full max-w-full box-border bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm sm:text-base text-slate-200 focus:outline-none focus:border-amber-400"
+                class="w-full min-w-0 max-w-full box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200 focus:outline-none focus:border-amber-400"
               />
             </div>
           </div>
