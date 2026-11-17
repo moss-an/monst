@@ -700,50 +700,50 @@
           >
         </summary>
         <div
-          class="p-4 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40"
+          class="p-3 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40"
         >
           <p class="text-sm text-slate-400 leading-relaxed">
             期間を指定して、1日あたりに必要な周回数や周回時間を計算できます。
           </p>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label class="block text-sm text-slate-400 mb-1"
+              <label class="block text-xs sm:text-sm text-slate-400 mb-1"
                 >from:（開始日）</label
               >
               <input
                 type="date"
                 v-model="fromDate"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm sm:text-base text-slate-200 focus:outline-none focus:border-amber-400"
               />
             </div>
             <div>
-              <label class="block text-sm text-slate-400 mb-1"
+              <label class="block text-xs sm:text-sm text-slate-400 mb-1"
                 >to:（終了日）</label
               >
               <input
                 type="date"
                 v-model="toDate"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm sm:text-base text-slate-200 focus:outline-none focus:border-amber-400"
               />
             </div>
           </div>
 
           <div
-            class="bg-slate-800/90 border border-slate-700 rounded-lg p-4 space-y-3"
+            class="bg-slate-800/90 border border-slate-700 rounded-lg p-3 sm:p-4 space-y-3"
           >
             <div
-              class="text-sm text-slate-400 border-b border-slate-700/60 pb-2"
+              class="text-xs sm:text-sm text-slate-400 border-b border-slate-700/60 pb-2"
             >
               対象日数: {{ scheduleDaysCount.toLocaleString() }}日
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
               <div
-                class="bg-slate-900/60 p-3 rounded border border-slate-700/60 text-center"
+                class="bg-slate-900/60 p-3 rounded-lg border border-slate-700 text-center overflow-hidden"
               >
                 <p class="text-xs text-slate-400">1日あたりの必要周回数</p>
                 <p
-                  class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1"
+                  class="text-base sm:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1 break-all"
                 >
                   <span
                     >{{ dailyRequiredRuns.toLocaleString() }}<span
@@ -754,7 +754,7 @@
                 </p>
               </div>
               <div
-                class="bg-slate-900/60 p-3 rounded border border-slate-700/60 text-center"
+                class="bg-slate-900/60 p-3 rounded-lg border border-slate-700 text-center overflow-hidden"
               >
                 <p class="text-xs text-slate-400">1日あたりの必要周回時間</p>
                 <p
@@ -794,8 +794,8 @@
               class="bg-red-950/60 border border-red-500/50 rounded-lg p-3 text-red-200 text-xs sm:text-sm flex items-start gap-2 mt-2"
             >
               <span class="text-base flex-shrink-0">⚠️</span>
-              <div>
-                <span class="font-bold text-red-300"
+              <div class="min-w-0 flex-1">
+                <span class="font-bold text-red-300 block sm:inline"
                   >警告: 1日あたりの必要周回時間が24時間を超えています。</span
                 >
                 <p class="text-red-300/90 text-xs mt-0.5">
