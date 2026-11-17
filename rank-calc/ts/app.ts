@@ -52,6 +52,18 @@ createApp({
     const currentExpInput = ref<string>("");
     const targetExpInput = ref<string>("");
 
+    // 日付スケジュール用
+    const getTodayString = (): string => {
+      const d = new Date();
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    const fromDate = ref<string>(getTodayString());
+    const toDate = ref<string>(getTodayString());
+
     const isLoaded = ref<boolean>(false);
     const lastStepExp = ref<number>(0);
     const lastStepMinRank = ref<number>(CONSTANTS.DEFAULT_THRESHOLD_RANK);
@@ -854,7 +866,6 @@ createApp({
       let val = target.value;
       val = val.replace(/[^0-9.]/g, "");
 
-      // 冒頭小数点の禁止
       if (val.startsWith(".")) {
         val = val.replace(/^\.+/, "");
       }
@@ -1043,6 +1054,40 @@ createApp({
       return Logic.formatTime(totalRuns.value * clearSec.value);
     });
 
+    // スケジュール計算用 computed
+    const scheduleDaysCount = computed<number>(() => {
+      if (!fromDate.value || !toDate.value) return 1;
+      const start = new Date(fromDate.value);
+      const end = new Date(toDate.value);
+      const diffTime = end.getTime() - start.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      return diffDays > 0 ? diffDays : 1;
+    });
+
+    const dailyRequiredRuns = computed<number>(() => {
+      if (scheduleDaysCount.value <= 0 || totalRuns.value <= 0) return 0;
+      return Math.ceil(totalRuns.value / scheduleDaysCount.value);
+    });
+
+    const dailyTotalSeconds = computed<number>(() => {
+      if (
+        scheduleDaysCount.value <= 0 ||
+        totalRuns.value <= 0 ||
+        clearSec.value <= 0
+      ) {
+        return 0;
+      }
+      return (totalRuns.value * clearSec.value) / scheduleDaysCount.value;
+    });
+
+    const dailyTimeResult = computed<Logic.FormattedTime>(() => {
+      return Logic.formatTime(Math.ceil(dailyTotalSeconds.value));
+    });
+
+    const isDailyTimeExceeding24Hours = computed<boolean>(() => {
+      return dailyTotalSeconds.value > 86400; // 24 hours in seconds
+    });
+
     return {
       maxRank,
       maxExp,
@@ -1065,6 +1110,8 @@ createApp({
       currentProgressPercent,
       targetProgressPercent,
       targetExpInput,
+      fromDate,
+      toDate,
       isLoaded,
       lastStepExp,
       lastStepMinRank,
@@ -1126,6 +1173,10 @@ createApp({
       requiredTotalExp,
       totalRuns,
       timeResult,
+      scheduleDaysCount,
+      dailyRequiredRuns,
+      dailyTimeResult,
+      isDailyTimeExceeding24Hours,
     };
   },
 }).mount("#app");

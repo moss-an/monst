@@ -655,7 +655,7 @@
               <template v-if="timeResult.days > 0">
                 <span
                   >{{ timeResult.days.toLocaleString() }}<span
-                    class="text-xs font-normal ml-0.5"
+                    class="text-xs font-bold ml-0.5"
                     >日</span
                   ></span
                 >
@@ -663,14 +663,14 @@
               <template v-if="timeResult.days > 0 || timeResult.hours > 0">
                 <span
                   >{{ timeResult.hours.toLocaleString() }}<span
-                    class="text-xs font-normal ml-0.5"
+                    class="text-xs font-bold ml-0.5"
                     >時間</span
                   ></span
                 >
               </template>
               <span
                 >{{ timeResult.minutes.toLocaleString() }}<span
-                  class="text-xs font-normal ml-0.5"
+                  class="text-xs font-bold ml-0.5"
                   >分</span
                 ></span
               >
@@ -683,6 +683,132 @@
           ※処理の都合により、ごくわずかな誤差が生じている場合があります。
         </p>
       </section>
+
+      <!-- 周回ペース計画トグル -->
+      <details
+        class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden group"
+      >
+        <summary
+          class="cursor-pointer px-4 sm:px-6 py-4 flex items-center justify-between text-base sm:text-lg font-bold text-amber-300 hover:bg-slate-700/50 transition select-none"
+        >
+          <span class="flex items-center gap-2">
+            <span>📅</span> 周回ペース計画
+          </span>
+          <span
+            class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
+            >▼</span
+          >
+        </summary>
+        <div
+          class="p-4 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40"
+        >
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            期間を指定して、1日あたりに必要な周回数や周回時間を計算できます。
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm text-slate-400 mb-1"
+                >from:（開始日）</label
+              >
+              <input
+                type="date"
+                v-model="fromDate"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400"
+              />
+            </div>
+            <div>
+              <label class="block text-sm text-slate-400 mb-1"
+                >to:（終了日）</label
+              >
+              <input
+                type="date"
+                v-model="toDate"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:outline-none focus:border-amber-400"
+              />
+            </div>
+          </div>
+
+          <div
+            class="bg-slate-800/90 border border-slate-700 rounded-lg p-4 space-y-3"
+          >
+            <div
+              class="flex justify-between items-center text-sm border-b border-slate-700/60 pb-2"
+            >
+              <span class="text-slate-400">対象期間</span>
+              <span class="font-bold text-slate-200 font-bold"
+                >{{ scheduleDaysCount.toLocaleString() }} 日</span
+              >
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div
+                class="bg-slate-900/60 p-3 rounded border border-slate-700/60 text-center"
+              >
+                <p class="text-xs text-slate-400">1日あたりの必要周回数</p>
+                <p
+                  class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1"
+                >
+                  <span
+                    >{{ dailyRequiredRuns.toLocaleString() }}<span
+                      class="text-xs font-bold ml-0.5"
+                      >周/日</span
+                    ></span
+                  >
+                </p>
+              </div>
+              <div
+                class="bg-slate-900/60 p-3 rounded border border-slate-700/60 text-center"
+              >
+                <p class="text-xs text-slate-400">1日あたりの必要周回時間</p>
+                <p
+                  class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1"
+                >
+                  <template v-if="dailyTimeResult.days > 0">
+                    <span
+                      >{{ dailyTimeResult.days.toLocaleString() }}<span
+                        class="text-xs font-bold ml-0.5"
+                        >日</span
+                      ></span
+                    >
+                  </template>
+                  <template
+                    v-if="dailyTimeResult.days > 0 || dailyTimeResult.hours > 0"
+                  >
+                    <span
+                      >{{ dailyTimeResult.hours.toLocaleString() }}<span
+                        class="text-xs font-bold ml-0.5"
+                        >時間</span
+                      ></span
+                    >
+                  </template>
+                  <span
+                    >{{ dailyTimeResult.minutes.toLocaleString() }}<span
+                      class="text-xs font-bold ml-0.5"
+                      >分/日</span
+                    ></span
+                  >
+                </p>
+              </div>
+            </div>
+
+            <!-- 24時間超過警告バナー -->
+            <div
+              v-if="isDailyTimeExceeding24Hours"
+              class="bg-red-950/60 border border-red-500/50 rounded-lg p-3 text-red-200 text-xs sm:text-sm flex items-start gap-2 mt-2"
+            >
+              <span class="text-base flex-shrink-0">⚠️</span>
+              <div>
+                <span class="font-bold text-red-300"
+                  >警告: 1日あたりの必要周回時間が24時間を超えています。</span
+                >
+                <p class="text-red-300/90 text-xs mt-0.5">
+                  現実的に不可能なスケジュールです。期間を長めに設定するなど、再調整してください。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
     </div>
 
     <footer class="mt-auto"></footer>
