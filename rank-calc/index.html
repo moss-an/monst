@@ -729,6 +729,13 @@
             </div>
           </div>
 
+          <p
+            v-if="isFromAfterTo"
+            class="text-amber-400 text-[11px] font-medium leading-relaxed"
+          >
+            ※from &gt; to のため、対象日数は1日として計算します。
+          </p>
+
           <div
             class="bg-slate-800/90 border border-slate-700 rounded-lg p-3 sm:p-4 space-y-3"
           >
