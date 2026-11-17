@@ -655,7 +655,7 @@
               <template v-if="timeResult.days > 0">
                 <span
                   >{{ timeResult.days.toLocaleString() }}<span
-                    class="text-xs font-normal ml-0.5"
+                    class="text-xs font-bold ml-0.5"
                     >日</span
                   ></span
                 >
@@ -663,14 +663,14 @@
               <template v-if="timeResult.days > 0 || timeResult.hours > 0">
                 <span
                   >{{ timeResult.hours.toLocaleString() }}<span
-                    class="text-xs font-normal ml-0.5"
+                    class="text-xs font-bold ml-0.5"
                     >時間</span
                   ></span
                 >
               </template>
               <span
                 >{{ timeResult.minutes.toLocaleString() }}<span
-                  class="text-xs font-normal ml-0.5"
+                  class="text-xs font-bold ml-0.5"
                   >分</span
                 ></span
               >
@@ -750,7 +750,7 @@
                 >
                   <span
                     >{{ dailyRequiredRuns.toLocaleString() }}<span
-                      class="text-xs font-normal ml-0.5"
+                      class="text-xs font-bold ml-0.5"
                       >周/日</span
                     ></span
                   >
@@ -766,7 +766,7 @@
                   <template v-if="dailyTimeResult.days > 0">
                     <span
                       >{{ dailyTimeResult.days.toLocaleString() }}<span
-                        class="text-xs font-normal ml-0.5"
+                        class="text-xs font-bold ml-0.5"
                         >日</span
                       ></span
                     >
@@ -776,14 +776,14 @@
                   >
                     <span
                       >{{ dailyTimeResult.hours.toLocaleString() }}<span
-                        class="text-xs font-normal ml-0.5"
+                        class="text-xs font-bold ml-0.5"
                         >時間</span
                       ></span
                     >
                   </template>
                   <span
                     >{{ dailyTimeResult.minutes.toLocaleString() }}<span
-                      class="text-xs font-normal ml-0.5"
+                      class="text-xs font-bold ml-0.5"
                       >分/日</span
                     ></span
                   >
