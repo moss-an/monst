@@ -328,7 +328,7 @@ createApp({
         let calculatedRank = Logic.calculateRankFromExp(exp);
         if (calculatedRank > maxRank) calculatedRank = maxRank;
         targetRank.value = calculatedRank.toString();
-      } else if (targetExpInput.value !== "") {
+      } else if (targetRank.value !== "") {
         const r = getEffectiveRank(targetRank.value);
         targetExpInput.value = formatNumber(Logic.calculateExpFromRank1(r));
       }
