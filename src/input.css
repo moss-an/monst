@@ -7,7 +7,7 @@
   src: url("/fonts/reggae-one-v20-japanese_latin-regular.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 @theme {
   --font-reggae: "Reggae One", cursive, sans-serif;
