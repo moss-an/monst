@@ -152,11 +152,43 @@ function initHamburgerMenu(): void {
         aria-expanded="false"
         aria-controls="hamburger-menu"
       >
-        <div class="w-5 h-4 relative flex flex-col justify-between">
-          <span id="hamburger-line-1" class="block h-0.5 w-full bg-current rounded-full transition-all duration-200 origin-center"></span>
-          <span id="hamburger-line-2" class="block h-0.5 w-full bg-current rounded-full transition-all duration-200"></span>
-          <span id="hamburger-line-3" class="block h-0.5 w-full bg-current rounded-full transition-all duration-200 origin-center"></span>
-        </div>
+        <svg
+          class="w-5 h-4 overflow-visible"
+          viewBox="0 0 20 16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <line
+            id="hamburger-line-1"
+            x1="1"
+            y1="2"
+            x2="19"
+            y2="2"
+            style="transform-box: fill-box; transform-origin: center;"
+            class="transition-all duration-200"
+          />
+          <line
+            id="hamburger-line-2"
+            x1="1"
+            y1="8"
+            x2="19"
+            y2="8"
+            style="transform-box: fill-box; transform-origin: center;"
+            class="transition-all duration-200"
+          />
+          <line
+            id="hamburger-line-3"
+            x1="1"
+            y1="14"
+            x2="19"
+            y2="14"
+            style="transform-box: fill-box; transform-origin: center;"
+            class="transition-all duration-200"
+          />
+        </svg>
       </button>
 
       <div
@@ -220,9 +252,9 @@ function initHamburgerMenu(): void {
     });
 
     btn.classList.remove("border-amber-400/70", "text-amber-300");
-    line1.classList.remove("translate-y-[7px]", "rotate-45");
+    line1.classList.remove("translate-y-[6px]", "rotate-45");
     line2.classList.remove("opacity-0", "scale-x-0");
-    line3.classList.remove("-translate-y-[7px]", "-rotate-45");
+    line3.classList.remove("-translate-y-[6px]", "-rotate-45");
 
     backdrop.classList.add("opacity-0", "pointer-events-none");
     backdrop.classList.remove("opacity-100");
@@ -263,9 +295,9 @@ function initHamburgerMenu(): void {
       links.forEach((link) => link.setAttribute("tabindex", "0"));
 
       btn.classList.add("border-amber-400/70", "text-amber-300");
-      line1.classList.add("translate-y-[7px]", "rotate-45");
+      line1.classList.add("translate-y-[6px]", "rotate-45");
       line2.classList.add("opacity-0", "scale-x-0");
-      line3.classList.add("-translate-y-[7px]", "-rotate-45");
+      line3.classList.add("-translate-y-[6px]", "-rotate-45");
       backdrop.classList.remove("opacity-0", "pointer-events-none");
       backdrop.classList.add("opacity-100");
       menu.classList.remove(
@@ -279,9 +311,9 @@ function initHamburgerMenu(): void {
       links.forEach((link) => link.setAttribute("tabindex", "-1"));
 
       btn.classList.remove("border-amber-400/70", "text-amber-300");
-      line1.classList.remove("translate-y-[7px]", "rotate-45");
+      line1.classList.remove("translate-y-[6px]", "rotate-45");
       line2.classList.remove("opacity-0", "scale-x-0");
-      line3.classList.remove("-translate-y-[7px]", "-rotate-45");
+      line3.classList.remove("-translate-y-[6px]", "-rotate-45");
       backdrop.classList.add("opacity-0", "pointer-events-none");
       backdrop.classList.remove("opacity-100");
       menu.classList.add(
