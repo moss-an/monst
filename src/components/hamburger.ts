@@ -275,15 +275,6 @@ function initHamburgerMenu(): void {
         "pointer-events-none",
       );
       menu.classList.add("opacity-100", "scale-100", "translate-y-0");
-
-      const firstLink = menu.querySelector<HTMLElement>(
-        "a[href], button:not([disabled])",
-      );
-      if (firstLink) {
-        requestAnimationFrame(() => {
-          firstLink.focus();
-        });
-      }
     } else {
       links.forEach((link) => link.setAttribute("tabindex", "-1"));
 
