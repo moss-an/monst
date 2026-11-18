@@ -11,14 +11,53 @@ export interface MenuItem {
   depth: number;
 }
 
+/**
+ * パス文字列をセグメント配列に正規化するヘルパー
+ */
+function getPathSegments(path: string): string[] {
+  return path.split("/").filter(Boolean);
+}
+
+/**
+ * ターゲットのパスセグメントが現在のパスセグメントと一致（前方一致または完全一致）するかを厳密に判定する
+ */
+function isPathMatched(
+  currentSegments: string[],
+  targetSegments: string[],
+): boolean {
+  if (targetSegments.length === 0) return false;
+  if (currentSegments.length < targetSegments.length) return false;
+
+  for (let i = 0; i < targetSegments.length; i++) {
+    if (currentSegments[i] !== targetSegments[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * 階層の深さ（depth）に応じたTailwindのインデントクラスを返す
+ */
+function getIndentClass(depth: number): string {
+  const indentMap: Record<number, string> = {
+    0: "",
+    1: "pl-4",
+    2: "pl-8",
+    3: "pl-12",
+    4: "pl-16",
+  };
+  // 想定以上の深さの場合もTailwindの任意値クラスで安全にフォールバック
+  return indentMap[depth] ?? (depth > 0 ? `pl-[${depth * 16}px]` : "");
+}
+
 function generateMenuItems(): MenuItem[] {
   const items: MenuItem[] = [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
 
   for (const tool of TOOLS) {
-    // パスに含まれるスラッシュの数から階層の深さ（depth）を自動計算する
-    const cleanPath = tool.path.replace(/^\/+/, "").replace(/\/$/, "");
-    const depth =
-      cleanPath === "" ? 0 : cleanPath.split("/").filter(Boolean).length;
+    // パスに含まれるセグメント数から階層の深さ（depth）を自動計算する
+    const segments = getPathSegments(tool.path);
+    const depth = segments.length;
 
     items.push({
       label: tool.name,
@@ -31,17 +70,14 @@ function generateMenuItems(): MenuItem[] {
 }
 
 function getCurrentRootPrefix(menuItems: MenuItem[]): string {
-  const currentPath = window.location.pathname;
+  const currentSegments = getPathSegments(window.location.pathname);
   const sortedItems = [...menuItems].sort((a, b) => b.depth - a.depth);
 
   for (const item of sortedItems) {
     if (item.depth === 0) continue;
 
-    const targetDir = item.pathFromRoot.replace(/\/$/, "");
-    if (
-      currentPath.includes(`/${targetDir}/`) ||
-      currentPath.endsWith(`/${targetDir}`)
-    ) {
+    const targetSegments = getPathSegments(item.pathFromRoot);
+    if (isPathMatched(currentSegments, targetSegments)) {
       return "../".repeat(item.depth);
     }
   }
@@ -52,7 +88,7 @@ function getCurrentRootPrefix(menuItems: MenuItem[]): string {
 function initHamburgerMenu(): void {
   if (document.getElementById("common-hamburger-container")) return;
 
-  const currentPath = window.location.pathname;
+  const currentSegments = getPathSegments(window.location.pathname);
   const menuItems = generateMenuItems();
   const rootPrefix = getCurrentRootPrefix(menuItems);
 
@@ -60,45 +96,43 @@ function initHamburgerMenu(): void {
     .map((item) => {
       const cleanPath = item.pathFromRoot.replace(/^\/+/, "");
       const href = `${rootPrefix}${cleanPath}`;
+      const targetSegments = getPathSegments(item.pathFromRoot);
 
-      const targetDir = cleanPath.replace(/\/$/, "");
+      // セグメント単位での厳密な一致判定
       const isCurrent =
-        targetDir === ""
-          ? !menuItems.some(
-              (m) =>
-                m.pathFromRoot !== "" &&
-                (currentPath.includes(
-                  `/${m.pathFromRoot.replace(/\/$/, "")}/`,
-                ) ||
-                  currentPath.endsWith(
-                    `/${m.pathFromRoot.replace(/\/$/, "")}`,
-                  )),
-            )
-          : currentPath.includes(`/${targetDir}/`) ||
-            currentPath.endsWith(`/${targetDir}`);
+        targetSegments.length === 0
+          ? !menuItems.some((m) => {
+              const mSegments = getPathSegments(m.pathFromRoot);
+              return (
+                mSegments.length > 0 &&
+                isPathMatched(currentSegments, mSegments)
+              );
+            })
+          : isPathMatched(currentSegments, targetSegments);
 
       const activeClass = isCurrent
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
         : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
 
-      // 階層の深さに応じてインデント幅をインラインスタイル（px）で動的に指定
-      const indentPx = item.depth > 0 ? item.depth * 16 : 0;
-      const indentWrapperClass = item.depth > 0 ? "relative" : "";
-      const indentStyle =
-        indentPx > 0 ? `style="padding-left: ${indentPx}px;"` : "";
+      const indentClass = getIndentClass(item.depth);
 
       const treeBranchHtml =
         item.depth > 0
           ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
           : "";
 
+      // セマンティックなリスト構造（<li>）と現在地を示す aria-current の付与
       return `
-      <div class="${indentWrapperClass}" ${indentStyle}>
-        <a href="${href}" class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3">
+      <li class="${indentClass}">
+        <a
+          href="${href}"
+          ${isCurrent ? 'aria-current="page"' : ""}
+          class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3"
+        >
           <span class="flex items-center">${treeBranchHtml}<span>${item.label}</span></span>
           <span class="${isCurrent ? "text-amber-400 text-xs font-bold shrink-0" : "text-slate-500 shrink-0"}">${isCurrent ? "表示中" : "→"}</span>
         </a>
-      </div>
+      </li>
     `;
     })
     .join("");
@@ -130,17 +164,19 @@ function initHamburgerMenu(): void {
         </div>
       </button>
 
+      <!-- ④ role="menu" を廃止し、標準的なナビゲーションドロワーとして構築 -->
       <div
         id="hamburger-menu"
         class="absolute left-0 top-full mt-2 w-72 sm:w-80 bg-slate-800/95 border border-slate-700 rounded-xl p-3.5 shadow-2xl backdrop-blur-md origin-top-left transition-all duration-200 ease-out opacity-0 scale-95 -translate-y-1 pointer-events-none"
-        role="menu"
-        aria-label="ツール切り替えメニュー"
+        aria-hidden="true"
       >
         <div class="flex items-center justify-between border-b border-slate-700/80 pb-2 mb-2.5 px-1">
           <span class="text-xs font-bold tracking-wider text-amber-400">メニュー</span>
         </div>
-        <nav class="space-y-1.5">
-          ${navLinksHtml}
+        <nav aria-label="ツール切り替えメニュー">
+          <ul class="space-y-1.5 list-none m-0 p-0">
+            ${navLinksHtml}
+          </ul>
         </nav>
       </div>
     </div>
@@ -180,6 +216,7 @@ function initHamburgerMenu(): void {
       "aria-label",
       open ? "メニューを閉じる" : "メニューを開く",
     );
+    menu.setAttribute("aria-hidden", String(!open));
 
     if (open) {
       btn.classList.add("border-amber-400/70", "text-amber-300");
@@ -195,6 +232,16 @@ function initHamburgerMenu(): void {
         "pointer-events-none",
       );
       menu.classList.add("opacity-100", "scale-100", "translate-y-0");
+
+      // メニュー展開直後に最初のリンク要素へ初期フォーカスを移動
+      const firstLink = menu.querySelector<HTMLElement>(
+        "a[href], button:not([disabled])",
+      );
+      if (firstLink) {
+        requestAnimationFrame(() => {
+          firstLink.focus();
+        });
+      }
     } else {
       btn.classList.remove("border-amber-400/70", "text-amber-300");
       line1.classList.remove("translate-y-[7px]", "rotate-45");
