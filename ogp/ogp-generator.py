@@ -1,5 +1,8 @@
 import os
+import io
+import re
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import cairosvg
 
 W, H = 1200, 630
 
@@ -60,11 +63,28 @@ base = Image.alpha_composite(base, panel_layer)
 
 draw = ImageDraw.Draw(base)
 
-#  左側：アイコン
+# 左側：アイコン
 cx, cy, r = 225, 315, 125
+
+# 背景の円フレーム
 draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill="#181717", outline="#475569", width=4)
-draw.ellipse([cx - 78, cy - 38, cx + 78, cy + 92], fill="#ffffff")
-draw.polygon([(cx, cy - 89), (cx - 30, cy - 24), (cx + 30, cy - 24)], fill="#ffffff")
+
+# favicon.svgからキャラクターのパスデータを読み込んで描画用SVGを構築
+favicon_path = "../favicon.svg"
+if os.path.exists(favicon_path):
+    with open(favicon_path, "r", encoding="utf-8") as f:
+        svg_content = f.read()
+
+    match = re.search(r'<path\s+d="([^"]+)"', svg_content)
+    if match:
+        path_d = match.group(1)
+        # OGP用に白色のシルエットとしてSVGをレンダリング
+        icon_svg = f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="250" height="250">
+          <path d="{path_d}" fill="#ffffff" />
+        </svg>'''
+        svg_data = cairosvg.svg2png(bytestring=icon_svg.encode("utf-8"))
+        icon_img = Image.open(io.BytesIO(svg_data)).convert("RGBA")
+        base.paste(icon_img, (cx - 125, cy - 125), icon_img)
 
 # 右側：タイポグラフィ
 font_badge = ImageFont.truetype(FONT_BOLD, 25)
@@ -73,10 +93,8 @@ try:
     font_title_main = ImageFont.truetype(FONT_REGGAE, 92)
     font_title_sub = ImageFont.truetype(FONT_REGGAE, 74)
 except Exception:
-    # 万が一読み込めない場合のフォールバック
     font_title_main = ImageFont.truetype(FONT_BOLD, 92)
     font_title_sub = ImageFont.truetype(FONT_BOLD, 74)
-
 
 text_x = 415
 
@@ -107,12 +125,10 @@ draw.text(
 )
 
 # メインタイトル
-# 1行目：「モンスト」
 title1_y = 185
 draw.text((text_x + 4, title1_y + 4), "モンスト", font=font_title_main, fill=(0, 0, 0, 150))
 draw.text((text_x, title1_y), "モンスト", font=font_title_main, fill="#fbbf24")
 
-# 2行目：「便利ツール集」
 title2_y = 292
 draw.text((text_x + 4, title2_y + 4), "便利ツール集", font=font_title_sub, fill=(0, 0, 0, 150))
 draw.text((text_x, title2_y), "便利ツール集", font=font_title_sub, fill="#ffffff")
@@ -142,14 +158,12 @@ draw.rounded_rectangle(
     width=2,
 )
 
-# 左側の丸いアクセントドット
 dot_cx = text_x + dot_left_pad + dot_r
 draw.ellipse(
     [dot_cx - dot_r, center_y - dot_r, dot_cx + dot_r, center_y + dot_r],
     fill=(56, 189, 248, 255),
 )
 
-# テキスト
 sub_text_x = dot_cx + dot_r + dot_gap - sub_bbox[0]
 sub_text_y = center_y - (sub_text_h / 2) - sub_bbox[1]
 draw.text((sub_text_x, sub_text_y), sub_text, font=font_sub, fill="#f8fafc")
