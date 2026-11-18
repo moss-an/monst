@@ -1,2 +1,24 @@
 @import "tailwindcss";
 @import "./preload.css";
+
+/* Reggae One フォントの定義 */
+@font-face {
+  font-family: "Reggae One";
+  src: url("/fonts/reggae-one-v20-japanese_latin-regular.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@theme {
+  --font-reggae: "Reggae One", cursive, sans-serif;
+}
+h1,
+h2,
+h3,
+.site-title,
+.section-subtitle {
+  font-family: var(--font-reggae);
+  /* ブラウザによる強制的な二重太字を解除 */
+  font-weight: normal !important;
+  font-synthesis-weight: none;
+}
