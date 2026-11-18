@@ -17,7 +17,7 @@ monst/
 ├── src/
 │   ├── components/             # 汎用UIコンポーネント
 │   ├── tools.ts                # ツール一覧の定義
-│   └── input.css               # スタイル(Tailwind CSS)
+│   └── input.css               # スタイル
 ├── ogp/                        # OGP画像作成用ディレクトリ
 ├── Dockerfile                  # Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
