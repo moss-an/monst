@@ -3,7 +3,7 @@
  * @description 全ページ共通のハンバーガーメニュー
  */
 
-import { TOOLS, ToolItem } from "../tools";
+import { TOOLS } from "../tools";
 
 export interface MenuItem {
   label: string;
@@ -200,6 +200,25 @@ function initHamburgerMenu(): void {
 
   btn?.addEventListener("click", () => setMenuState(!isOpen));
   backdrop?.addEventListener("click", () => setMenuState(false));
+
+  // メニュー内のリンクをクリックした際にメニューを閉じる（BFCache復元対策）
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (isOpen) setMenuState(false);
+    });
+  });
+
+  // ページ離脱時およびブラウザバック（BFCache復元）時に確実にメニューを閉じる
+  window.addEventListener("pagehide", () => {
+    if (isOpen) setMenuState(false);
+  });
+
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted || isOpen) {
+      setMenuState(false);
+    }
+  });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isOpen) setMenuState(false);
   });
