@@ -157,7 +157,21 @@ function initHamburgerMenu(): void {
 
   let isOpen = false;
 
-  const setMenuState = (open: boolean) => {
+  const getFocusableElements = (): HTMLElement[] => {
+    const elements: HTMLElement[] = [];
+    if (btn) elements.push(btn);
+    if (menu) {
+      const links = Array.from(
+        menu.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      elements.push(...links);
+    }
+    return elements;
+  };
+
+  const setMenuState = (open: boolean, returnFocusToBtn = false) => {
     isOpen = open;
     if (!btn || !menu || !backdrop || !line1 || !line2 || !line3) return;
 
@@ -195,6 +209,10 @@ function initHamburgerMenu(): void {
         "pointer-events-none",
       );
       menu.classList.remove("opacity-100", "scale-100", "translate-y-0");
+
+      if (returnFocusToBtn) {
+        btn.focus();
+      }
     }
   };
 
@@ -220,7 +238,40 @@ function initHamburgerMenu(): void {
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen) setMenuState(false);
+    if (!isOpen) return;
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setMenuState(false, true);
+      return;
+    }
+
+    if (e.key === "Tab") {
+      const focusableElements = getFocusableElements();
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (e.shiftKey) {
+        if (
+          activeElement === firstElement ||
+          !focusableElements.includes(activeElement as HTMLElement)
+        ) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (
+          activeElement === lastElement ||
+          !focusableElements.includes(activeElement as HTMLElement)
+        ) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
   });
 }
 
