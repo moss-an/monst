@@ -19,17 +19,26 @@ function getPathSegments(path: string): string[] {
 }
 
 /**
- * ターゲットのパスセグメントが現在のパスセグメントと一致（前方一致または完全一致）するかを厳密に判定する
+ * ターゲットのパスセグメントが現在のパスセグメントと一致するかを判定する
  */
 function isPathMatched(
   currentSegments: string[],
   targetSegments: string[],
 ): boolean {
   if (targetSegments.length === 0) return false;
-  if (currentSegments.length < targetSegments.length) return false;
 
+  // 末尾が index.html の場合は判定用配列から除外しておく
+  const normalizedCurrent =
+    currentSegments[currentSegments.length - 1] === "index.html"
+      ? currentSegments.slice(0, -1)
+      : currentSegments;
+
+  if (normalizedCurrent.length < targetSegments.length) return false;
+
+  // 末尾側から比較する（例: ['my-repo', 'tools', 'calc'] と ['tools', 'calc'] を一致とみなす）
+  const offset = normalizedCurrent.length - targetSegments.length;
   for (let i = 0; i < targetSegments.length; i++) {
-    if (currentSegments[i] !== targetSegments[i]) {
+    if (normalizedCurrent[offset + i] !== targetSegments[i]) {
       return false;
     }
   }
@@ -98,7 +107,7 @@ function initHamburgerMenu(): void {
       const href = `${rootPrefix}${cleanPath}`;
       const targetSegments = getPathSegments(item.pathFromRoot);
 
-      // セグメント単位での厳密な一致判定
+      // セグメント単位での厳密な一致判定（GitHub Pages対応の後方一致）
       const isCurrent =
         targetSegments.length === 0
           ? !menuItems.some((m) => {
@@ -121,7 +130,6 @@ function initHamburgerMenu(): void {
           ? `<span class="text-slate-500 font-mono text-xs select-none mr-1.5" aria-hidden="true">└</span>`
           : "";
 
-      // セマンティックなリスト構造（<li>）と現在地を示す aria-current の付与
       return `
       <li class="${indentClass}">
         <a
@@ -164,7 +172,6 @@ function initHamburgerMenu(): void {
         </div>
       </button>
 
-      <!-- ④ role="menu" を廃止し、標準的なナビゲーションドロワーとして構築 -->
       <div
         id="hamburger-menu"
         class="absolute left-0 top-full mt-2 w-72 sm:w-80 bg-slate-800/95 border border-slate-700 rounded-xl p-3.5 shadow-2xl backdrop-blur-md origin-top-left transition-all duration-200 ease-out opacity-0 scale-95 -translate-y-1 pointer-events-none"
@@ -233,7 +240,6 @@ function initHamburgerMenu(): void {
       );
       menu.classList.add("opacity-100", "scale-100", "translate-y-0");
 
-      // メニュー展開直後に最初のリンク要素へ初期フォーカスを移動
       const firstLink = menu.querySelector<HTMLElement>(
         "a[href], button:not([disabled])",
       );
@@ -266,14 +272,12 @@ function initHamburgerMenu(): void {
   btn?.addEventListener("click", () => setMenuState(!isOpen));
   backdrop?.addEventListener("click", () => setMenuState(false));
 
-  // メニュー内のリンクをクリックした際にメニューを閉じる（BFCache復元対策）
   menu?.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => {
       if (isOpen) setMenuState(false);
     });
   });
 
-  // ページ離脱時およびブラウザバック（BFCache復元）時に確実にメニューを閉じる
   window.addEventListener("pagehide", () => {
     if (isOpen) setMenuState(false);
   });
