@@ -3,7 +3,7 @@
  * @description 全ページ共通のハンバーガーメニュー
  */
 
-import { TOOLS, ToolItem } from "../tools";
+import { TOOLS } from "../tools";
 
 export interface MenuItem {
   label: string;
@@ -11,14 +11,62 @@ export interface MenuItem {
   depth: number;
 }
 
+/**
+ * パス文字列をセグメント配列に正規化するヘルパー
+ */
+function getPathSegments(path: string): string[] {
+  return path.split("/").filter(Boolean);
+}
+
+/**
+ * ターゲットのパスセグメントが現在のパスセグメントと一致するかを判定する
+ */
+function isPathMatched(
+  currentSegments: string[],
+  targetSegments: string[],
+): boolean {
+  if (targetSegments.length === 0) return false;
+
+  // 末尾が index.html の場合は判定用配列から除外しておく
+  const normalizedCurrent =
+    currentSegments[currentSegments.length - 1] === "index.html"
+      ? currentSegments.slice(0, -1)
+      : currentSegments;
+
+  if (normalizedCurrent.length < targetSegments.length) return false;
+
+  // 末尾側から比較する（例: ['my-repo', 'tools', 'calc'] と ['tools', 'calc'] を一致とみなす）
+  const offset = normalizedCurrent.length - targetSegments.length;
+  for (let i = 0; i < targetSegments.length; i++) {
+    if (normalizedCurrent[offset + i] !== targetSegments[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * 階層の深さ（depth）に応じたTailwindのインデントクラスを返す
+ */
+function getIndentClass(depth: number): string {
+  const indentMap: Record<number, string> = {
+    0: "",
+    1: "pl-4",
+    2: "pl-8",
+    3: "pl-12",
+    4: "pl-16",
+  };
+  // 想定以上の深さの場合もTailwindの任意値クラスで安全にフォールバック
+  return indentMap[depth] ?? (depth > 0 ? `pl-[${depth * 16}px]` : "");
+}
+
 function generateMenuItems(): MenuItem[] {
   const items: MenuItem[] = [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
 
   for (const tool of TOOLS) {
-    // パスに含まれるスラッシュの数から階層の深さ（depth）を自動計算する
-    const cleanPath = tool.path.replace(/^\/+/, "").replace(/\/$/, "");
-    const depth =
-      cleanPath === "" ? 0 : cleanPath.split("/").filter(Boolean).length;
+    // パスに含まれるセグメント数から階層の深さ（depth）を自動計算する
+    const segments = getPathSegments(tool.path);
+    const depth = segments.length;
 
     items.push({
       label: tool.name,
@@ -31,17 +79,14 @@ function generateMenuItems(): MenuItem[] {
 }
 
 function getCurrentRootPrefix(menuItems: MenuItem[]): string {
-  const currentPath = window.location.pathname;
+  const currentSegments = getPathSegments(window.location.pathname);
   const sortedItems = [...menuItems].sort((a, b) => b.depth - a.depth);
 
   for (const item of sortedItems) {
     if (item.depth === 0) continue;
 
-    const targetDir = item.pathFromRoot.replace(/\/$/, "");
-    if (
-      currentPath.includes(`/${targetDir}/`) ||
-      currentPath.endsWith(`/${targetDir}`)
-    ) {
+    const targetSegments = getPathSegments(item.pathFromRoot);
+    if (isPathMatched(currentSegments, targetSegments)) {
       return "../".repeat(item.depth);
     }
   }
@@ -52,7 +97,7 @@ function getCurrentRootPrefix(menuItems: MenuItem[]): string {
 function initHamburgerMenu(): void {
   if (document.getElementById("common-hamburger-container")) return;
 
-  const currentPath = window.location.pathname;
+  const currentSegments = getPathSegments(window.location.pathname);
   const menuItems = generateMenuItems();
   const rootPrefix = getCurrentRootPrefix(menuItems);
 
@@ -60,32 +105,25 @@ function initHamburgerMenu(): void {
     .map((item) => {
       const cleanPath = item.pathFromRoot.replace(/^\/+/, "");
       const href = `${rootPrefix}${cleanPath}`;
+      const targetSegments = getPathSegments(item.pathFromRoot);
 
-      const targetDir = cleanPath.replace(/\/$/, "");
+      // セグメント単位での厳密な一致判定（GitHub Pages対応の後方一致）
       const isCurrent =
-        targetDir === ""
-          ? !menuItems.some(
-              (m) =>
-                m.pathFromRoot !== "" &&
-                (currentPath.includes(
-                  `/${m.pathFromRoot.replace(/\/$/, "")}/`,
-                ) ||
-                  currentPath.endsWith(
-                    `/${m.pathFromRoot.replace(/\/$/, "")}`,
-                  )),
-            )
-          : currentPath.includes(`/${targetDir}/`) ||
-            currentPath.endsWith(`/${targetDir}`);
+        targetSegments.length === 0
+          ? !menuItems.some((m) => {
+              const mSegments = getPathSegments(m.pathFromRoot);
+              return (
+                mSegments.length > 0 &&
+                isPathMatched(currentSegments, mSegments)
+              );
+            })
+          : isPathMatched(currentSegments, targetSegments);
 
       const activeClass = isCurrent
         ? "bg-amber-500/15 border-amber-500/50 text-amber-300"
         : "bg-slate-900/90 hover:bg-slate-700/80 border-slate-700/80 text-slate-200";
 
-      // 階層の深さに応じてインデント幅をインラインスタイル（px）で動的に指定
-      const indentPx = item.depth > 0 ? item.depth * 16 : 0;
-      const indentWrapperClass = item.depth > 0 ? "relative" : "";
-      const indentStyle =
-        indentPx > 0 ? `style="padding-left: ${indentPx}px;"` : "";
+      const indentClass = getIndentClass(item.depth);
 
       const treeBranchHtml =
         item.depth > 0
@@ -93,12 +131,16 @@ function initHamburgerMenu(): void {
           : "";
 
       return `
-      <div class="${indentWrapperClass}" ${indentStyle}>
-        <a href="${href}" class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3">
+      <li class="${indentClass}">
+        <a
+          href="${href}"
+          ${isCurrent ? 'aria-current="page"' : ""}
+          class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3"
+        >
           <span class="flex items-center">${treeBranchHtml}<span>${item.label}</span></span>
           <span class="${isCurrent ? "text-amber-400 text-xs font-bold shrink-0" : "text-slate-500 shrink-0"}">${isCurrent ? "表示中" : "→"}</span>
         </a>
-      </div>
+      </li>
     `;
     })
     .join("");
@@ -133,14 +175,15 @@ function initHamburgerMenu(): void {
       <div
         id="hamburger-menu"
         class="absolute left-0 top-full mt-2 w-72 sm:w-80 bg-slate-800/95 border border-slate-700 rounded-xl p-3.5 shadow-2xl backdrop-blur-md origin-top-left transition-all duration-200 ease-out opacity-0 scale-95 -translate-y-1 pointer-events-none"
-        role="menu"
-        aria-label="ツール切り替えメニュー"
+        aria-hidden="true"
       >
         <div class="flex items-center justify-between border-b border-slate-700/80 pb-2 mb-2.5 px-1">
           <span class="text-xs font-bold tracking-wider text-amber-400">メニュー</span>
         </div>
-        <nav class="space-y-1.5">
-          ${navLinksHtml}
+        <nav aria-label="ツール切り替えメニュー">
+          <ul class="space-y-1.5 list-none m-0 p-0">
+            ${navLinksHtml}
+          </ul>
         </nav>
       </div>
     </div>
@@ -157,7 +200,21 @@ function initHamburgerMenu(): void {
 
   let isOpen = false;
 
-  const setMenuState = (open: boolean) => {
+  const getFocusableElements = (): HTMLElement[] => {
+    const elements: HTMLElement[] = [];
+    if (btn) elements.push(btn);
+    if (menu) {
+      const links = Array.from(
+        menu.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      elements.push(...links);
+    }
+    return elements;
+  };
+
+  const setMenuState = (open: boolean, returnFocusToBtn = false) => {
     isOpen = open;
     if (!btn || !menu || !backdrop || !line1 || !line2 || !line3) return;
 
@@ -166,6 +223,7 @@ function initHamburgerMenu(): void {
       "aria-label",
       open ? "メニューを閉じる" : "メニューを開く",
     );
+    menu.setAttribute("aria-hidden", String(!open));
 
     if (open) {
       btn.classList.add("border-amber-400/70", "text-amber-300");
@@ -181,6 +239,15 @@ function initHamburgerMenu(): void {
         "pointer-events-none",
       );
       menu.classList.add("opacity-100", "scale-100", "translate-y-0");
+
+      const firstLink = menu.querySelector<HTMLElement>(
+        "a[href], button:not([disabled])",
+      );
+      if (firstLink) {
+        requestAnimationFrame(() => {
+          firstLink.focus();
+        });
+      }
     } else {
       btn.classList.remove("border-amber-400/70", "text-amber-300");
       line1.classList.remove("translate-y-[7px]", "rotate-45");
@@ -195,13 +262,67 @@ function initHamburgerMenu(): void {
         "pointer-events-none",
       );
       menu.classList.remove("opacity-100", "scale-100", "translate-y-0");
+
+      if (returnFocusToBtn) {
+        btn.focus();
+      }
     }
   };
 
   btn?.addEventListener("click", () => setMenuState(!isOpen));
   backdrop?.addEventListener("click", () => setMenuState(false));
+
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (isOpen) setMenuState(false);
+    });
+  });
+
+  window.addEventListener("pagehide", () => {
+    if (isOpen) setMenuState(false);
+  });
+
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted || isOpen) {
+      setMenuState(false);
+    }
+  });
+
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen) setMenuState(false);
+    if (!isOpen) return;
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      setMenuState(false, true);
+      return;
+    }
+
+    if (e.key === "Tab") {
+      const focusableElements = getFocusableElements();
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (e.shiftKey) {
+        if (
+          activeElement === firstElement ||
+          !focusableElements.includes(activeElement as HTMLElement)
+        ) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (
+          activeElement === lastElement ||
+          !focusableElements.includes(activeElement as HTMLElement)
+        ) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
   });
 }
 
