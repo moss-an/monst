@@ -1,13 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
-  <!-- 円形背景 -->
-  <circle cx="256" cy="256" r="240" fill="#181717"/>
-  <!-- キャラクターシルエット -->
-  <path d="M 256,96
+  <defs>
+    <!-- マスク定義 -->
+    <mask id="icon-mask">
+      <!-- マスク全体を白で塗りつぶす -->
+      <rect width="512" height="512" fill="#FFFFFF" />
+      <!-- キャラクターの形部分は黒で描画 -->
+      <path d="M 256,96
 C 263,96 300,165 307,188
 C 358,198 416,246 416,306
 C 416,378 344,432 256,432
 C 168,432 96,378 96,306
 C 96,246 154,198 205,188
 C 212,165 249,96 256,96
-Z" fill="#FFFFFF"/>
+Z" fill="#000000" />
+    </mask>
+
+    <!-- スタイル定義 -->
+    <style>
+      /* デフォルトテーマ：背景が黒、シルエット部分は透明 */
+      .bg { fill: #000000; }
+
+      /* ダークテーマ：背景が白、シルエット部分は透明 */
+      @media (prefers-color-scheme: dark) {
+        .bg { fill: #FFFFFF; }
+      }
+    </style>
+  </defs>
+
+  <!-- 円形の背景 -->
+  <circle class="bg" cx="256" cy="256" r="240" mask="url(#icon-mask)" />
 </svg>
