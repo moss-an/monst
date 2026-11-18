@@ -7,6 +7,7 @@ W, H = 1200, 630
 FONT_BOLD = "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"
 if not os.path.exists(FONT_BOLD):
     FONT_BOLD = "/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc"
+FONT_REGGAE = "/app/public/fonts/reggae-one-v20-japanese_latin-regular.woff2"
 
 # ダークグラデーション背景
 base = Image.new("RGBA", (W, H), "#090d16")
@@ -67,9 +68,15 @@ draw.polygon([(cx, cy - 89), (cx - 30, cy - 24), (cx + 30, cy - 24)], fill="#fff
 
 # 右側：タイポグラフィ（NotoSansCJK-Bold）
 font_badge = ImageFont.truetype(FONT_BOLD, 25)
-font_title_main = ImageFont.truetype(FONT_BOLD, 92)
-font_title_sub = ImageFont.truetype(FONT_BOLD, 74)
 font_sub = ImageFont.truetype(FONT_BOLD, 33)
+try:
+    font_title_main = ImageFont.truetype(FONT_REGGAE, 92)
+    font_title_sub = ImageFont.truetype(FONT_REGGAE, 74)
+except Exception:
+    # 万が一読み込めない場合のフォールバック
+    font_title_main = ImageFont.truetype(FONT_BOLD, 92)
+    font_title_sub = ImageFont.truetype(FONT_BOLD, 74)
+
 
 text_x = 415
 
