@@ -214,6 +214,50 @@ function initHamburgerMenu(): void {
     return elements;
   };
 
+  /**
+   * アニメーションなしで即座にメニューを閉じる（bfcache復元時のチラつき防止用）
+   */
+  const forceCloseMenuImmediately = () => {
+    isOpen = false;
+    if (!btn || !menu || !backdrop || !line1 || !line2 || !line3) return;
+
+    menu.style.transition = "none";
+    backdrop.style.transition = "none";
+    line1.style.transition = "none";
+    line2.style.transition = "none";
+    line3.style.transition = "none";
+
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-label", "メニューを開く");
+    menu.setAttribute("aria-hidden", "true");
+
+    btn.classList.remove("border-amber-400/70", "text-amber-300");
+    line1.classList.remove("translate-y-[7px]", "rotate-45");
+    line2.classList.remove("opacity-0", "scale-x-0");
+    line3.classList.remove("-translate-y-[7px]", "-rotate-45");
+
+    backdrop.classList.add("opacity-0", "pointer-events-none");
+    backdrop.classList.remove("opacity-100");
+
+    menu.classList.add(
+      "opacity-0",
+      "scale-95",
+      "-translate-y-1",
+      "pointer-events-none",
+    );
+    menu.classList.remove("opacity-100", "scale-100", "translate-y-0");
+
+    void menu.offsetHeight;
+
+    setTimeout(() => {
+      menu.style.transition = "";
+      backdrop.style.transition = "";
+      line1.style.transition = "";
+      line2.style.transition = "";
+      line3.style.transition = "";
+    }, 0);
+  };
+
   const setMenuState = (open: boolean, returnFocusToBtn = false) => {
     isOpen = open;
     if (!btn || !menu || !backdrop || !line1 || !line2 || !line3) return;
@@ -279,12 +323,12 @@ function initHamburgerMenu(): void {
   });
 
   window.addEventListener("pagehide", () => {
-    if (isOpen) setMenuState(false);
+    forceCloseMenuImmediately();
   });
 
   window.addEventListener("pageshow", (event) => {
-    if (event.persisted || isOpen) {
-      setMenuState(false);
+    if (event.persisted) {
+      forceCloseMenuImmediately();
     }
   });
 
