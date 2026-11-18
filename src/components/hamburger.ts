@@ -134,8 +134,9 @@ function initHamburgerMenu(): void {
       <li class="${indentClass}">
         <a
           href="${href}"
+          tabindex="-1"
           ${isCurrent ? 'aria-current="page"' : ""}
-          class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3"
+          class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
         >
           <span class="flex items-center">${treeBranchHtml}<span>${item.label}</span></span>
           <span class="${isCurrent ? "text-amber-400 text-xs font-bold shrink-0" : "text-slate-500 shrink-0"}">${isCurrent ? "表示中" : "→"}</span>
@@ -160,7 +161,7 @@ function initHamburgerMenu(): void {
       <button
         id="hamburger-btn"
         type="button"
-        class="relative w-10 h-10 bg-slate-800/95 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-200 shadow-lg transition-colors flex items-center justify-center backdrop-blur-sm focus:outline-none focus:border-amber-400"
+        class="relative w-10 h-10 bg-slate-800/95 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-200 shadow-lg transition-colors flex items-center justify-center backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
         aria-label="メニューを開く"
         aria-expanded="false"
         aria-controls="hamburger-menu"
@@ -189,7 +190,7 @@ function initHamburgerMenu(): void {
     </div>
   `;
 
-  document.body.appendChild(container);
+  document.body.prepend(container);
 
   const btn = document.getElementById("hamburger-btn");
   const menu = document.getElementById("hamburger-menu");
@@ -231,6 +232,10 @@ function initHamburgerMenu(): void {
     btn.setAttribute("aria-label", "メニューを開く");
     menu.setAttribute("aria-hidden", "true");
 
+    menu.querySelectorAll<HTMLElement>("a[href]").forEach((link) => {
+      link.setAttribute("tabindex", "-1");
+    });
+
     btn.classList.remove("border-amber-400/70", "text-amber-300");
     line1.classList.remove("translate-y-[7px]", "rotate-45");
     line2.classList.remove("opacity-0", "scale-x-0");
@@ -269,7 +274,11 @@ function initHamburgerMenu(): void {
     );
     menu.setAttribute("aria-hidden", String(!open));
 
+    const links = menu.querySelectorAll<HTMLElement>("a[href]");
+
     if (open) {
+      links.forEach((link) => link.setAttribute("tabindex", "0"));
+
       btn.classList.add("border-amber-400/70", "text-amber-300");
       line1.classList.add("translate-y-[7px]", "rotate-45");
       line2.classList.add("opacity-0", "scale-x-0");
@@ -293,6 +302,8 @@ function initHamburgerMenu(): void {
         });
       }
     } else {
+      links.forEach((link) => link.setAttribute("tabindex", "-1"));
+
       btn.classList.remove("border-amber-400/70", "text-amber-300");
       line1.classList.remove("translate-y-[7px]", "rotate-45");
       line2.classList.remove("opacity-0", "scale-x-0");
