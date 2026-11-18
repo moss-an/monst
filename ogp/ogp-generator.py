@@ -66,7 +66,7 @@ draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill="#181717", outline="#475569"
 draw.ellipse([cx - 78, cy - 38, cx + 78, cy + 92], fill="#ffffff")
 draw.polygon([(cx, cy - 89), (cx - 30, cy - 24), (cx + 30, cy - 24)], fill="#ffffff")
 
-# 右側：タイポグラフィ（NotoSansCJK-Bold）
+# 右側：タイポグラフィ
 font_badge = ImageFont.truetype(FONT_BOLD, 25)
 font_sub = ImageFont.truetype(FONT_BOLD, 33)
 try:
