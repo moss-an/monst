@@ -102,3 +102,9 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 ## ライセンス
 
 このプロジェクトのライセンスについては `LICENSE` ファイルをご確認ください。
+
+また、当リポジトリで使用しているWebフォント「Reggae One」には以下のライセンスが適用されています。
+
+- **Reggae One**
+  - Copyright (c) The Reggae Project Authors
+  - ライセンス: SIL Open Font License, Version 1.1 (詳細は `public/fonts/OFL.txt` を参照)
