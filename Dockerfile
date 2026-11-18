@@ -1,4 +1,4 @@
-# 開発環境作成用 Dockerfile
+# 開発環境用 Dockerfile
 FROM node:20-alpine
 
 WORKDIR /app
