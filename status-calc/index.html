@@ -67,7 +67,7 @@
                 @input="e => handleHpInput('baseHp', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 20000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm"
               />
             </div>
             <div>
@@ -79,7 +79,7 @@
                 @input="e => handleAtkInput('baseAtk', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 30000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm"
               />
             </div>
             <div>
@@ -91,7 +91,7 @@
                 @input="e => handleSpdInput('baseSpd', e)"
                 @keydown="handleDecimalKeydown"
                 placeholder="例: 350.00"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm"
               />
             </div>
           </div>
@@ -109,8 +109,8 @@
                 @input="e => handleHpInput('hpMin', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 22000"
-                :class="validationErrors.hpMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+                :class="validationErrors.hpMin.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
               />
               <span class="text-slate-400">〜</span>
               <input
@@ -120,8 +120,8 @@
                 @input="e => handleHpInput('hpMax', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 26000"
-                :class="validationErrors.hpMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+                :class="validationErrors.hpMax.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
               />
             </div>
             <div
@@ -141,7 +141,6 @@
                 ・{{ err }}
               </p>
             </div>
-            <!-- HP以外の条件がある場合に表示されるヒント -->
             <p
               v-if="hpFilterHintMessage"
               class="pt-1 text-xs text-amber-300/90 leading-relaxed"
@@ -163,8 +162,8 @@
                 @input="e => handleAtkInput('atkMin', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 32500"
-                :class="validationErrors.atkMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+                :class="validationErrors.atkMin.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
               />
               <span class="text-slate-400">〜</span>
               <input
@@ -174,8 +173,8 @@
                 @input="e => handleAtkInput('atkMax', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 36000"
-                :class="validationErrors.atkMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+                :class="validationErrors.atkMax.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
               />
             </div>
             <div
@@ -195,7 +194,6 @@
                 ・{{ err }}
               </p>
             </div>
-            <!-- 攻撃力以外の条件がある場合に表示されるヒント -->
             <p
               v-if="atkFilterHintMessage"
               class="pt-1 text-xs text-amber-300/90 leading-relaxed"
@@ -219,8 +217,8 @@
                 @input="e => handleSpdInput('spdMin', e)"
                 @keydown="handleDecimalKeydown"
                 placeholder="例: 360.50"
-                :class="validationErrors.spdMin.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+                :class="validationErrors.spdMin.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
               />
               <span class="text-slate-400">〜</span>
               <input
@@ -230,8 +228,8 @@
                 @input="e => handleSpdInput('spdMax', e)"
                 @keydown="handleDecimalKeydown"
                 placeholder="例: 420.25"
-                :class="validationErrors.spdMax.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono focus:outline-none"
+                :class="validationErrors.spdMax.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
               />
             </div>
             <div
@@ -251,7 +249,6 @@
                 ・{{ err }}
               </p>
             </div>
-            <!-- スピード以外の条件がある場合に表示されるヒント -->
             <p
               v-if="spdFilterHintMessage"
               class="pt-1 text-xs text-amber-300/90 leading-relaxed"
@@ -272,12 +269,11 @@
               2. 検索条件
             </h2>
 
-            <!-- モンスポット（単独行） -->
             <div>
               <label class="block text-sm text-slate-400">モンスポット</label>
               <select
                 v-model="selectedSpotId"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
               >
                 <option
                   v-for="spot in spotOptions"
@@ -289,7 +285,6 @@
               </select>
             </div>
 
-            <!-- 使用回数 ＆ 実の上限数（横並び） -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label class="block text-sm text-slate-400"
@@ -302,8 +297,8 @@
                   @input="handleUseCountInput"
                   @keydown="handleIntegerKeydown"
                   placeholder="例: 100"
-                  :class="validationErrors.useCount.length > 0 ? 'border-rose-500 focus:border-rose-400' : 'border-slate-700 focus:border-amber-400'"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-[9px] mt-1 font-mono text-sm focus:outline-none"
+                  :class="validationErrors.useCount.length > 0 ? 'border-rose-500' : 'border-slate-700'"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-[9px] mt-1 font-mono text-sm"
                 />
                 <div
                   v-if="validationErrors.useCount.length > 0"
@@ -322,7 +317,7 @@
                 <label class="block text-sm text-slate-400">実の上限数</label>
                 <select
                   v-model.number="maxSlots"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 focus:outline-none focus:border-amber-400"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
                 >
                   <option v-for="n in slotOptions" :key="n" :value="n">
                     最大 {{ n }} 個
@@ -331,7 +326,6 @@
               </div>
             </div>
 
-            <!-- 実の等級 -->
             <div>
               <label class="block text-sm text-slate-400 mb-1.5"
                 >実の等級</label
@@ -373,7 +367,6 @@
               </div>
             </div>
 
-            <!-- 使用するわくわくの実の種類（トグル開閉） -->
             <div
               class="bg-slate-900/50 rounded-lg border border-slate-700/60 overflow-hidden"
             >
@@ -455,7 +448,7 @@
                       <button
                         type="button"
                         @click="toggleCategoryGroup(grp.group)"
-                        class="text-[10px] text-amber-400/80 hover:text-amber-300 hover:underline transition"
+                        class="text-[10px] text-amber-400/80 hover:text-amber-300 hover:underline transition rounded"
                       >
                         {{ isGroupAllSelected(grp.group) ? 'グループ解除' :
                         'グループ全選択' }}
@@ -549,7 +542,7 @@
               <span class="text-slate-400">表示件数:</span>
               <select
                 v-model.number="pageSize"
-                class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-amber-400"
+                class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200"
               >
                 <option
                   v-for="size in pageSizeOptions"
@@ -603,7 +596,6 @@
           </div>
         </div>
 
-        <!-- 計算中 -->
         <div v-if="isCalculating" class="text-center py-12 space-y-3">
           <div
             class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-amber-400 border-t-transparent"
@@ -611,7 +603,6 @@
           <p class="text-sm text-slate-300">組み合わせパターンを計算中...</p>
         </div>
 
-        <!-- 未検索状態 -->
         <div
           v-else-if="!hasSearched"
           class="text-center py-10 text-sm text-slate-400 space-y-2"
@@ -622,7 +613,6 @@
           </p>
         </div>
 
-        <!-- エラーメッセージ -->
         <div
           v-else-if="errorMessage"
           class="bg-rose-500/10 border border-rose-500/40 rounded-xl p-4 text-sm text-rose-200 space-y-1.5 text-center my-4"
@@ -641,7 +631,6 @@
         <template
           v-if="hasSearched && !isCalculating && !errorMessage && totalCount > 0"
         >
-          <!-- PC用コンパクトテーブル -->
           <div
             ref="pcScrollContainer"
             class="hidden md:block overflow-x-auto max-h-[32rem] overflow-y-auto"
@@ -725,7 +714,6 @@
             </table>
           </div>
 
-          <!-- スマホ用カードUI -->
           <div
             ref="mobileScrollContainer"
             class="md:hidden space-y-2.5 max-h-[34rem] overflow-y-auto pr-1"
@@ -787,7 +775,6 @@
             </div>
           </div>
 
-          <!-- ページネーション -->
           <div
             v-if="totalPages > 1"
             class="grid grid-cols-2 sm:grid-cols-3 items-center gap-3 pt-3 border-t border-slate-700/60 text-xs"

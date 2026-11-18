@@ -11,23 +11,16 @@ export interface MenuItem {
   depth: number;
 }
 
-/**
- * パス文字列をセグメント配列に正規化するヘルパー
- */
 function getPathSegments(path: string): string[] {
   return path.split("/").filter(Boolean);
 }
 
-/**
- * ターゲットのパスセグメントが現在のパスセグメントと一致するかを判定する
- */
 function isPathMatched(
   currentSegments: string[],
   targetSegments: string[],
 ): boolean {
   if (targetSegments.length === 0) return false;
 
-  // 末尾が index.html の場合は判定用配列から除外しておく
   const normalizedCurrent =
     currentSegments[currentSegments.length - 1] === "index.html"
       ? currentSegments.slice(0, -1)
@@ -35,7 +28,6 @@ function isPathMatched(
 
   if (normalizedCurrent.length < targetSegments.length) return false;
 
-  // 末尾側から比較する（例: ['my-repo', 'tools', 'calc'] と ['tools', 'calc'] を一致とみなす）
   const offset = normalizedCurrent.length - targetSegments.length;
   for (let i = 0; i < targetSegments.length; i++) {
     if (normalizedCurrent[offset + i] !== targetSegments[i]) {
@@ -45,9 +37,6 @@ function isPathMatched(
   return true;
 }
 
-/**
- * 階層の深さ（depth）に応じたTailwindのインデントクラスを返す
- */
 function getIndentClass(depth: number): string {
   const indentMap: Record<number, string> = {
     0: "",
@@ -56,7 +45,6 @@ function getIndentClass(depth: number): string {
     3: "pl-12",
     4: "pl-16",
   };
-  // 想定以上の深さの場合もTailwindの任意値クラスで安全にフォールバック
   return indentMap[depth] ?? (depth > 0 ? `pl-[${depth * 16}px]` : "");
 }
 
@@ -64,7 +52,6 @@ function generateMenuItems(): MenuItem[] {
   const items: MenuItem[] = [{ label: "ホーム", pathFromRoot: "", depth: 0 }];
 
   for (const tool of TOOLS) {
-    // パスに含まれるセグメント数から階層の深さ（depth）を自動計算する
     const segments = getPathSegments(tool.path);
     const depth = segments.length;
 
@@ -107,7 +94,6 @@ function initHamburgerMenu(): void {
       const href = `${rootPrefix}${cleanPath}`;
       const targetSegments = getPathSegments(item.pathFromRoot);
 
-      // セグメント単位での厳密な一致判定（GitHub Pages対応の後方一致）
       const isCurrent =
         targetSegments.length === 0
           ? !menuItems.some((m) => {
@@ -136,7 +122,7 @@ function initHamburgerMenu(): void {
           href="${href}"
           tabindex="-1"
           ${isCurrent ? 'aria-current="page"' : ""}
-          class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
+          class="block px-3.5 py-2.5 ${activeClass} border rounded-lg text-sm font-medium transition flex items-center justify-between gap-3"
         >
           <span class="flex items-center">${treeBranchHtml}<span>${item.label}</span></span>
           <span class="${isCurrent ? "text-amber-400 text-xs font-bold shrink-0" : "text-slate-500 shrink-0"}">${isCurrent ? "表示中" : "→"}</span>
@@ -161,7 +147,7 @@ function initHamburgerMenu(): void {
       <button
         id="hamburger-btn"
         type="button"
-        class="relative w-10 h-10 bg-slate-800/95 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-200 shadow-lg transition-colors flex items-center justify-center backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
+        class="relative w-10 h-10 bg-slate-800/95 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-200 shadow-lg transition-colors flex items-center justify-center backdrop-blur-sm"
         aria-label="メニューを開く"
         aria-expanded="false"
         aria-controls="hamburger-menu"
@@ -215,9 +201,6 @@ function initHamburgerMenu(): void {
     return elements;
   };
 
-  /**
-   * アニメーションなしで即座にメニューを閉じる（bfcache復元時のチラつき防止用）
-   */
   const forceCloseMenuImmediately = () => {
     isOpen = false;
     if (!btn || !menu || !backdrop || !line1 || !line2 || !line3) return;
