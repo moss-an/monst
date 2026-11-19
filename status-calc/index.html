@@ -33,16 +33,9 @@
       id="app"
       class="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 w-full flex-grow preload-hidden"
     >
-      <header class="text-center pl-11 pr-2 sm:px-0">
-        <h1
-          class="whitespace-nowrap text-2xl sm:text-3xl font-bold text-amber-400"
-        >
-          モンスト ステータス計算
-        </h1>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1">
-          わくわくの実組み合わせパターンシミュレーター
-        </p>
-      </header>
+      <header
+        data-subtitle="わくわくの実組み合わせパターンシミュレーター"
+      ></header>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <!-- 1. ステータス・許容範囲設定 -->
@@ -829,6 +822,7 @@
     </div>
 
     <footer class="mt-auto"></footer>
+    <script type="module" src="../src/components/tool-header.ts"></script>
     <script type="module" src="../src/components/hamburger.ts"></script>
     <script type="module" src="../src/components/footer.ts"></script>
     <script type="module" src="./ts/app.ts"></script>
