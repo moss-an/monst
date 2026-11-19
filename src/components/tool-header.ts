@@ -55,7 +55,7 @@ function initHeader(): void {
 
   const tool = findCurrentTool();
   const title = header.dataset.title || (tool ? `モンスト ${tool.name}` : "");
-  const subtitle = header.dataset.subtitle || "";
+  const subtitle = header.dataset.subtitle || (tool ? tool.description : "");
 
   if (!title) return;
 
