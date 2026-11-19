@@ -18,7 +18,6 @@ monst/
 │   ├── components/             # 汎用UIコンポーネント
 │   ├── tools.ts                # ツール一覧の定義
 │   ├── seo.ts                  # 各ページのSEOメタ情報・共通headタグ定義
-│   ├── head-builder.ts         # ビルド時に<head>タグを注入するViteプラグイン
 │   └── input.css               # スタイル
 ├── Dockerfile                  # 開発環境用Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
