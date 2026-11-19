@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import fg from "fast-glob";
+import { createSeoHeadPlugin } from "./src/head-builder";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -13,7 +14,7 @@ const htmlFiles = fg.sync(["index.html", "**/index.html"], {
   ignore: ["node_modules/**", "dist/**"],
 });
 
-const input = {};
+const input: Record<string, string> = {};
 htmlFiles.forEach((file) => {
   const key =
     file === "index.html" ? "main" : file.replace(/\/index\.html$/, "");
@@ -22,7 +23,7 @@ htmlFiles.forEach((file) => {
 
 export default defineConfig({
   base: "./",
-  plugins: [vue(), tailwindcss()],
+  plugins: [vue(), tailwindcss(), createSeoHeadPlugin()],
   resolve: {
     alias: {
       vue: "vue/dist/vue.esm-bundler.js",

@@ -21,7 +21,7 @@ monst/
 ├── Dockerfile                  # 開発環境用Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
 ├── docker-compose.build.yml    # ビルド確認用Docker Compose
-├── vite.config.mjs             # Viteの設定ファイル（マルチページ対応）
+├── vite.config.mts             # Viteの設定ファイル（マルチページ対応）
 └── package.json                # 依存関係とスクリプト定義
 ```
 
@@ -87,9 +87,9 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 ## Viteのマルチページ自動検出
 
-`vite.config.mjs` では `fast-glob` を使用して、リポジトリ内のすべての `index.html`（ルート直下および各サブディレクトリ内）を自動的に検出し、ビルドのエントリーポイント（`rollupOptions.input`）として登録する設定になっています。
+`vite.config.mts` では `fast-glob` を使用して、リポジトリ内のすべての `index.html`（ルート直下および各サブディレクトリ内）を自動的に検出し、ビルドのエントリーポイント（`rollupOptions.input`）として登録する設定になっています。
 
-新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mjs` を手動で書き換える必要はありません。
+新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mts` を手動で書き換える必要はありません。
 
 ## CI/CD
 
