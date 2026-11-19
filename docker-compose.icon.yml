@@ -1,0 +1,9 @@
+# アイコン画像作成用
+services:
+  icon:
+    build:
+      context: .
+      dockerfile: icon/Dockerfile.icon
+    image: monst-icon
+    volumes:
+      - .:/app
