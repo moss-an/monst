@@ -79,12 +79,19 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 ## ツール一覧の仕組み
 
 - **`src/tools.ts`**:
+
   ツール一覧情報を定義しています。ここを編集するだけで、他に自動反映されます。
+
 - **`src/index-renderer.ts`**:
+
   `src/tools.ts` をもとに、トップページのツール一覧リンクを動的に生成します。
+
 - **`src/components/hamburger.ts`**:
+
   `src/tools.ts` をもとに、ハンバーガーメニューのツリー構造を動的に生成します。
+
 - **`src/components/tool-header.ts`**:
+
   `src/tools.ts` をもとに、各ツールページのヘッダーを動的に生成します。（`data-title` / `data-subtitle` 指定時はそちらを優先）
 
 ## Viteのマルチページ自動検出
@@ -98,20 +105,22 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 各ページの `<head>` 要素は、各 `index.html` に直書きせず一元管理しています。
 
 - **`src/head-config.ts`**:
+
   サイト全体の設定と各ページごとのメタ情報を定義しています。
 
   新しいページを追加した際やメタ情報を変更したい場合は、このファイルを編集します。
-  - Viteにバンドル不要な要素のうち、全ページ共通で `<head>` に追加したい要素は `siteConfig.commonHeadTags` に記述します。
-  - 特定ページ固有で追加したい要素は各ページの `extraHeadTags` に記述します。
-  - 文字列内に `{prefix}` を含めると、ビルド時にページの階層に応じた相対パス（ルート直下は `./`、1階層下は `../` など）へ自動置換されます。
 
 - **`src/head-builder.ts`**:
+
   `vite.config.mts` から呼び出されるカスタム Vite プラグインです。
 
   開発時・ビルド時に各 `index.html` の `<head>` 内へ、`src/head-config.ts` で定義された内容を自動注入します。
 
 - **`src/common.ts`**:
-  全ページ共通リソース・初期化エントリです。モジュールは `src/head-config.ts` の `siteConfig.commonHeadTags` に文字列で書かず、ここから `import` して Vite にバンドルさせます。
+
+  全ページ共通リソース・初期化エントリです。
+
+  モジュールは `src/head-config.ts` に文字列で書かず、ここから `import` して Vite にバンドルさせます。
 
 ## CI/CD
 
