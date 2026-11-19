@@ -27,9 +27,6 @@ export const siteConfig: SiteConfig = {
   commonHeadTags: [
     '<meta charset="UTF-8" />',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-    '<script type="module" src="{prefix}src/components/gtm.ts"></script>',
-    '<link rel="stylesheet" href="{prefix}src/input.css" />',
-    '<script type="module" src="{prefix}src/components/favicon.ts"></script>',
   ],
 };
 
