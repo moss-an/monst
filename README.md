@@ -1,6 +1,6 @@
 # monst
 
-モンスターストライク (モンスト) 関連の各種ツールを管理するリポジトリです。
+モンスターストライク（モンスト）関連の各種ツールを管理するリポジトリです。
 
 GitHub Pages上で公開されている、マルチページ構成のWebアプリケーションです。
 
@@ -18,12 +18,10 @@ monst/
 │   ├── components/             # 汎用UIコンポーネント
 │   ├── tools.ts                # ツール一覧の定義
 │   └── input.css               # スタイル
-├── ogp/                        # OGP画像作成用ディレクトリ
 ├── Dockerfile                  # 開発環境用Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
 ├── docker-compose.build.yml    # ビルド確認用Docker Compose
-├── docker-compose.ogp.yml      # OGP画像作成用Docker Compose
-├── vite.config.mjs             # Viteの設定ファイル(マルチページ対応)
+├── vite.config.mjs             # Viteの設定ファイル（マルチページ対応）
 └── package.json                # 依存関係とスクリプト定義
 ```
 
@@ -43,7 +41,7 @@ Node.js環境を直接利用して、ローカルで確認やビルドを行う�
    npm run dev
    ```
 
-3. ブラウザで表示されたローカルURL (例: `http://localhost:5173`) にアクセスします。
+3. ブラウザで表示されたローカルURL（例: `http://localhost:5173`）にアクセスします。
 
 4. ビルドエラーが起こらないかの確認は、以下のコマンドで可能です。
    ```bash
@@ -60,20 +58,20 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
    docker compose up --build
    ```
 
-2. ターミナルで表示されたローカルURL (例: `http://localhost:5173`) にアクセスします。
+2. ターミナルで表示されたローカルURL（例: `http://localhost:5173`）にアクセスします。
 
 3. ビルドエラーが起こらないかの確認は、以下のコマンドで可能です。
    ```bash
    docker compose -f docker-compose.build.yml up --build
    ```
 
-### VS Code (Dev Containers) を使った開発
+### VS Code（Dev Containers）を使った開発
 
-ホスト (手元) 環境の Node.js を汚さず、コンテナ内で直接エディタの補完や型チェックを完全に効かせて開発したい場合は、`.devcontainer/devcontainer.json` による Dev Containers を利用できます。
+ホスト（手元）環境の Node.js を汚さず、コンテナ内で直接エディタの補完や型チェックを完全に効かせて開発したい場合は、`.devcontainer/devcontainer.json` による Dev Containers を利用できます。
 
 1. VS Code に拡張機能「Dev Containers」をインストールします。
 2. プロジェクトを VS Code で開きます。
-3. 画面左下のアイコン (またはコマンドパレット) から `Dev Containers: Reopen in Container` を実行します。
+3. 画面左下のアイコン（またはコマンドパレット）から `Dev Containers: Reopen in Container` を実行します。
 4. 自動的にコンテナがビルドされ、接続と同時に依存関係のインストールや開発サーバーの起動が行われます。
 
 ## ツール一覧の仕組み
@@ -85,11 +83,11 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 - **`src/components/hamburger.ts`**:
   `src/tools.ts` をもとに、ハンバーガーメニューのツリー構造を動的に生成します。
 - **`src/components/tool-header.ts`**:
-  `src/tools.ts` をもとに、各ツールページのヘッダーを動的に生成します。 (`data-title` / `data-subtitle` 指定時はそちらを優先)
+  `src/tools.ts` をもとに、各ツールページのヘッダーを動的に生成します。（`data-title` / `data-subtitle` 指定時はそちらを優先）
 
 ## Viteのマルチページ自動検出
 
-`vite.config.mjs` では `fast-glob` を使用して、リポジトリ内のすべての `index.html` (ルート直下および各サブディレクトリ内) を自動的に検出し、ビルドのエントリーポイント (`rollupOptions.input`) として登録する設定になっています。
+`vite.config.mjs` では `fast-glob` を使用して、リポジトリ内のすべての `index.html`（ルート直下および各サブディレクトリ内）を自動的に検出し、ビルドのエントリーポイント（`rollupOptions.input`）として登録する設定になっています。
 
 新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mjs` を手動で書き換える必要はありません。
 
@@ -99,14 +97,15 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 `main` ブランチへ変更がマージされると、自動的にビルドとGitHub Pagesへのデプロイが実行されます。
 
-ビルド成果物 (`dist/` 内のファイル群) は `.gitignore` で除外されており、リポジトリに手動でpushする必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
+ビルド成果物（`dist/` 内のファイル群）は `.gitignore` で除外されており、リポジトリに手動でpushする必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
 
 ## ライセンス
 
-このプロジェクトのライセンスについては `LICENSE` ファイルをご確認ください。
+本プロジェクトのライセンスについては `LICENSE` ファイルをご確認ください。
 
-また、当リポジトリで使用しているWebフォント「Reggae One」には以下のライセンスが適用されています。
+また、本プロジェクトで使用しているWebフォント「Reggae One」には以下のライセンスが適用されています。（詳細は `public/fonts/OFL.txt` を参照）
 
-- **Reggae One**
-  - Copyright (c) The Reggae Project Authors
-  - ライセンス: SIL Open Font License, Version 1.1 (詳細は `public/fonts/OFL.txt` を参照)
+```markdown
+Copyright (c) The Reggae Project Authors
+SIL Open Font License, Version 1.1
+```
