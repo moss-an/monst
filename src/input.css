@@ -23,7 +23,14 @@ h3,
   font-synthesis-weight: none;
 }
 
-/* グローバルなフォーカス枠 */
+@layer base {
+  body {
+    /* 全ページ共通のレイアウト */
+    @apply bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans;
+  }
+}
+
+/* 全ページ共通のフォーカス枠 */
 *:focus-visible {
   outline: 1px solid rgba(255, 255, 255, 0.9);
   outline-offset: 0px;
