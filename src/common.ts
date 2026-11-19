@@ -9,3 +9,5 @@
 
 import "./components/gtm";
 import "./components/favicon";
+import "./components/hamburger";
+import "./components/footer";
