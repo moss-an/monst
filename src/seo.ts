@@ -1,3 +1,8 @@
+/**
+ * @file seo.ts
+ * @description サイト共通設定および各ページのSEOメタ情報・追加headタグ定義
+ */
+
 export interface SiteConfig {
   siteUrl: string;
   defaultOgImage: string;
