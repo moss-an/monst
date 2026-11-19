@@ -85,7 +85,7 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 - **`src/components/hamburger.ts`**:
   `src/tools.ts` をもとに、ハンバーガーメニューのツリー構造を動的に生成します。
 - **`src/components/tool-header.ts`**:
-  `src/tools.ts` をもとに、各ツールページのヘッダーを動的に生成します (`data-title` / `data-subtitle` 指定時はそちらを優先)
+  `src/tools.ts` をもとに、各ツールページのヘッダーを動的に生成します。 (`data-title` / `data-subtitle` 指定時はそちらを優先)
 
 ## Viteのマルチページ自動検出
 
