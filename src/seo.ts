@@ -18,20 +18,15 @@ export interface PageSeoConfig {
   extraHeadTags?: string[];
 }
 
-export type PageKey =
-  | "main"
-  | "rank-calc"
-  | "score-calc"
-  | "status-calc"
-  | (string & {});
-
 export const siteConfig: SiteConfig = {
   siteUrl: "https://moss-an.github.io/monst/",
   defaultOgImage: "https://moss-an.github.io/monst/ogp.png",
   twitterCard: "summary_large_image",
-  // SEO基本タグ以外の全ページ共通 <head> 要素
+  // SEO基本タグ（title, description, og:*, twitter:card）以外の全ページ共通 <head> 要素
   // ページ階層に応じて ./ または ../ に自動置換したい箇所には {prefix} を使えます
   commonHeadTags: [
+    '<meta charset="UTF-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
     '<script type="module" src="{prefix}src/components/gtm.ts"></script>',
     '<link rel="stylesheet" href="{prefix}src/input.css" />',
     '<script type="module" src="{prefix}src/components/favicon.ts"></script>',

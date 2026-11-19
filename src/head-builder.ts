@@ -1,6 +1,6 @@
 /**
  * @file head-builder.ts
- * @description ビルド時に各HTMLの<head>へSEO基本タグと共通/個別headタグ（{prefix}置換・重複除去付き）を注入するViteプラグイン
+ * @description ビルド時に各HTMLの<head>へSEO基本タグと共通/個別headタグ（{prefix}置換付き）を注入するViteプラグイン
  */
 
 import { relative } from "path";
@@ -56,12 +56,8 @@ function buildHeadTags(pageKey: string): string {
     (t) => `    ${applyPrefix(t, prefix)}`,
   );
 
-  // SEO基本タグ（charset, viewport, title, description, og:*, twitter:card）を自動生成し、
-  // それ以外の共通/個別要素は commonHeadTags / extraHeadTags に一本化
   const tags = [
     ...customCommonTags,
-    `    <meta charset="UTF-8" />`,
-    `    <meta name="viewport" content="width=device-width, initial-scale=1.0" />`,
     `    <title>${escapeHtml(page.title)}</title>`,
     `    <meta name="description" content="${escapeAttr(page.description)}" />`,
     `    <meta property="og:title" content="${escapeAttr(page.title)}" />`,
@@ -75,27 +71,6 @@ function buildHeadTags(pageKey: string): string {
   return tags.join("\n");
 }
 
-function stripManagedHeadTags(html: string): string {
-  let result = html;
-
-  result = result.replace(/<title>[\s\S]*?<[\/]title>\s*/gi, "");
-  result = result.replace(/<meta\s+charset=["'][^"']+["'][^>]*>\s*/gi, "");
-  result = result.replace(/<meta\s+name=["']viewport["'][^>]*>\s*/gi, "");
-  result = result.replace(/<meta\s+name=["']description["'][^>]*>\s*/gi, "");
-  result = result.replace(/<meta\s+property=["']og:[^"']+["'][^>]*>\s*/gi, "");
-  result = result.replace(/<meta\s+name=["']twitter:card["'][^>]*>\s*/gi, "");
-  result = result.replace(
-    /<script\s+type=["']module["']\s+src=["'](?:\.\/|\.\.[\/])+src[\/]components[\/](?:gtm|favicon)\.ts["']><[\/]script>\s*/gi,
-    "",
-  );
-  result = result.replace(
-    /<link\s+rel=["']stylesheet["']\s+href=["'](?:\.\/|\.\.[\/])+src[\/]input\.css["']\s*[\/]?>\s*/gi,
-    "",
-  );
-
-  return result;
-}
-
 export function createSeoHeadPlugin(): Plugin {
   let rootDir = process.cwd();
 
@@ -107,8 +82,7 @@ export function createSeoHeadPlugin(): Plugin {
     transformIndexHtml(html, ctx) {
       const pageKey = resolvePageKey(ctx?.filename, rootDir);
       const tags = buildHeadTags(pageKey);
-      const cleaned = stripManagedHeadTags(html);
-      return cleaned.replace("</head>", `${tags}\n  </head>`);
+      return html.replace("</head>", `${tags}\n  </head>`);
     },
   };
 }
