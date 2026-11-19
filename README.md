@@ -17,6 +17,8 @@ monst/
 ├── src/
 │   ├── components/             # 汎用UIコンポーネント
 │   ├── tools.ts                # ツール一覧の定義
+│   ├── seo.ts                  # 各ページのSEOメタ情報・共通headタグ定義
+│   ├── head-builder.ts         # ビルド時に<head>タグを注入するViteプラグイン
 │   └── input.css               # スタイル
 ├── Dockerfile                  # 開発環境用Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
@@ -90,6 +92,23 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 `vite.config.mts` では `fast-glob` を使用して、リポジトリ内のすべての `index.html`（ルート直下および各サブディレクトリ内）を自動的に検出し、ビルドのエントリーポイント（`rollupOptions.input`）として登録する設定になっています。
 
 新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mts` を手動で書き換える必要はありません。
+
+## `<head>` 要素の一元管理
+
+各ページの `<head>` 要素は、各 `index.html` に直書きせず一元管理しています。
+
+- **`src/seo.ts`**:
+  サイト全体の設定と各ページごとのメタ情報を定義しています。
+
+  新しいページを追加した際やメタ情報を変更したい場合は、このファイルを編集します。
+  - 全ページ共通で `<head>` に追加したい要素は `siteConfig.commonHeadTags` に記述します。
+  - 特定ページ固有で追加したい要素は各ページの `extraHeadTags` に記述します。
+  - 文字列内に `{prefix}` を含めると、ビルド時にページの階層に応じた相対パス（ルート直下は `./`、1階層下は `../` など）へ自動置換されます。
+
+- **`src/head-builder.ts`**:
+  `vite.config.mts` から呼び出されるカスタム Vite プラグインです。
+
+  開発時・ビルド時に各 `index.html` の `<head>` 内へ、`src/seo.ts` で定義された内容を自動注入します。
 
 ## CI/CD
 
