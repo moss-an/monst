@@ -17,7 +17,7 @@ monst/
 ├── src/
 │   ├── components/             # 汎用UIコンポーネント
 │   ├── tools.ts                # ツール一覧の定義
-│   ├── seo.ts                  # 各ページのSEOメタ情報・共通headタグ定義
+│   ├── head-config.ts          # 各ページのheadタグ定義
 │   └── input.css               # スタイル
 ├── Dockerfile                  # 開発環境用Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
@@ -96,7 +96,7 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 各ページの `<head>` 要素は、各 `index.html` に直書きせず一元管理しています。
 
-- **`src/seo.ts`**:
+- **`src/head-config.ts`**:
   サイト全体の設定と各ページごとのメタ情報を定義しています。
 
   新しいページを追加した際やメタ情報を変更したい場合は、このファイルを編集します。
@@ -107,7 +107,7 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 - **`src/head-builder.ts`**:
   `vite.config.mts` から呼び出されるカスタム Vite プラグインです。
 
-  開発時・ビルド時に各 `index.html` の `<head>` 内へ、`src/seo.ts` で定義された内容を自動注入します。
+  開発時・ビルド時に各 `index.html` の `<head>` 内へ、`src/head-config.ts` で定義された内容を自動注入します。
 
 ## CI/CD
 

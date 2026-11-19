@@ -5,7 +5,7 @@
 
 import { relative } from "path";
 import type { Plugin } from "vite";
-import { siteConfig, pagesSeo } from "./seo";
+import { siteConfig, pagesSeo } from "./head-config";
 
 function escapeAttr(str: string): string {
   return String(str)
