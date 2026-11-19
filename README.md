@@ -111,7 +111,7 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
   開発時・ビルド時に各 `index.html` の `<head>` 内へ、`src/head-config.ts` で定義された内容を自動注入します。
 
 - **`src/common.ts`**:
-  全ページ共通リソース・初期化エントリです。CSSやモジュールは `src/head-config.ts` の `siteConfig.commonHeadTags` に文字列で書かず、ここから `import` して Vite にバンドルさせます。
+  全ページ共通リソース・初期化エントリです。モジュールは `src/head-config.ts` の `siteConfig.commonHeadTags` に文字列で書かず、ここから `import` して Vite にバンドルさせます。
 
 ## CI/CD
 
