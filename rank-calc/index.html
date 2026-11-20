@@ -6,7 +6,7 @@
   <body>
     <div
       id="app"
-      class="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 w-full flex-grow preload-hidden"
+      class="max-w-6xl mx-auto px-3 sm:px-6 md:px-8 py-6 space-y-4 sm:space-y-6 w-full flex-grow overflow-x-hidden preload-hidden"
     >
       <header></header>
 
@@ -662,7 +662,7 @@
           >
         </summary>
         <div
-          class="p-3 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40"
+          class="p-3 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40 min-w-0 overflow-hidden"
         >
           <p class="text-sm text-slate-400 leading-relaxed">
             期間を指定して、1日あたりに必要な周回数や周回時間を計算できます。
@@ -676,7 +676,7 @@
               <input
                 type="date"
                 v-model="fromDate"
-                class="w-full min-w-0 max-w-full box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200"
+                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200"
               />
             </div>
             <div class="min-w-0 flex flex-col">
@@ -686,7 +686,7 @@
               <input
                 type="date"
                 v-model="toDate"
-                class="w-full min-w-0 max-w-full box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200"
+                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200"
               />
             </div>
           </div>
