@@ -43,6 +43,17 @@ function applyPrefix(tag: string, prefix: string): string {
   return String(tag).replace(/\{prefix\}/g, prefix);
 }
 
+function buildWebSiteJsonLd(): string {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.siteName,
+    url: siteConfig.siteUrl,
+  };
+  const safeJson = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
+  return `    <script type="application/ld+json">${safeJson}</script>`;
+}
+
 function buildHeadTags(pageKey: string): string {
   const page = pagesSeo[pageKey] || pagesSeo.main;
   const prefix = getRelPrefix(pageKey);
@@ -65,6 +76,7 @@ function buildHeadTags(pageKey: string): string {
     `    <meta property="og:image" content="${escapeAttr(ogImage)}" />`,
     `    <meta property="og:url" content="${escapeAttr(ogUrl)}" />`,
     `    <meta name="twitter:card" content="${escapeAttr(siteConfig.twitterCard)}" />`,
+    ...(pageKey === "main" ? [buildWebSiteJsonLd()] : []),
     ...customPageTags,
   ];
 

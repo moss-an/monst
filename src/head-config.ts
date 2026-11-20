@@ -4,6 +4,7 @@
  */
 
 export interface SiteConfig {
+  siteName: string;
   siteUrl: string;
   defaultOgImage: string;
   twitterCard: string;
@@ -19,6 +20,7 @@ export interface PageSeoConfig {
 }
 
 export const siteConfig: SiteConfig = {
+  siteName: "モンスト 便利ツール集",
   siteUrl: "https://moss-an.github.io/monst/",
   defaultOgImage: "https://moss-an.github.io/monst/ogp.png",
   twitterCard: "summary_large_image",
