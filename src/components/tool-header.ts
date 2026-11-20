@@ -62,7 +62,7 @@ function initHeader(): void {
   header.className = "text-center pl-11 pr-2 sm:px-0";
   header.innerHTML = `
     <h1
-      class="whitespace-nowrap text-2xl sm:text-3xl font-bold text-amber-400"
+      class="whitespace-nowrap text-2xl sm:text-3xl font-bold text-amber-300"
     >
       ${title}
     </h1>
