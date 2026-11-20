@@ -6,6 +6,11 @@
 import faviconUrl from "../../favicon.svg";
 
 (function () {
+  // 既存のアイコン指定（/favicon.ico など）を削除してブラウザタブの競合を防ぐ
+  document
+    .querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]')
+    .forEach((el) => el.remove());
+
   const linkId = "dynamic-favicon";
   if (document.getElementById(linkId)) return;
 
