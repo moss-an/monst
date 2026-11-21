@@ -1,0 +1,46 @@
+name: Notify LINE on Issue or PR (Others Only)
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    # 手動実行(workflow_dispatch)か、作成者が自分ではない場合のみジョブを実行
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.actor != secrets.MY_GITHUB_USERNAME
+    steps:
+      - name: Send LINE notification
+        env:
+          LINE_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_TO: ${{ secrets.LINE_USER_ID }}
+          EVENT_NAME: ${{ github.event_name }}
+          ACTOR: ${{ github.actor }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REPO_NAME: ${{ github.repository }}
+        run: |
+          if [ "$EVENT_NAME" = "issues" ]; then
+            MSG="【GitHub Issue】${REPO_NAME}\n作成者: ${ACTOR}\n${ISSUE_TITLE}\n${ISSUE_URL}"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            MSG="【GitHub PR】${REPO_NAME}\n作成者: ${ACTOR}\n${PR_TITLE}\n${PR_URL}"
+          else
+            MSG="【GitHub通知テスト】${REPO_NAME} からテスト送信です。"
+          fi
+
+          PAYLOAD=$(jq -nc --arg to "$LINE_TO" --arg text "$MSG" '{
+            to: $to,
+            messages: [{ type: "text", text: $text }]
+          }')
+
+          curl -sS -X POST https://api.line.me/v2/bot/message/push \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${LINE_TOKEN}" \
+            -d "$PAYLOAD"
