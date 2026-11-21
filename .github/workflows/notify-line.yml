@@ -10,15 +10,14 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
-    env:
-      MY_GITHUB_USERNAME: ${{ secrets.MY_GITHUB_USERNAME }}
-    # 手動実行(workflow_dispatch)か、作成者が自分ではない場合のみジョブを実行
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.actor != env.MY_GITHUB_USERNAME
     steps:
       - name: Send LINE notification
+        # 手動実行(workflow_dispatch)か、作成者が自分ではない場合のみジョブを実行
+        if: >-
+          github.event_name == 'workflow_dispatch' ||
+          github.actor != env.MY_GITHUB_USERNAME
         env:
+          MY_GITHUB_USERNAME: ${{ secrets.MY_GITHUB_USERNAME }}
           LINE_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_TO: ${{ secrets.LINE_USER_ID }}
           EVENT_NAME: ${{ github.event_name }}
