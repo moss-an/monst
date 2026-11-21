@@ -1050,6 +1050,10 @@ createApp({
       );
     });
 
+    const runsPerHour = computed<number>(() => {
+      return Logic.calculateRunsPerHour(clearSec.value);
+    });
+
     const timeResult = computed<Logic.FormattedTime>(() => {
       return Logic.formatTime(totalRuns.value * clearSec.value);
     });
@@ -1173,6 +1177,7 @@ createApp({
       baseExpInput,
       clearSec,
       clearSecInput,
+      runsPerHour,
       handleBaseExpFocus,
       handleBaseExpInput,
       handleBaseExpBlur,

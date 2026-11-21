@@ -432,3 +432,11 @@ export function formatTime(totalSeconds: number): FormattedTime {
     minutes: Math.max(0, minutes),
   };
 }
+
+/**
+ * 1時間あたりの周回数を算出
+ */
+export function calculateRunsPerHour(clearSec: number): number {
+  if (clearSec <= 0) return 0;
+  return Math.floor(3600 / clearSec + CONSTANTS.FLOATING_POINT_EPSILON);
+}
