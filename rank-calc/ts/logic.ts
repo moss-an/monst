@@ -359,6 +359,14 @@ export function calculateTotalMultiplier(multipliers: Multipliers): number {
 }
 
 /**
+ * 1時間あたりの周回数を算出
+ */
+export function calculateRunsPerHour(clearSec: number): number {
+  if (clearSec <= 0) return 0;
+  return Math.floor(3600 / clearSec + CONSTANTS.FLOATING_POINT_EPSILON);
+}
+
+/**
  * 1周あたりの獲得経験値を算出
  */
 export function calculateEarnedExpPerRun(

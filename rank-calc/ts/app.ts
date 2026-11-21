@@ -1030,6 +1030,10 @@ createApp({
       return Logic.calculateTotalMultiplier(multiplierObj.value);
     });
 
+    const runsPerHour = computed<number>(() => {
+      return Logic.calculateRunsPerHour(clearSec.value);
+    });
+
     const earnedExpPerRun = computed<number>(() => {
       return Logic.calculateEarnedExpPerRun(baseExp.value, multiplierObj.value);
     });
@@ -1173,6 +1177,7 @@ createApp({
       baseExpInput,
       clearSec,
       clearSecInput,
+      runsPerHour,
       handleBaseExpFocus,
       handleBaseExpInput,
       handleBaseExpBlur,

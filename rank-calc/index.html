@@ -548,9 +548,15 @@
             />
           </div>
           <div>
-            <label class="block text-sm text-slate-400"
-              >1周の平均時間（秒）</label
+            <label
+              class="flex items-baseline justify-between gap-2 text-sm text-slate-400"
             >
+              <span>1周の平均時間（秒）</span>
+              <span class="text-xs text-slate-400 shrink-0"
+                >[1時間あたり約{{ runsPerHour.toLocaleString(undefined, {
+                maximumFractionDigits: 0, }) }}周]</span
+              >
+            </label>
             <input
               type="text"
               inputmode="numeric"
