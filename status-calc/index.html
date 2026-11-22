@@ -33,7 +33,7 @@
                 @input="e => handleHpInput('baseHp', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 20000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-base sm:text-sm"
               />
             </div>
             <div>
@@ -45,7 +45,7 @@
                 @input="e => handleAtkInput('baseAtk', e)"
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 30000"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-base sm:text-sm"
               />
             </div>
             <div>
@@ -57,7 +57,7 @@
                 @input="e => handleSpdInput('baseSpd', e)"
                 @keydown="handleDecimalKeydown"
                 placeholder="例: 350.00"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-xs sm:text-sm"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-2 mt-1 font-mono text-base sm:text-sm"
               />
             </div>
           </div>
@@ -76,7 +76,7 @@
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 22000"
                 :class="validationErrors.hpMin.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-base sm:text-sm font-mono"
               />
               <span class="text-slate-400">〜</span>
               <input
@@ -87,7 +87,7 @@
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 26000"
                 :class="validationErrors.hpMax.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-base sm:text-sm font-mono"
               />
             </div>
             <div
@@ -129,7 +129,7 @@
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 32500"
                 :class="validationErrors.atkMin.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-base sm:text-sm font-mono"
               />
               <span class="text-slate-400">〜</span>
               <input
@@ -140,7 +140,7 @@
                 @keydown="handleIntegerKeydown"
                 placeholder="例: 36000"
                 :class="validationErrors.atkMax.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-base sm:text-sm font-mono"
               />
             </div>
             <div
@@ -184,7 +184,7 @@
                 @keydown="handleDecimalKeydown"
                 placeholder="例: 360.50"
                 :class="validationErrors.spdMin.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-base sm:text-sm font-mono"
               />
               <span class="text-slate-400">〜</span>
               <input
@@ -195,7 +195,7 @@
                 @keydown="handleDecimalKeydown"
                 placeholder="例: 420.25"
                 :class="validationErrors.spdMax.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-sm font-mono"
+                class="w-full bg-slate-900 border rounded px-3 py-1.5 text-base sm:text-sm font-mono"
               />
             </div>
             <div
@@ -264,7 +264,7 @@
                   @keydown="handleIntegerKeydown"
                   placeholder="例: 100"
                   :class="validationErrors.useCount.length > 0 ? 'border-rose-500' : 'border-slate-700'"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-[9px] mt-1 font-mono text-sm"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-[9px] mt-1 font-mono text-base sm:text-sm"
                 />
                 <div
                   v-if="validationErrors.useCount.length > 0"
@@ -508,7 +508,7 @@
               <span class="text-slate-400">表示件数:</span>
               <select
                 v-model.number="pageSize"
-                class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200"
+                class="h-9 sm:h-8 bg-slate-900 border border-slate-700 rounded px-2 text-base sm:text-sm text-slate-200"
               >
                 <option
                   v-for="size in pageSizeOptions"
@@ -526,7 +526,7 @@
                 type="button"
                 @click="changeSort('fruitCount')"
                 :class="sortKey === 'fruitCount' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
-                class="px-2 py-1 rounded border transition"
+                class="h-9 sm:h-8 inline-flex items-center px-2 rounded border transition"
               >
                 実の個数 {{ sortKey === 'fruitCount' ? (sortOrder === 'asc' ?
                 '▲' : '▼') : '' }}
@@ -535,7 +535,7 @@
                 type="button"
                 @click="changeSort('finalHp')"
                 :class="sortKey === 'finalHp' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
-                class="px-2 py-1 rounded border transition"
+                class="h-9 sm:h-8 inline-flex items-center px-2 rounded border transition"
               >
                 HP {{ sortKey === 'finalHp' ? (sortOrder === 'asc' ? '▲' : '▼')
                 : '' }}
@@ -544,7 +544,7 @@
                 type="button"
                 @click="changeSort('finalAtk')"
                 :class="sortKey === 'finalAtk' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
-                class="px-2 py-1 rounded border transition"
+                class="h-9 sm:h-8 inline-flex items-center px-2 rounded border transition"
               >
                 攻撃力 {{ sortKey === 'finalAtk' ? (sortOrder === 'asc' ? '▲' :
                 '▼') : '' }}
@@ -553,7 +553,7 @@
                 type="button"
                 @click="changeSort('finalSpd')"
                 :class="sortKey === 'finalSpd' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50' : 'bg-slate-900 text-slate-400 border-slate-700'"
-                class="px-2 py-1 rounded border transition"
+                class="h-9 sm:h-8 inline-flex items-center px-2 rounded border transition"
               >
                 スピード {{ sortKey === 'finalSpd' ? (sortOrder === 'asc' ? '▲'
                 : '▼') : '' }}
