@@ -28,6 +28,15 @@ h3,
     /* 全ページ共通のレイアウト */
     @apply bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between font-sans;
   }
+
+  /* スマホ表示時のフォームフォーカスによる自動ズーム防止 */
+  @media (max-width: 639px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
 }
 
 /* 全ページ共通のフォーカス枠 */

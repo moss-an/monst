@@ -55,7 +55,7 @@
                   @input="handleCurrentExpInput"
                   @blur="validateCurrentExp"
                   placeholder="数値を入力"
-                  class="relative w-full bg-transparent px-3 py-1.5 text-sm font-mono text-slate-300"
+                  class="relative w-full bg-transparent px-3 py-1.5 text-base sm:text-sm font-mono text-slate-300"
                 />
               </div>
             </div>
@@ -95,7 +95,7 @@
                   @input="handleTargetExpInput"
                   @blur="validateTargetExp"
                   placeholder="数値を入力"
-                  class="relative w-full bg-transparent px-3 py-1.5 text-sm font-mono text-slate-300"
+                  class="relative w-full bg-transparent px-3 py-1.5 text-base sm:text-sm font-mono text-slate-300"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@
                         :value="row.itemRef.minRank"
                         disabled
                         placeholder="自動計算"
-                        class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-400 opacity-60 cursor-not-allowed"
+                        class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-base sm:text-xs text-slate-400 opacity-60 cursor-not-allowed"
                       />
                     </div>
                     <div>
@@ -167,7 +167,7 @@
                         :disabled="!row.isLast"
                         placeholder="未入力"
                         :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
-                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-200"
+                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-base sm:text-xs text-slate-200"
                       />
                     </div>
                   </div>
@@ -185,7 +185,7 @@
                       :disabled="!row.isLast"
                       placeholder="未入力"
                       :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
-                      class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs font-mono text-slate-200"
+                      class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-base sm:text-xs font-mono text-slate-200"
                     />
                   </div>
                 </div>
@@ -682,7 +682,7 @@
               <input
                 type="date"
                 v-model="fromDate"
-                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200"
+                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-base text-slate-200"
               />
             </div>
             <div class="min-w-0 flex flex-col">
@@ -692,7 +692,7 @@
               <input
                 type="date"
                 v-model="toDate"
-                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-sm sm:text-base text-slate-200"
+                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-base text-slate-200"
               />
             </div>
           </div>
