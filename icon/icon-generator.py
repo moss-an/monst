@@ -96,8 +96,8 @@ def render_master_512(poly_points, super_sample=4) -> Image.Image:
     return img.resize((base_px, base_px), Image.Resampling.LANCZOS)
 
 
-def build_multi_size_ico(master_512: Image.Image, target_sizes=(48, 32, 16)) -> bytes:
-    """各サイズ（48x48, 32x32, 16x16）をPNG格納形式で確実にパックした ICO バイナリを生成"""
+def build_multi_size_ico(master_512: Image.Image, target_sizes=(144, 96, 48, 32, 16)) -> bytes:
+    """各サイズ（144x144, 96x96, 48x48, 32x32, 16x16）をPNG格納形式で確実にパックした ICO バイナリを生成"""
     entries_data = []
     for sz in target_sizes:
         resized = master_512.resize((sz, sz), Image.Resampling.LANCZOS).convert("RGBA")
@@ -142,12 +142,12 @@ def main() -> None:
     poly_points = extract_character_polygon(svg_text)
     master_512 = render_master_512(poly_points, super_sample=4)
 
-    # 1. favicon.ico (48x48, 32x32, 16x16)
-    ico_bytes = build_multi_size_ico(master_512, target_sizes=(48, 32, 16))
+    # 1. favicon.ico (144x144, 96x96, 48x48, 32x32, 16x16)
+    ico_bytes = build_multi_size_ico(master_512, target_sizes=(144, 96, 48, 32, 16))
     ico_path = os.path.join(out_dir, "favicon.ico")
     with open(ico_path, "wb") as f:
         f.write(ico_bytes)
-    print(f"Generated {ico_path} ({len(ico_bytes)} bytes, sizes: 48x48, 32x32, 16x16)")
+    print(f"Generated {ico_path} ({len(ico_bytes)} bytes, sizes: 144x144, 96x96, 48x48, 32x32, 16x16)")
 
     # 2. apple-touch-icon.png (180x180)
     apple_icon_bytes = build_apple_touch_icon_png(master_512, size=180)
