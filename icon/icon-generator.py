@@ -120,6 +120,14 @@ def build_multi_size_ico(master_512: Image.Image, target_sizes=(48, 32, 16)) -> 
     return header + bytes(dir_entries) + bytes(image_blobs)
 
 
+def build_apple_touch_icon_png(master_512: Image.Image, size: int = 180) -> bytes:
+    """iOS Safari 用の apple-touch-icon.png（180x180, 不透明RGB）を生成"""
+    resized = master_512.resize((size, size), Image.Resampling.LANCZOS).convert("RGB")
+    buf = io.BytesIO()
+    resized.save(buf, format="PNG", optimize=True)
+    return buf.getvalue()
+
+
 def main() -> None:
     favicon_svg_path = "../favicon.svg"
     out_dir = "../public"
@@ -133,13 +141,20 @@ def main() -> None:
 
     poly_points = extract_character_polygon(svg_text)
     master_512 = render_master_512(poly_points, super_sample=4)
-    ico_bytes = build_multi_size_ico(master_512, target_sizes=(48, 32, 16))
 
+    # 1. favicon.ico (48x48, 32x32, 16x16)
+    ico_bytes = build_multi_size_ico(master_512, target_sizes=(48, 32, 16))
     ico_path = os.path.join(out_dir, "favicon.ico")
     with open(ico_path, "wb") as f:
         f.write(ico_bytes)
-
     print(f"Generated {ico_path} ({len(ico_bytes)} bytes, sizes: 48x48, 32x32, 16x16)")
+
+    # 2. apple-touch-icon.png (180x180)
+    apple_icon_bytes = build_apple_touch_icon_png(master_512, size=180)
+    apple_icon_path = os.path.join(out_dir, "apple-touch-icon.png")
+    with open(apple_icon_path, "wb") as f:
+        f.write(apple_icon_bytes)
+    print(f"Generated {apple_icon_path} ({len(apple_icon_bytes)} bytes, size: 180x180)")
 
 
 if __name__ == "__main__":
