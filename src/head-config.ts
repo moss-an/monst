@@ -30,6 +30,7 @@ export const siteConfig: SiteConfig = {
     '<meta charset="UTF-8" />',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
     '<link rel="icon" href="/favicon.ico" />',
+    '<link rel="apple-touch-icon" sizes="180x180" href="{prefix}apple-touch-icon.png" />',
   ],
 };
 
