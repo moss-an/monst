@@ -8,7 +8,7 @@ function initFooter(): void {
   if (!footer) return;
 
   footer.className =
-    "py-6 text-center text-slate-400 text-xs border-t border-slate-800/80 mt-auto";
+    "py-6 px-4 text-center text-slate-400 text-xs border-t border-slate-800/80 mt-auto space-y-2";
 
   const pathname = window.location.pathname;
   const isGitHubPages = window.location.hostname.endsWith("github.io");
@@ -25,6 +25,12 @@ function initFooter(): void {
 
   // 3. 残りのセグメントが空の場合はルートページとみなす
   const isRoot = segments.length === 0;
+
+  const disclaimerHtml = `
+    <p class="text-[11px] text-slate-400">
+      ※非公式ファンサイトであり、株式会社MIXIおよび『モンスターストライク』公式とは関係ありません。
+    </p>
+  `;
 
   if (!isRoot) {
     // 下層ページ（ツールや深いディレクトリ）の場合："via-web" とエントリーポイント末尾のセグメントをラベルに設定
@@ -47,6 +53,7 @@ function initFooter(): void {
           改善要望・不具合報告はこちら（GitHub Issue）
         </a>
       </p>
+      ${disclaimerHtml}
     `;
   } else {
     // ルートページの場合：共通のライセンス表記を設定
@@ -61,6 +68,7 @@ function initFooter(): void {
             class="hover:text-slate-300 underline underline-offset-2"
             >MIT License</a>
         </p>
+        ${disclaimerHtml}
       `;
     }
   }
