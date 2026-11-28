@@ -15,10 +15,13 @@
       >
         <!-- クエスト難易度 -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-difficulty"
+            class="block text-sm font-medium text-slate-300"
             >クエスト難易度</label
           >
           <select
+            id="select-difficulty"
             v-model.number="selectedDifficulty"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -34,10 +37,13 @@
 
         <!-- クリアランク -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-rank"
+            class="block text-sm font-medium text-slate-300"
             >クリアランク</label
           >
           <select
+            id="select-rank"
             v-model.number="selectedRank"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -53,10 +59,13 @@
 
         <!-- 合計レアリティ -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-rarity"
+            class="block text-sm font-medium text-slate-300"
             >合計レアリティ</label
           >
           <select
+            id="select-rarity"
             v-model.number="selectedRarity"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -72,10 +81,13 @@
 
         <!-- マルチ人数 -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-multi"
+            class="block text-sm font-medium text-slate-300"
             >マルチ人数</label
           >
           <select
+            id="select-multi"
             v-model.number="selectedMulti"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -91,10 +103,13 @@
 
         <!-- イベント倍率 -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-event"
+            class="block text-sm font-medium text-slate-300"
             >イベント</label
           >
           <select
+            id="select-event"
             v-model.number="selectedEvent"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -110,10 +125,13 @@
 
         <!-- わくわくの実 -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-wakuwaku"
+            class="block text-sm font-medium text-slate-300"
             >わくわくの実</label
           >
           <select
+            id="select-wakuwaku"
             v-model.number="selectedWakuwaku"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -129,10 +147,13 @@
 
         <!-- モンスポット -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-spot"
+            class="block text-sm font-medium text-slate-300"
             >モンスポット</label
           >
           <select
+            id="select-spot"
             v-model.number="selectedSpot"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
@@ -148,10 +169,13 @@
 
         <!-- メダルアップモンスター -->
         <div class="space-y-1.5">
-          <label class="block text-sm font-medium text-slate-300"
+          <label
+            for="select-medal-up-monster"
+            class="block text-sm font-medium text-slate-300"
             >メダルアップモンスター</label
           >
           <select
+            id="select-medal-up-monster"
             v-model.number="selectedMedalUpMonster"
             class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-slate-100"
           >
