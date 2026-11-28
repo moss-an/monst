@@ -20,6 +20,8 @@ monst/
 ├── rank-calc/                  # ランク上げ計算ツール
 ├── score-calc/                 # スコア計算ツール
 ├── status-calc/                # ステータス計算ツール
+├── public/
+│   └── fonts/                  # 配信用Webフォント
 ├── src/
 │   ├── common.ts               # 全ページ共通の初期化エントリ
 │   ├── components/             # 汎用UIコンポーネント
@@ -29,6 +31,7 @@ monst/
 ├── Dockerfile                  # 開発環境用Dockerイメージ定義
 ├── docker-compose.yml          # 開発サーバー構築用Docker Compose
 ├── docker-compose.build.yml    # ビルド確認用Docker Compose
+├── docker-compose.font.subset.yml # フォントサブセット生成用Docker Compose
 ├── vite.config.mts             # Viteの設定ファイル（マルチページ対応）
 └── package.json                # 依存関係とスクリプト定義
 ```
@@ -128,13 +131,25 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mts` を手動で書き換える必要はありません。
 
+## フォントのサブセット化
+
+Webフォントの軽量化のため、サイト内で使用している文字だけを抽出したサブセットフォントを `public/fonts/` に配置しています。
+
+見出し文言やツール一覧（`src/tools.ts`）を追加・変更した際は、以下のコマンドでサブセットを再生成してください。
+
+PR 作成時や `main` ブランチへの push 時には、GitHub Actions によって差分チェックが自動実行されます。
+
+```bash
+docker compose -f docker-compose.font-subset.yml up --build
+```
+
 ## CI/CD
 
-このリポジトリでは、`.github/workflows/deploy.yml` を用いたGitHub Actionsによる自動デプロイが設定されています。
+このリポジトリでは、`.github/workflows/deploy.yml` を用いた GitHub Actions による自動デプロイが設定されています。
 
-`main` ブランチへ変更がマージされると、自動的にビルドとGitHub Pagesへのデプロイが実行されます。
+`main` ブランチへ変更がマージされると、自動的にビルドと GitHub Pages へのデプロイが実行されます。
 
-ビルド成果物（`dist/` 内のファイル群）は `.gitignore` で除外されており、リポジトリに手動でpushする必要はありません。ローカルやDockerでの確認は、あくまで手元でのテスト用として行います。
+ビルド成果物（`dist/` 内のファイル群）は `.gitignore` で除外されており、リポジトリに手動で push する必要はありません。ローカルや Docker での確認は、あくまで手元でのテスト用として行います。
 
 ## ライセンス
 
