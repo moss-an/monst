@@ -25,6 +25,6 @@ jobs:
         run: |
           python font-subset/subset-generator.py
           if ! git diff --exit-code -- public/fonts/reggae-one-subset.woff2; then
-            echo "::error::Font subset is out of date. Run 'docker compose -f docker-compose.font.subset.yml up --build' and commit the updated font."
+            echo "::error::Font subset is out of date. Run 'docker compose -f docker-compose.font-subset.yml up --build' and commit the updated font."
             exit 1
           fi
