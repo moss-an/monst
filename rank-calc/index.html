@@ -10,218 +10,154 @@
     >
       <header></header>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        <!-- 1. ランク設定エリア -->
-        <section
-          class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
-        >
-          <h2
-            class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
+      <main class="space-y-4 sm:space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <!-- 1. ランク設定エリア -->
+          <section
+            class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
           >
-            1. ランク設定
-          </h2>
-
-          <div
-            class="space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
-          >
-            <div>
-              <label class="block text-sm text-slate-400">現在のランク</label>
-              <input
-                type="text"
-                inputmode="numeric"
-                v-model="currentRank"
-                @input="handleCurrentRankInput"
-                @blur="validateCurrentRank"
-                placeholder="数値を入力"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-              />
-            </div>
-            <div>
-              <label class="block text-xs text-slate-400"
-                >現在の累計経験値</label
-              >
-              <div
-                class="relative w-full bg-slate-900 border border-slate-700 rounded mt-1 overflow-hidden"
-              >
-                <div
-                  class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-150 pointer-events-none"
-                  :style="{ width: currentProgressPercent + '%' }"
-                ></div>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  v-model="currentExpInput"
-                  @focus="handleCurrentExpFocus"
-                  @input="handleCurrentExpInput"
-                  @blur="validateCurrentExp"
-                  placeholder="数値を入力"
-                  class="relative w-full bg-transparent px-3 py-1.5 text-base sm:text-sm font-mono text-slate-300"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
-          >
-            <div>
-              <label class="block text-sm text-slate-400">目標のランク</label>
-              <input
-                type="text"
-                inputmode="numeric"
-                v-model="targetRank"
-                @input="handleTargetRankInput"
-                @blur="validateTargetRank"
-                placeholder="数値を入力"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-              />
-            </div>
-            <div>
-              <label class="block text-xs text-slate-400"
-                >目標の累計経験値</label
-              >
-              <div
-                class="relative w-full bg-slate-900 border border-slate-700 rounded mt-1 overflow-hidden"
-              >
-                <div
-                  class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-150 pointer-events-none"
-                  :style="{ width: targetProgressPercent + '%' }"
-                ></div>
-                <input
-                  type="text"
-                  inputmode="numeric"
-                  v-model="targetExpInput"
-                  @focus="handleTargetExpFocus"
-                  @input="handleTargetExpInput"
-                  @blur="validateTargetExp"
-                  placeholder="数値を入力"
-                  class="relative w-full bg-transparent px-3 py-1.5 text-base sm:text-sm font-mono text-slate-300"
-                />
-              </div>
-            </div>
-          </div>
-
-          <details
-            class="bg-slate-900/50 rounded-lg border border-slate-700/60 overflow-hidden group"
-          >
-            <summary
-              class="cursor-pointer px-4 py-3 flex items-center justify-between text-sm text-slate-300 hover:bg-slate-800/80 transition select-none"
+            <h2
+              class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
             >
-              <span>経験値テーブル設定</span>
-              <span
-                class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
-                >▼</span
-              >
-            </summary>
+              1. ランク設定
+            </h2>
 
-            <div class="p-4 space-y-3 border-t border-slate-700/60 text-xs">
-              <p class="text-slate-400 text-[11px] leading-relaxed">
-                ランク帯と、1ランク上げるのに必要な経験値を設定してください。
-              </p>
-              <div
-                ref="mobileRankStepList"
-                class="md:hidden space-y-3 max-h-80 overflow-y-auto pr-1"
-              >
+            <div
+              class="space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+            >
+              <div>
+                <label class="block text-sm text-slate-400">現在のランク</label>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  v-model="currentRank"
+                  @input="handleCurrentRankInput"
+                  @blur="validateCurrentRank"
+                  placeholder="数値を入力"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400"
+                  >現在の累計経験値</label
+                >
                 <div
-                  v-for="row in visibleRankSteps"
-                  :key="'mob-' + row.originalIndex"
-                  class="bg-slate-950 p-3 rounded-lg border border-slate-700/80 space-y-2.5"
+                  class="relative w-full bg-slate-900 border border-slate-700 rounded mt-1 overflow-hidden"
                 >
                   <div
-                    v-if="row.isCustomRow"
-                    class="flex justify-end items-center text-xs pb-0"
-                  >
-                    <button
-                      @click="removeRankStepRow(row.originalIndex)"
-                      class="text-red-400 hover:text-red-300 font-bold px-1 text-xs rounded"
-                      title="削除"
-                    >
-                      ✕ 削除
-                    </button>
-                  </div>
-                  <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <label class="block text-[11px] text-slate-400 mb-0.5"
-                        >開始ランク</label
-                      >
-                      <input
-                        type="text"
-                        inputmode="numeric"
-                        :value="row.itemRef.minRank"
-                        disabled
-                        placeholder="自動計算"
-                        class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-base sm:text-xs text-slate-400 opacity-60 cursor-not-allowed"
-                      />
-                    </div>
-                    <div>
-                      <label class="block text-[11px] text-slate-400 mb-0.5"
-                        >終了ランク</label
-                      >
-                      <input
-                        type="text"
-                        inputmode="numeric"
-                        v-model="row.itemRef.inputMaxRankDisplay"
-                        @focus="handleStepMaxRankFocus(row)"
-                        @input="e => handleStepMaxRankInput(row, e)"
-                        @blur="validateStepMaxRankBlur(row)"
-                        :disabled="!row.isLast"
-                        placeholder="未入力"
-                        :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
-                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-base sm:text-xs text-slate-200"
-                      />
-                    </div>
-                  </div>
-                  <div class="text-xs">
-                    <label class="block text-[11px] text-slate-400 mb-0.5"
-                      >必要経験値</label
-                    >
-                    <input
-                      type="text"
-                      inputmode="numeric"
-                      v-model="row.itemRef.inputExpDisplay"
-                      @focus="handleStepExpFocus(row)"
-                      @input="e => handleStepExpInput(row, e)"
-                      @blur="handleStepExpBlur(row)"
-                      :disabled="!row.isLast"
-                      placeholder="未入力"
-                      :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
-                      class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-base sm:text-xs font-mono text-slate-200"
-                    />
-                  </div>
+                    class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-150 pointer-events-none"
+                    :style="{ width: currentProgressPercent + '%' }"
+                  ></div>
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    v-model="currentExpInput"
+                    @focus="handleCurrentExpFocus"
+                    @input="handleCurrentExpInput"
+                    @blur="validateCurrentExp"
+                    placeholder="数値を入力"
+                    class="relative w-full bg-transparent px-3 py-1.5 text-base sm:text-sm font-mono text-slate-300"
+                  />
                 </div>
               </div>
+            </div>
 
-              <div
-                class="hidden md:block overflow-x-auto max-h-60 overflow-y-auto"
+            <div
+              class="space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
+            >
+              <div>
+                <label class="block text-sm text-slate-400">目標のランク</label>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  v-model="targetRank"
+                  @input="handleTargetRankInput"
+                  @blur="validateTargetRank"
+                  placeholder="数値を入力"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400"
+                  >目標の累計経験値</label
+                >
+                <div
+                  class="relative w-full bg-slate-900 border border-slate-700 rounded mt-1 overflow-hidden"
+                >
+                  <div
+                    class="absolute inset-y-0 left-0 bg-amber-500/15 transition-all duration-150 pointer-events-none"
+                    :style="{ width: targetProgressPercent + '%' }"
+                  ></div>
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    v-model="targetExpInput"
+                    @focus="handleTargetExpFocus"
+                    @input="handleTargetExpInput"
+                    @blur="validateTargetExp"
+                    placeholder="数値を入力"
+                    class="relative w-full bg-transparent px-3 py-1.5 text-base sm:text-sm font-mono text-slate-300"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <details
+              class="bg-slate-900/50 rounded-lg border border-slate-700/60 overflow-hidden group"
+            >
+              <summary
+                class="cursor-pointer px-4 py-3 flex items-center justify-between text-sm text-slate-300 hover:bg-slate-800/80 transition select-none"
               >
-                <table class="w-full text-left border-collapse table-fixed">
-                  <thead>
-                    <tr
-                      class="text-slate-400 border-b border-slate-700 sticky top-0 bg-slate-900/90"
+                <span>経験値テーブル設定</span>
+                <span
+                  class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
+                  >▼</span
+                >
+              </summary>
+
+              <div class="p-4 space-y-3 border-t border-slate-700/60 text-xs">
+                <p class="text-slate-400 text-[11px] leading-relaxed">
+                  ランク帯と、1ランク上げるのに必要な経験値を設定してください。
+                </p>
+                <div
+                  ref="mobileRankStepList"
+                  class="md:hidden space-y-3 max-h-80 overflow-y-auto pr-1"
+                >
+                  <div
+                    v-for="row in visibleRankSteps"
+                    :key="'mob-' + row.originalIndex"
+                    class="bg-slate-950 p-3 rounded-lg border border-slate-700/80 space-y-2.5"
+                  >
+                    <div
+                      v-if="row.isCustomRow"
+                      class="flex justify-end items-center text-xs pb-0"
                     >
-                      <th class="py-1 px-1 font-medium w-1/4">開始ランク</th>
-                      <th class="py-1 px-1 font-medium w-1/4">終了ランク</th>
-                      <th class="py-1 px-1 font-medium w-[40%]">必要経験値</th>
-                      <th class="py-1 px-1 w-[10%] text-center"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="row in visibleRankSteps"
-                      :key="row.originalIndex"
-                      class="border-b border-slate-800"
-                    >
-                      <td class="py-1 px-1">
+                      <button
+                        @click="removeRankStepRow(row.originalIndex)"
+                        class="text-red-400 hover:text-red-300 font-bold px-1 text-xs rounded"
+                        title="削除"
+                      >
+                        ✕ 削除
+                      </button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <label class="block text-[11px] text-slate-400 mb-0.5"
+                          >開始ランク</label
+                        >
                         <input
                           type="text"
                           inputmode="numeric"
                           :value="row.itemRef.minRank"
                           disabled
                           placeholder="自動計算"
-                          class="w-full bg-slate-950 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-400 opacity-60 cursor-not-allowed"
+                          class="w-full bg-slate-900 border border-slate-800 rounded px-2 py-1.5 text-base sm:text-xs text-slate-400 opacity-60 cursor-not-allowed"
                         />
-                      </td>
-                      <td class="py-1 px-1">
+                      </div>
+                      <div>
+                        <label class="block text-[11px] text-slate-400 mb-0.5"
+                          >終了ランク</label
+                        >
                         <input
                           type="text"
                           inputmode="numeric"
@@ -231,561 +167,637 @@
                           @blur="validateStepMaxRankBlur(row)"
                           :disabled="!row.isLast"
                           placeholder="未入力"
-                          :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200"
+                          :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
+                          class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-base sm:text-xs text-slate-200"
                         />
-                      </td>
-                      <td class="py-1 px-1">
-                        <input
-                          type="text"
-                          inputmode="numeric"
-                          v-model="row.itemRef.inputExpDisplay"
-                          @focus="handleStepExpFocus(row)"
-                          @input="e => handleStepExpInput(row, e)"
-                          @blur="handleStepExpBlur(row)"
-                          :disabled="!row.isLast"
-                          placeholder="未入力"
-                          :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
-                          class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200"
-                        />
-                      </td>
-                      <td class="py-1 px-1 text-center">
-                        <button
-                          v-if="row.isCustomRow"
-                          @click="removeRankStepRow(row.originalIndex)"
-                          class="text-red-400 hover:text-red-300 font-bold px-1 rounded"
-                          title="削除"
-                        >
-                          ✕
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                      </div>
+                    </div>
+                    <div class="text-xs">
+                      <label class="block text-[11px] text-slate-400 mb-0.5"
+                        >必要経験値</label
+                      >
+                      <input
+                        type="text"
+                        inputmode="numeric"
+                        v-model="row.itemRef.inputExpDisplay"
+                        @focus="handleStepExpFocus(row)"
+                        @input="e => handleStepExpInput(row, e)"
+                        @blur="handleStepExpBlur(row)"
+                        :disabled="!row.isLast"
+                        placeholder="未入力"
+                        :class="{'opacity-60 bg-slate-900 cursor-not-allowed': !row.isLast}"
+                        class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-base sm:text-xs font-mono text-slate-200"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="hidden md:block overflow-x-auto max-h-60 overflow-y-auto"
+                >
+                  <table class="w-full text-left border-collapse table-fixed">
+                    <thead>
+                      <tr
+                        class="text-slate-400 border-b border-slate-700 sticky top-0 bg-slate-900/90"
+                      >
+                        <th class="py-1 px-1 font-medium w-1/4">開始ランク</th>
+                        <th class="py-1 px-1 font-medium w-1/4">終了ランク</th>
+                        <th class="py-1 px-1 font-medium w-[40%]">
+                          必要経験値
+                        </th>
+                        <th class="py-1 px-1 w-[10%] text-center"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="row in visibleRankSteps"
+                        :key="row.originalIndex"
+                        class="border-b border-slate-800"
+                      >
+                        <td class="py-1 px-1">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            :value="row.itemRef.minRank"
+                            disabled
+                            placeholder="自動計算"
+                            class="w-full bg-slate-950 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-400 opacity-60 cursor-not-allowed"
+                          />
+                        </td>
+                        <td class="py-1 px-1">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            v-model="row.itemRef.inputMaxRankDisplay"
+                            @focus="handleStepMaxRankFocus(row)"
+                            @input="e => handleStepMaxRankInput(row, e)"
+                            @blur="validateStepMaxRankBlur(row)"
+                            :disabled="!row.isLast"
+                            placeholder="未入力"
+                            :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
+                            class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs text-slate-200"
+                          />
+                        </td>
+                        <td class="py-1 px-1">
+                          <input
+                            type="text"
+                            inputmode="numeric"
+                            v-model="row.itemRef.inputExpDisplay"
+                            @focus="handleStepExpFocus(row)"
+                            @input="e => handleStepExpInput(row, e)"
+                            @blur="handleStepExpBlur(row)"
+                            :disabled="!row.isLast"
+                            placeholder="未入力"
+                            :class="{'opacity-60 bg-slate-950 cursor-not-allowed': !row.isLast}"
+                            class="w-full bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-xs font-mono text-slate-200"
+                          />
+                        </td>
+                        <td class="py-1 px-1 text-center">
+                          <button
+                            v-if="row.isCustomRow"
+                            @click="removeRankStepRow(row.originalIndex)"
+                            class="text-red-400 hover:text-red-300 font-bold px-1 rounded"
+                            title="削除"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <p
+                  v-if="lastRowPattern === 'onlyMaxEmpty'"
+                  class="text-amber-400 text-[11px] font-medium leading-relaxed"
+                >
+                  ※終了ランクが未入力の場合は要素を追加できず、ランク{{
+                  lastRowMinRank }}以降は
+                  <span class="font-mono">{{ lastRowExpFormatted }}</span>
+                  Expを適用して計算します。
+                </p>
+
+                <p
+                  v-else-if="lastRowPattern === 'onlyExpEmpty'"
+                  class="text-amber-400 text-[11px] font-medium leading-relaxed"
+                >
+                  ※必要経験値が未入力の場合は要素を追加できず、ランク{{
+                  lastRowMaxRankFormatted }}以降は
+                  <span class="font-mono">{{ prevRowExpFormatted }}</span>
+                  Expを適用して計算します。
+                </p>
+
+                <p
+                  v-else-if="lastRowPattern === 'bothEmpty'"
+                  class="text-amber-400 text-[11px] font-medium leading-relaxed"
+                >
+                  ※終了ランク・必要経験値が未入力の場合は要素を追加できず、ランク{{
+                  lastRowMinRank }}以降は
+                  <span class="font-mono">{{ prevRowExpFormatted }}</span>
+                  Expを適用して計算します。
+                </p>
+
+                <p
+                  v-else
+                  class="text-slate-400 text-[11px] font-medium leading-relaxed"
+                >
+                  ※ランク{{ lastRowMaxRankFormatted
+                  }}を超えるランク帯の必要経験値は、
+                  <span class="font-mono">{{ lastRowExpFormatted }}</span>
+                  Expを適用して計算します。
+                </p>
+
+                <div class="flex justify-between items-center pt-1">
+                  <button
+                    @click="addRankStepRow"
+                    class="bg-slate-700 hover:bg-slate-600 text-amber-300 font-medium px-2.5 py-1 rounded text-xs transition"
+                  >
+                    + 要素を追加
+                  </button>
+                  <button
+                    @click="resetRankSteps"
+                    class="text-slate-400 hover:text-slate-200 text-xs underline rounded"
+                  >
+                    初期設定に戻す
+                  </button>
+                </div>
               </div>
+            </details>
 
-              <p
-                v-if="lastRowPattern === 'onlyMaxEmpty'"
-                class="text-amber-400 text-[11px] font-medium leading-relaxed"
-              >
-                ※終了ランクが未入力の場合は要素を追加できず、ランク{{
-                lastRowMinRank }}以降は
-                <span class="font-mono">{{ lastRowExpFormatted }}</span>
-                Expを適用して計算します。
-              </p>
-
-              <p
-                v-else-if="lastRowPattern === 'onlyExpEmpty'"
-                class="text-amber-400 text-[11px] font-medium leading-relaxed"
-              >
-                ※必要経験値が未入力の場合は要素を追加できず、ランク{{
-                lastRowMaxRankFormatted }}以降は
-                <span class="font-mono">{{ prevRowExpFormatted }}</span>
-                Expを適用して計算します。
-              </p>
-
-              <p
-                v-else-if="lastRowPattern === 'bothEmpty'"
-                class="text-amber-400 text-[11px] font-medium leading-relaxed"
-              >
-                ※終了ランク・必要経験値が未入力の場合は要素を追加できず、ランク{{
-                lastRowMinRank }}以降は
-                <span class="font-mono">{{ prevRowExpFormatted }}</span>
-                Expを適用して計算します。
-              </p>
-
-              <p
-                v-else
-                class="text-slate-400 text-[11px] font-medium leading-relaxed"
-              >
-                ※ランク{{ lastRowMaxRankFormatted
-                }}を超えるランク帯の必要経験値は、
-                <span class="font-mono">{{ lastRowExpFormatted }}</span>
-                Expを適用して計算します。
-              </p>
-
-              <div class="flex justify-between items-center pt-1">
-                <button
-                  @click="addRankStepRow"
-                  class="bg-slate-700 hover:bg-slate-600 text-amber-300 font-medium px-2.5 py-1 rounded text-xs transition"
+            <p
+              class="text-xs text-slate-400 text-left pt-2 border-t border-slate-700"
+            >
+              <template v-if="hasUserEditedSteps">
+                ※ランク帯ごとの必要経験値は、あなたによって設定されています。
+              </template>
+              <template v-else>
+                ※上限を超えるランク帯の必要経験値は、
+                <span class="font-mono"
+                  >{{ lastStepExp.toLocaleString() }}</span
                 >
-                  + 要素を追加
-                </button>
-                <button
-                  @click="resetRankSteps"
-                  class="text-slate-400 hover:text-slate-200 text-xs underline rounded"
-                >
-                  初期設定に戻す
-                </button>
+                Expを適用して計算します。
+              </template>
+            </p>
+          </section>
+
+          <!-- 2. 倍率設定エリア -->
+          <section
+            class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
+          >
+            <h2
+              class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
+            >
+              2. 獲得経験値倍率設定
+            </h2>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div
+                class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 text-center"
+              >
+                <p class="text-xs text-amber-300 font-medium">リザルト倍率</p>
+                <p class="text-xl font-extrabold text-amber-400 mt-0.5">
+                  <span class="text-xs font-bold">約</span>
+                  {{ baseMultiplier.toFixed(2) }}
+                  <span class="text-xs font-bold">倍</span>
+                </p>
+              </div>
+              <div
+                class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 text-center"
+              >
+                <p class="text-xs text-amber-300 font-medium">トータル倍率</p>
+                <p class="text-xl font-extrabold text-amber-400 mt-0.5">
+                  <span class="text-xs font-bold">約</span>
+                  {{ totalMultiplier.toFixed(2) }}
+                  <span class="text-xs font-bold">倍</span>
+                </p>
               </div>
             </div>
-          </details>
 
-          <p
-            class="text-xs text-slate-400 text-left pt-2 border-t border-slate-700"
-          >
-            <template v-if="hasUserEditedSteps">
-              ※ランク帯ごとの必要経験値は、あなたによって設定されています。
-            </template>
-            <template v-else>
-              ※上限を超えるランク帯の必要経験値は、
-              <span class="font-mono">{{ lastStepExp.toLocaleString() }}</span>
-              Expを適用して計算します。
-            </template>
-          </p>
-        </section>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-sm text-slate-400">わくわくの実</label>
+                <select
+                  v-model.number="selectedWakuwaku"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                >
+                  <option
+                    v-for="item in wakuwakuOptions"
+                    :key="item.label"
+                    :value="item.value"
+                  >
+                    {{ item.label }}
+                  </option>
+                </select>
+              </div>
 
-        <!-- 2. 倍率設定エリア -->
+              <div>
+                <label class="block text-sm text-slate-400">モンスポット</label>
+                <select
+                  v-model.number="selectedSpot"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                >
+                  <option
+                    v-for="item in spotOptions"
+                    :key="item.label"
+                    :value="item.value"
+                  >
+                    {{ item.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm text-slate-400">イベント</label>
+                <select
+                  v-model.number="selectedEvent"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                >
+                  <option
+                    v-for="item in eventOptions"
+                    :key="item.label"
+                    :value="item.value"
+                  >
+                    {{ item.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm text-slate-400"
+                  >経験値アップモンスター</label
+                >
+                <select
+                  v-model.number="selectedExpUpMonster"
+                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                >
+                  <option
+                    v-for="item in expUpMonsterOptions"
+                    :key="item.label"
+                    :value="item.value"
+                  >
+                    {{ item.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <details
+              class="bg-slate-900/50 rounded-lg border border-slate-700/60 overflow-hidden group"
+            >
+              <summary
+                class="cursor-pointer px-4 py-3 flex items-center justify-between text-sm text-slate-300 hover:bg-slate-800/80 transition select-none"
+              >
+                <span>詳細設定（リザルト倍率以外）</span>
+                <span
+                  class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
+                  >▼</span
+                >
+              </summary>
+
+              <div class="p-4 space-y-4 border-t border-slate-700/60">
+                <div>
+                  <label class="block text-sm text-slate-400"
+                    >運極ボーナス</label
+                  >
+                  <select
+                    v-model.number="selectedLuckBonus"
+                    class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  >
+                    <option
+                      v-for="item in luckBonusOptions"
+                      :key="item.label"
+                      :value="item.value"
+                    >
+                      {{ item.label }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-400"
+                    >マルチプレイ</label
+                  >
+                  <select
+                    v-model.number="selectedMulti"
+                    class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  >
+                    <option
+                      v-for="item in multiOptions"
+                      :key="item.label"
+                      :value="item.value"
+                    >
+                      {{ item.label }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm text-slate-400"
+                    >カスタム倍率</label
+                  >
+                  <input
+                    type="text"
+                    inputmode="decimal"
+                    v-model="customMultiplier"
+                    @input="handleCustomMultiplierInput"
+                    @blur="validateCustomMultiplier"
+                    placeholder="例: 1.05（未入力は1）"
+                    class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  />
+                </div>
+              </div>
+            </details>
+
+            <p
+              class="text-xs text-slate-400 text-left pt-2 border-t border-slate-700"
+            >
+              ※リザルト倍率は、ゲーム内リザルト画面に表示される倍率です。
+            </p>
+          </section>
+        </div>
+
+        <!-- 3. クエスト条件・周回設定 -->
         <section
           class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
         >
           <h2
             class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
           >
-            2. 獲得経験値倍率設定
+            3. クエスト・タイム設定
           </h2>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div
-              class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 text-center"
-            >
-              <p class="text-xs text-amber-300 font-medium">リザルト倍率</p>
-              <p class="text-xl font-extrabold text-amber-400 mt-0.5">
-                <span class="text-xs font-bold">約</span>
-                {{ baseMultiplier.toFixed(2) }}
-                <span class="text-xs font-bold">倍</span>
-              </p>
-            </div>
-            <div
-              class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5 text-center"
-            >
-              <p class="text-xs text-amber-300 font-medium">トータル倍率</p>
-              <p class="text-xl font-extrabold text-amber-400 mt-0.5">
-                <span class="text-xs font-bold">約</span>
-                {{ totalMultiplier.toFixed(2) }}
-                <span class="text-xs font-bold">倍</span>
-              </p>
-            </div>
-          </div>
-
-          <div class="space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label class="block text-sm text-slate-400">わくわくの実</label>
+              <label class="block text-sm text-slate-400">クエスト選択</label>
               <select
-                v-model.number="selectedWakuwaku"
+                v-model="selectedPreset"
+                @change="handlePresetChange"
                 class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
               >
                 <option
-                  v-for="item in wakuwakuOptions"
-                  :key="item.label"
-                  :value="item.value"
+                  v-for="preset in questPresets"
+                  :key="preset.name"
+                  :value="preset"
                 >
-                  {{ item.label }}
+                  {{ preset.name }}
                 </option>
               </select>
             </div>
-
-            <div>
-              <label class="block text-sm text-slate-400">モンスポット</label>
-              <select
-                v-model.number="selectedSpot"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-              >
-                <option
-                  v-for="item in spotOptions"
-                  :key="item.label"
-                  :value="item.value"
-                >
-                  {{ item.label }}
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm text-slate-400">イベント</label>
-              <select
-                v-model.number="selectedEvent"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-              >
-                <option
-                  v-for="item in eventOptions"
-                  :key="item.label"
-                  :value="item.value"
-                >
-                  {{ item.label }}
-                </option>
-              </select>
-            </div>
-
             <div>
               <label class="block text-sm text-slate-400"
-                >経験値アップモンスター</label
+                >1周の基礎獲得経験値</label
               >
-              <select
-                v-model.number="selectedExpUpMonster"
-                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              <input
+                type="text"
+                inputmode="numeric"
+                v-model="baseExpInput"
+                @focus="handleBaseExpFocus"
+                @input="handleBaseExpInput"
+                @blur="handleBaseExpBlur"
+                :disabled="!selectedPreset.isCustom"
+                :class="{'opacity-50 cursor-not-allowed': !selectedPreset.isCustom}"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono text-slate-300"
+              />
+            </div>
+            <div>
+              <label
+                class="flex items-baseline justify-between gap-2 text-sm text-slate-400"
               >
-                <option
-                  v-for="item in expUpMonsterOptions"
-                  :key="item.label"
-                  :value="item.value"
+                <span>1周の平均時間（秒）</span>
+                <span class="text-xs text-slate-400 shrink-0"
+                  >[1時間あたり約{{ runsPerHour.toLocaleString(undefined, {
+                  maximumFractionDigits: 0, }) }}周]</span
                 >
-                  {{ item.label }}
-                </option>
-              </select>
+              </label>
+              <input
+                type="text"
+                inputmode="numeric"
+                v-model="clearSecInput"
+                @focus="handleClearSecFocus"
+                @input="handleClearSecInput"
+                @blur="handleClearSecBlur"
+                placeholder="数値を入力"
+                class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+              />
             </div>
           </div>
+        </section>
 
-          <details
-            class="bg-slate-900/50 rounded-lg border border-slate-700/60 overflow-hidden group"
+        <!-- 計算結果表示 -->
+        <section
+          class="bg-amber-950/40 border border-amber-500/40 p-4 sm:p-6 rounded-xl space-y-4"
+        >
+          <h2 class="text-xl font-bold text-amber-300 text-center">計算結果</h2>
+          <div
+            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-center"
           >
-            <summary
-              class="cursor-pointer px-4 py-3 flex items-center justify-between text-sm text-slate-300 hover:bg-slate-800/80 transition select-none"
+            <div
+              class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
             >
-              <span>詳細設定（リザルト倍率以外）</span>
-              <span
-                class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
-                >▼</span
+              <p class="text-xs text-slate-400">必要総経験値</p>
+              <p
+                class="text-sm sm:text-base md:text-lg font-bold text-amber-300 font-mono break-all"
               >
-            </summary>
-
-            <div class="p-4 space-y-4 border-t border-slate-700/60">
-              <div>
-                <label class="block text-sm text-slate-400">運極ボーナス</label>
-                <select
-                  v-model.number="selectedLuckBonus"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-                >
-                  <option
-                    v-for="item in luckBonusOptions"
-                    :key="item.label"
-                    :value="item.value"
+                {{ requiredTotalExp.toLocaleString() }}
+                <span class="text-xs font-sans">Exp</span>
+              </p>
+            </div>
+            <div
+              class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
+            >
+              <p class="text-xs text-slate-400">1周の獲得経験値</p>
+              <p
+                class="text-sm sm:text-base md:text-lg font-bold text-amber-300 font-mono break-all"
+              >
+                {{ earnedExpPerRun.toLocaleString() }}
+                <span class="text-xs font-sans">Exp</span>
+              </p>
+            </div>
+            <div
+              class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
+            >
+              <p class="text-xs text-slate-400">必要周回数</p>
+              <p
+                class="text-sm sm:text-base md:text-lg font-bold text-amber-300 break-all"
+              >
+                {{ totalRuns.toLocaleString() }} <span class="text-xs">周</span>
+              </p>
+            </div>
+            <div
+              class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
+            >
+              <p class="text-xs text-slate-400">推定所要時間</p>
+              <p
+                class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5"
+              >
+                <template v-if="timeResult.days > 0">
+                  <span
+                    >{{ timeResult.days.toLocaleString() }}<span
+                      class="text-xs font-bold ml-0.5"
+                      >日</span
+                    ></span
                   >
-                    {{ item.label }}
-                  </option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm text-slate-400">マルチプレイ</label>
-                <select
-                  v-model.number="selectedMulti"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-                >
-                  <option
-                    v-for="item in multiOptions"
-                    :key="item.label"
-                    :value="item.value"
+                </template>
+                <template v-if="timeResult.days > 0 || timeResult.hours > 0">
+                  <span
+                    >{{ timeResult.hours.toLocaleString() }}<span
+                      class="text-xs font-bold ml-0.5"
+                      >時間</span
+                    ></span
                   >
-                    {{ item.label }}
-                  </option>
-                </select>
-              </div>
+                </template>
+                <span
+                  >{{ timeResult.minutes.toLocaleString() }}<span
+                    class="text-xs font-bold ml-0.5"
+                    >分</span
+                  ></span
+                >
+              </p>
+            </div>
+          </div>
+          <p
+            class="text-xs text-slate-400 text-left pt-2 border-t border-amber-500/20"
+          >
+            ※処理の都合により、ごくわずかな誤差が生じている場合があります。
+          </p>
+        </section>
 
-              <div>
-                <label class="block text-sm text-slate-400">カスタム倍率</label>
+        <!-- 周回ペース計画トグル -->
+        <details
+          class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden group"
+        >
+          <summary
+            class="cursor-pointer px-4 sm:px-6 py-4 flex items-center justify-between text-base sm:text-lg font-bold text-amber-300 hover:bg-slate-700/50 transition select-none"
+          >
+            <h2
+              class="flex items-center gap-2 text-lg font-semibold text-amber-300"
+            >
+              <span>📅</span> 周回ペース計画
+            </h2>
+            <span
+              class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
+              >▼</span
+            >
+          </summary>
+          <div
+            class="p-3 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40 min-w-0 overflow-hidden"
+          >
+            <p class="text-sm text-slate-400 leading-relaxed">
+              期間を指定して、1日あたりに必要な周回数や周回時間を計算できます。
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div class="min-w-0 flex flex-col">
+                <label class="block text-xs sm:text-sm text-slate-400 mb-1"
+                  >From:（開始日）</label
+                >
                 <input
-                  type="text"
-                  inputmode="decimal"
-                  v-model="customMultiplier"
-                  @input="handleCustomMultiplierInput"
-                  @blur="validateCustomMultiplier"
-                  placeholder="例: 1.05（未入力は1）"
-                  class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
+                  type="date"
+                  v-model="fromDate"
+                  class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-base text-slate-200"
+                />
+              </div>
+              <div class="min-w-0 flex flex-col">
+                <label class="block text-xs sm:text-sm text-slate-400 mb-1"
+                  >To:（終了日）</label
+                >
+                <input
+                  type="date"
+                  v-model="toDate"
+                  class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-base text-slate-200"
                 />
               </div>
             </div>
-          </details>
 
-          <p
-            class="text-xs text-slate-400 text-left pt-2 border-t border-slate-700"
-          >
-            ※リザルト倍率は、ゲーム内リザルト画面に表示される倍率です。
-          </p>
-        </section>
-      </div>
-
-      <!-- 3. クエスト条件・周回設定 -->
-      <section
-        class="bg-slate-800 p-4 sm:p-5 rounded-xl border border-slate-700 space-y-4"
-      >
-        <h2
-          class="text-lg font-semibold text-amber-300 border-b border-slate-700 pb-2"
-        >
-          3. クエスト・タイム設定
-        </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-sm text-slate-400">クエスト選択</label>
-            <select
-              v-model="selectedPreset"
-              @change="handlePresetChange"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-            >
-              <option
-                v-for="preset in questPresets"
-                :key="preset.name"
-                :value="preset"
-              >
-                {{ preset.name }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm text-slate-400"
-              >1周の基礎獲得経験値</label
-            >
-            <input
-              type="text"
-              inputmode="numeric"
-              v-model="baseExpInput"
-              @focus="handleBaseExpFocus"
-              @input="handleBaseExpInput"
-              @blur="handleBaseExpBlur"
-              :disabled="!selectedPreset.isCustom"
-              :class="{'opacity-50 cursor-not-allowed': !selectedPreset.isCustom}"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1 font-mono text-slate-300"
-            />
-          </div>
-          <div>
-            <label
-              class="flex items-baseline justify-between gap-2 text-sm text-slate-400"
-            >
-              <span>1周の平均時間（秒）</span>
-              <span class="text-xs text-slate-400 shrink-0"
-                >[1時間あたり約{{ runsPerHour.toLocaleString(undefined, {
-                maximumFractionDigits: 0, }) }}周]</span
-              >
-            </label>
-            <input
-              type="text"
-              inputmode="numeric"
-              v-model="clearSecInput"
-              @focus="handleClearSecFocus"
-              @input="handleClearSecInput"
-              @blur="handleClearSecBlur"
-              placeholder="数値を入力"
-              class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
-            />
-          </div>
-        </div>
-      </section>
-
-      <!-- 計算結果表示 -->
-      <section
-        class="bg-amber-950/40 border border-amber-500/40 p-4 sm:p-6 rounded-xl space-y-4"
-      >
-        <h2 class="text-xl font-bold text-amber-300 text-center">計算結果</h2>
-        <div
-          class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-center"
-        >
-          <div
-            class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
-          >
-            <p class="text-xs text-slate-400">必要総経験値</p>
             <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 font-mono break-all"
+              v-if="isFromAfterTo"
+              class="text-amber-400 text-[11px] font-medium leading-relaxed"
             >
-              {{ requiredTotalExp.toLocaleString() }}
-              <span class="text-xs font-sans">Exp</span>
+              ※開始日 &gt; 終了日のため、対象日数は1日として計算します。
             </p>
-          </div>
-          <div
-            class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
-          >
-            <p class="text-xs text-slate-400">1周の獲得経験値</p>
             <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 font-mono break-all"
+              v-if="isDateEmpty"
+              class="text-amber-400 text-[11px] font-medium leading-relaxed"
             >
-              {{ earnedExpPerRun.toLocaleString() }}
-              <span class="text-xs font-sans">Exp</span>
+              ※開始日または終了日が未入力のため、対象日数は1日として計算します。
             </p>
-          </div>
-          <div
-            class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
-          >
-            <p class="text-xs text-slate-400">必要周回数</p>
-            <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 break-all"
-            >
-              {{ totalRuns.toLocaleString() }} <span class="text-xs">周</span>
-            </p>
-          </div>
-          <div
-            class="bg-slate-800/80 p-3 rounded-lg border border-slate-700 overflow-hidden"
-          >
-            <p class="text-xs text-slate-400">推定所要時間</p>
-            <p
-              class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5"
-            >
-              <template v-if="timeResult.days > 0">
-                <span
-                  >{{ timeResult.days.toLocaleString() }}<span
-                    class="text-xs font-bold ml-0.5"
-                    >日</span
-                  ></span
-                >
-              </template>
-              <template v-if="timeResult.days > 0 || timeResult.hours > 0">
-                <span
-                  >{{ timeResult.hours.toLocaleString() }}<span
-                    class="text-xs font-bold ml-0.5"
-                    >時間</span
-                  ></span
-                >
-              </template>
-              <span
-                >{{ timeResult.minutes.toLocaleString() }}<span
-                  class="text-xs font-bold ml-0.5"
-                  >分</span
-                ></span
-              >
-            </p>
-          </div>
-        </div>
-        <p
-          class="text-xs text-slate-400 text-left pt-2 border-t border-amber-500/20"
-        >
-          ※処理の都合により、ごくわずかな誤差が生じている場合があります。
-        </p>
-      </section>
-
-      <!-- 周回ペース計画トグル -->
-      <details
-        class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden group"
-      >
-        <summary
-          class="cursor-pointer px-4 sm:px-6 py-4 flex items-center justify-between text-base sm:text-lg font-bold text-amber-300 hover:bg-slate-700/50 transition select-none"
-        >
-          <h2
-            class="flex items-center gap-2 text-lg font-semibold text-amber-300"
-          >
-            <span>📅</span> 周回ペース計画
-          </h2>
-          <span
-            class="text-xs text-slate-400 group-open:rotate-180 transition-transform"
-            >▼</span
-          >
-        </summary>
-        <div
-          class="p-3 sm:p-6 border-t border-slate-700 space-y-4 bg-slate-900/40 min-w-0 overflow-hidden"
-        >
-          <p class="text-sm text-slate-400 leading-relaxed">
-            期間を指定して、1日あたりに必要な周回数や周回時間を計算できます。
-          </p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div class="min-w-0 flex flex-col">
-              <label class="block text-xs sm:text-sm text-slate-400 mb-1"
-                >From:（開始日）</label
-              >
-              <input
-                type="date"
-                v-model="fromDate"
-                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-base text-slate-200"
-              />
-            </div>
-            <div class="min-w-0 flex flex-col">
-              <label class="block text-xs sm:text-sm text-slate-400 mb-1"
-                >To:（終了日）</label
-              >
-              <input
-                type="date"
-                v-model="toDate"
-                class="block w-full min-w-0 max-w-full appearance-none box-border bg-slate-900 border border-slate-700 rounded px-2 sm:px-3 py-2 text-base text-slate-200"
-              />
-            </div>
-          </div>
-
-          <p
-            v-if="isFromAfterTo"
-            class="text-amber-400 text-[11px] font-medium leading-relaxed"
-          >
-            ※開始日 &gt; 終了日のため、対象日数は1日として計算します。
-          </p>
-          <p
-            v-if="isDateEmpty"
-            class="text-amber-400 text-[11px] font-medium leading-relaxed"
-          >
-            ※開始日または終了日が未入力のため、対象日数は1日として計算します。
-          </p>
-
-          <div
-            class="bg-slate-800/90 border border-slate-700 rounded-lg p-3 sm:p-4 space-y-3"
-          >
-            <div
-              class="text-xs sm:text-sm text-slate-400 border-b border-slate-700/60 pb-2"
-            >
-              対象日数: {{ scheduleDaysCount.toLocaleString() }}日
-            </div>
-            <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-1">
-              <div
-                class="bg-slate-900/60 p-3 rounded-lg border border-slate-700 text-center overflow-hidden"
-              >
-                <p class="text-xs text-slate-400">1日の必要周回数</p>
-                <p
-                  class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1 break-all"
-                >
-                  <span
-                    >{{ dailyRequiredRuns.toLocaleString() }}<span
-                      class="text-xs font-bold ml-0.5"
-                      >周/日</span
-                    ></span
-                  >
-                </p>
-              </div>
-              <div
-                class="bg-slate-900/60 p-3 rounded-lg border border-slate-700 text-center overflow-hidden"
-              >
-                <p class="text-xs text-slate-400">1日の必要周回時間</p>
-                <p
-                  class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1"
-                >
-                  <template v-if="dailyTimeResult.days > 0">
-                    <span
-                      >{{ dailyTimeResult.days.toLocaleString() }}<span
-                        class="text-xs font-bold ml-0.5"
-                        >日</span
-                      ></span
-                    >
-                  </template>
-                  <template
-                    v-if="dailyTimeResult.days > 0 || dailyTimeResult.hours > 0"
-                  >
-                    <span
-                      >{{ dailyTimeResult.hours.toLocaleString() }}<span
-                        class="text-xs font-bold ml-0.5"
-                        >時間</span
-                      ></span
-                    >
-                  </template>
-                  <span
-                    >{{ dailyTimeResult.minutes.toLocaleString() }}<span
-                      class="text-xs font-bold ml-0.5"
-                      >分/日</span
-                    ></span
-                  >
-                </p>
-              </div>
-            </div>
 
             <div
-              v-if="isDailyTimeExceeding24Hours"
-              class="bg-red-950/60 border border-red-500/50 rounded-lg p-3 text-red-200 text-xs sm:text-sm flex items-start gap-2 mt-2"
+              class="bg-slate-800/90 border border-slate-700 rounded-lg p-3 sm:p-4 space-y-3"
             >
-              <span class="text-base flex-shrink-0">⚠️</span>
-              <div class="min-w-0 flex-1">
-                <span class="font-bold text-red-300 block sm:inline"
-                  >警告: 1日の必要周回時間が24時間を超えています。</span
+              <div
+                class="text-xs sm:text-sm text-slate-400 border-b border-slate-700/60 pb-2"
+              >
+                対象日数: {{ scheduleDaysCount.toLocaleString() }}日
+              </div>
+              <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-1">
+                <div
+                  class="bg-slate-900/60 p-3 rounded-lg border border-slate-700 text-center overflow-hidden"
                 >
-                <p class="text-red-300/90 text-xs mt-0.5">
-                  現実的に不可能なスケジュールです。期間を長めに設定するなど、再調整してください。
-                </p>
+                  <p class="text-xs text-slate-400">1日の必要周回数</p>
+                  <p
+                    class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1 break-all"
+                  >
+                    <span
+                      >{{ dailyRequiredRuns.toLocaleString() }}<span
+                        class="text-xs font-bold ml-0.5"
+                        >周/日</span
+                      ></span
+                    >
+                  </p>
+                </div>
+                <div
+                  class="bg-slate-900/60 p-3 rounded-lg border border-slate-700 text-center overflow-hidden"
+                >
+                  <p class="text-xs text-slate-400">1日の必要周回時間</p>
+                  <p
+                    class="text-sm sm:text-base md:text-lg font-bold text-amber-300 flex flex-wrap items-center justify-center gap-x-1.5 mt-1"
+                  >
+                    <template v-if="dailyTimeResult.days > 0">
+                      <span
+                        >{{ dailyTimeResult.days.toLocaleString() }}<span
+                          class="text-xs font-bold ml-0.5"
+                          >日</span
+                        ></span
+                      >
+                    </template>
+                    <template
+                      v-if="dailyTimeResult.days > 0 || dailyTimeResult.hours > 0"
+                    >
+                      <span
+                        >{{ dailyTimeResult.hours.toLocaleString() }}<span
+                          class="text-xs font-bold ml-0.5"
+                          >時間</span
+                        ></span
+                      >
+                    </template>
+                    <span
+                      >{{ dailyTimeResult.minutes.toLocaleString() }}<span
+                        class="text-xs font-bold ml-0.5"
+                        >分/日</span
+                      ></span
+                    >
+                  </p>
+                </div>
+              </div>
+
+              <div
+                v-if="isDailyTimeExceeding24Hours"
+                class="bg-red-950/60 border border-red-500/50 rounded-lg p-3 text-red-200 text-xs sm:text-sm flex items-start gap-2 mt-2"
+              >
+                <span class="text-base flex-shrink-0">⚠️</span>
+                <div class="min-w-0 flex-1">
+                  <span class="font-bold text-red-300 block sm:inline"
+                    >警告: 1日の必要周回時間が24時間を超えています。</span
+                  >
+                  <p class="text-red-300/90 text-xs mt-0.5">
+                    現実的に不可能なスケジュールです。期間を長めに設定するなど、再調整してください。
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </details>
+        </details>
+      </main>
     </div>
 
     <footer class="mt-auto"></footer>
