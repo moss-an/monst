@@ -20,6 +20,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "font-subset/requirements.txt"
+
+      - name: Install font subsetting dependencies
+        run: pip install --no-cache-dir -r font-subset/requirements.txt
+
+      - name: Verify font subset is up to date
+        run: |
+          python font-subset/subset-generator.py
+          if ! git diff --exit-code -- public/fonts/reggae-one-subset.woff2; then
+            echo "::error::Font subset is out of date. Run 'docker compose -f docker-compose.font.subset.yml up --build' and commit the updated font."
+            exit 1
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

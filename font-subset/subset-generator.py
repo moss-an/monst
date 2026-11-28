@@ -3,7 +3,8 @@ import re
 from bs4 import BeautifulSoup
 from fontTools.subset import main as pyftsubset
 
-ROOT_DIR = Path("/workspace")
+# リポジトリルート基準（Dockerの /workspace でも GitHub Actions でも動作）
+ROOT_DIR = Path(__file__).resolve().parent.parent
 SOURCE_FONT = ROOT_DIR / "font-subset/fonts/reggae-one-v20-japanese_latin-regular.woff2"
 OUTPUT_FONT = ROOT_DIR / "public/fonts/reggae-one-subset.woff2"
 TOOLS_TS = ROOT_DIR / "src/tools.ts"
@@ -16,6 +17,7 @@ EXCLUDE_DIRS = {"dist", "node_modules", ".git", ".devcontainer"}
 
 # 動的挿入・数値・記号・予備として含める文字
 EXTRA_CHARS = "モンスト0123456789.,:：・（）()！？!?-ー〜"
+
 
 def find_target_html_files(root: Path) -> list[Path]:
     html_files = []
@@ -81,6 +83,8 @@ def main() -> None:
     sorted_chars = "".join(sorted(all_chars))
     print(f"\n抽出された一意文字数: {len(sorted_chars)} 文字")
     print(f"文字一覧: {sorted_chars}\n")
+
+    OUTPUT_FONT.parent.mkdir(parents=True, exist_ok=True)
 
     args = [
         str(SOURCE_FONT),
