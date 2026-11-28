@@ -471,12 +471,6 @@ createApp({
       if (pcScrollContainer.value) pcScrollContainer.value.scrollTop = 0;
       if (mobileScrollContainer.value)
         mobileScrollContainer.value.scrollTop = 0;
-      if (resultSection.value) {
-        resultSection.value.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
     };
 
     const changeSort = (key: SortKey): void => {
