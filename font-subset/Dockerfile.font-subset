@@ -1,0 +1,9 @@
+# フォントサブセット生成用 Dockerfile
+FROM python:3.12-slim
+
+WORKDIR /workspace
+
+COPY font-subset/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+CMD ["python", "font-subset/subset-generator.py"]

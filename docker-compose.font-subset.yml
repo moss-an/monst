@@ -1,0 +1,10 @@
+# フォントサブセット生成用
+services:
+  font-subset:
+    image: monst-font-subset
+    build:
+      context: .
+      dockerfile: font-subset/Dockerfile.font-subset
+    volumes:
+      - .:/workspace
+    restart: "no"
