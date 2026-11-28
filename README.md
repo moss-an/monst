@@ -16,24 +16,24 @@ GitHub Pages上で公開されている、マルチページ構成のWebアプ�
 
 ```
 monst/
-├── index.html                  # トップページのエントリーポイント
-├── rank-calc/                  # ランク上げ計算ツール
-├── score-calc/                 # スコア計算ツール
-├── status-calc/                # ステータス計算ツール
+├── index.html                      # トップページのエントリーポイント
+├── rank-calc/                      # ランク上げ計算ツール
+├── score-calc/                     # スコア計算ツール
+├── status-calc/                    # ステータス計算ツール
 ├── public/
-│   └── fonts/                  # 配信用Webフォント
+│   └── fonts/                      # 配信用Webフォント
 ├── src/
-│   ├── common.ts               # 全ページ共通の初期化エントリ
-│   ├── components/             # 汎用UIコンポーネント
-│   ├── tools.ts                # ツール一覧の定義
-│   ├── head-config.ts          # 各ページのheadタグ定義
-│   └── input.css               # スタイル
-├── Dockerfile                  # 開発環境用Dockerイメージ定義
-├── docker-compose.yml          # 開発サーバー構築用Docker Compose
-├── docker-compose.build.yml    # ビルド確認用Docker Compose
-├── docker-compose.font.subset.yml # フォントサブセット生成用Docker Compose
-├── vite.config.mts             # Viteの設定ファイル（マルチページ対応）
-└── package.json                # 依存関係とスクリプト定義
+│   ├── common.ts                   # 全ページ共通の初期化エントリ
+│   ├── components/                 # 汎用UIコンポーネント
+│   ├── tools.ts                    # ツール一覧の定義
+│   ├── head-config.ts              # 各ページのheadタグ定義
+│   └── input.css                   # スタイル
+├── Dockerfile                      # 開発環境用Dockerイメージ定義
+├── docker-compose.yml              # 開発サーバー構築用Docker Compose
+├── docker-compose.build.yml        # ビルド確認用Docker Compose
+├── docker-compose.font-subset.yml  # フォントサブセット生成用Docker Compose
+├── vite.config.mts                 # Viteの設定ファイル（マルチページ対応）
+└── package.json                    # 依存関係とスクリプト定義
 ```
 
 ## ローカルでの開発・確認方法
