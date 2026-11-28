@@ -5,27 +5,72 @@
 
 (function () {
   const GTM_ID = "GTM-M8NFP8CB";
+  const SCRIPT_ID = "gtm-script";
+  const INIT_ID = "gtm-init";
+  const FALLBACK_DELAY_MS = 2000;
 
   // すでに挿入されている場合は重複を避ける
-  if (document.getElementById("gtm-script")) return;
+  if (document.getElementById(SCRIPT_ID) || document.getElementById(INIT_ID)) {
+    return;
+  }
 
-  // 1. GTM本体のスクリプト読み込み
-  const script1 = document.createElement("script");
-  script1.id = "gtm-script";
-  script1.async = true;
-  script1.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`;
+  // dataLayer と gtag の初期化は先に行い、イベント取りこぼしに備える
+  const win = window as Window & {
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
+    requestIdleCallback?: (
+      callback: (deadline: {
+        didTimeout: boolean;
+        timeRemaining: () => number;
+      }) => void,
+      options?: { timeout?: number },
+    ) => number;
+  };
 
-  // 2. dataLayer と gtag の初期化スクリプト
-  const script2 = document.createElement("script");
-  script2.id = "gtm-init";
-  script2.textContent = `
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-  `;
+  win.dataLayer = win.dataLayer || [];
+  if (!win.gtag) {
+    win.gtag = function (...args: unknown[]) {
+      win.dataLayer!.push(args);
+    };
+  }
+  win.gtag("js", new Date());
 
-  // <head> の先頭（直後）に script1 -> script2 の順で挿入する
-  const firstChild = document.head.firstChild;
-  document.head.insertBefore(script1, firstChild);
-  document.head.insertBefore(script2, firstChild);
+  let loaded = false;
+
+  const loadGtmScript = () => {
+    if (loaded || document.getElementById(SCRIPT_ID)) return;
+    loaded = true;
+
+    const initScript = document.createElement("script");
+    initScript.id = INIT_ID;
+    initScript.textContent = `
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    `;
+
+    const gtmScript = document.createElement("script");
+    gtmScript.id = SCRIPT_ID;
+    gtmScript.async = true;
+    gtmScript.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`;
+
+    const target = document.head || document.documentElement;
+    target.appendChild(initScript);
+    target.appendChild(gtmScript);
+  };
+
+  const scheduleAfterLoad = () => {
+    if (typeof win.requestIdleCallback === "function") {
+      win.requestIdleCallback(() => loadGtmScript(), {
+        timeout: FALLBACK_DELAY_MS,
+      });
+    } else {
+      window.setTimeout(loadGtmScript, FALLBACK_DELAY_MS);
+    }
+  };
+
+  if (document.readyState === "complete") {
+    scheduleAfterLoad();
+  } else {
+    window.addEventListener("load", scheduleAfterLoad, { once: true });
+  }
 })();
