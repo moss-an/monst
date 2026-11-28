@@ -69,6 +69,15 @@ createApp({
     const currentPage = ref<number>(1);
     const pageSize = ref<number>(CONSTANTS.DEFAULT_PAGE_SIZE);
 
+    const minPageSize = computed<number>(() => {
+      if (pageSizeOptions.length === 0) return pageSize.value;
+      return Math.min(...pageSizeOptions);
+    });
+
+    const isMinPageSize = computed<boolean>(
+      () => pageSize.value === minPageSize.value,
+    );
+
     const resultSection = ref<HTMLElement | null>(null);
     const pcScrollContainer = ref<HTMLElement | null>(null);
     const mobileScrollContainer = ref<HTMLElement | null>(null);
@@ -530,6 +539,8 @@ createApp({
       totalPages,
       currentPage,
       pageSize,
+      minPageSize,
+      isMinPageSize,
       paginatedResults,
       displayRangeText,
       goToPage,
