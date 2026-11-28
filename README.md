@@ -12,7 +12,7 @@ GitHub Pages上で公開されている、マルチページ構成のWebアプ�
 
 ## プロジェクト構成
 
-主なファイル構成は以下のようになっています。各種ツールの説明はそれぞれの `README.md` をご覧ください。
+主な構成は以下のようになっています。各種ツールの説明はそれぞれの `README.md` をご覧ください。
 
 ```
 monst/
@@ -36,29 +36,6 @@ monst/
 └── package.json                    # 依存関係とスクリプト定義
 ```
 
-## ローカルでの開発・確認方法
-
-Node.js環境を直接利用して、ローカルで確認やビルドを行うことができます。
-
-1. 依存パッケージをインストールします。
-
-   ```bash
-   npm install
-   ```
-
-2. 開発サーバーを起動します。
-
-   ```bash
-   npm run dev
-   ```
-
-3. ブラウザで表示されたローカルURL（例: `http://localhost:5173`）にアクセスします。
-
-4. ビルドエラーが起こらないかの確認は、以下のコマンドで可能です。
-   ```bash
-   npm run build
-   ```
-
 ## Docker環境での開発・確認方法
 
 Docker環境で、コンテナを使った確認やビルドを行うことができます。
@@ -78,12 +55,24 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 
 ### VS Code（Dev Containers）を使った開発
 
-ホスト（手元）環境の Node.js を汚さず、コンテナ内で直接エディタの補完や型チェックを完全に効かせて開発したい場合は、`.devcontainer/devcontainer.json` による Dev Containers を利用できます。
+コンテナ内で直接エディタの補完や型チェックを完全に効かせて開発したい場合は、`.devcontainer/devcontainer.json` による Dev Containers を利用できます。
 
 1. VS Code に拡張機能「Dev Containers」をインストールします。
 2. プロジェクトを VS Code で開きます。
 3. 画面左下のアイコン（またはコマンドパレット）から `Dev Containers: Reopen in Container` を実行します。
 4. 自動的にコンテナがビルドされ、接続と同時に依存関係のインストールや開発サーバーの起動が行われます。
+
+## フォントのサブセット化
+
+Webフォントの軽量化のため、サイト内で使用している文字だけを抽出したサブセットフォントを `public/fonts/` に配置しています。
+
+見出し文言やツール一覧（`src/tools.ts`）を追加・変更した際は、以下のコマンドでサブセットを再生成してください。
+
+PR 作成時や `main` ブランチへの push 時には、GitHub Actions によって差分チェックが自動実行されます。
+
+```bash
+docker compose -f docker-compose.font-subset.yml up --build
+```
 
 ## ツール一覧の仕組み
 
@@ -130,18 +119,6 @@ Docker環境で、コンテナを使った確認やビルドを行うことが�
 `vite.config.mts` では `fast-glob` を使用して、リポジトリ内のすべての `index.html`（ルート直下および各サブディレクトリ内）を自動的に検出し、ビルドのエントリーポイント（`rollupOptions.input`）として登録する設定になっています。
 
 新しいツールやサブページを追加する際は、新規ディレクトリを作成してその中に `index.html` を配置するだけで自動的にビルド対象に含まれるため、`vite.config.mts` を手動で書き換える必要はありません。
-
-## フォントのサブセット化
-
-Webフォントの軽量化のため、サイト内で使用している文字だけを抽出したサブセットフォントを `public/fonts/` に配置しています。
-
-見出し文言やツール一覧（`src/tools.ts`）を追加・変更した際は、以下のコマンドでサブセットを再生成してください。
-
-PR 作成時や `main` ブランチへの push 時には、GitHub Actions によって差分チェックが自動実行されます。
-
-```bash
-docker compose -f docker-compose.font-subset.yml up --build
-```
 
 ## CI/CD
 
