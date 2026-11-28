@@ -599,7 +599,8 @@
         >
           <div
             ref="pcScrollContainer"
-            class="hidden md:block overflow-x-auto max-h-[32rem] overflow-y-auto"
+            :class="isMinPageSize ? 'max-h-none overflow-y-visible' : 'max-h-[32rem] overflow-y-auto'"
+            class="hidden md:block overflow-x-auto"
           >
             <table class="w-full text-left border-collapse text-sm">
               <thead>
@@ -682,7 +683,8 @@
 
           <div
             ref="mobileScrollContainer"
-            class="md:hidden space-y-2.5 max-h-[34rem] overflow-y-auto pr-1"
+            :class="isMinPageSize ? 'max-h-none overflow-y-visible' : 'max-h-[34rem] overflow-y-auto'"
+            class="md:hidden space-y-2.5 pr-1"
           >
             <div
               v-for="row in paginatedResults"
