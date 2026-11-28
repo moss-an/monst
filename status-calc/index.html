@@ -26,8 +26,11 @@
               class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
             >
               <div>
-                <label class="block text-xs text-slate-400">基礎HP</label>
+                <label for="base-hp" class="block text-xs text-slate-400"
+                  >基礎HP</label
+                >
                 <input
+                  id="base-hp"
                   type="text"
                   inputmode="numeric"
                   :value="baseHpInput"
@@ -38,8 +41,11 @@
                 />
               </div>
               <div>
-                <label class="block text-xs text-slate-400">基礎攻撃力</label>
+                <label for="base-atk" class="block text-xs text-slate-400"
+                  >基礎攻撃力</label
+                >
                 <input
+                  id="base-atk"
                   type="text"
                   inputmode="numeric"
                   :value="baseAtkInput"
@@ -50,8 +56,11 @@
                 />
               </div>
               <div>
-                <label class="block text-xs text-slate-400">基礎スピード</label>
+                <label for="base-spd" class="block text-xs text-slate-400"
+                  >基礎スピード</label
+                >
                 <input
+                  id="base-spd"
                   type="text"
                   inputmode="decimal"
                   :value="baseSpdInput"
@@ -67,9 +76,12 @@
             <div
               class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
             >
-              <label class="block text-xs text-slate-400">HPの許容範囲</label>
+              <label for="hp-min" class="block text-xs text-slate-400"
+                >HPの許容範囲</label
+              >
               <div class="flex items-center gap-2">
                 <input
+                  id="hp-min"
                   type="text"
                   inputmode="numeric"
                   :value="hpMinInput"
@@ -81,6 +93,8 @@
                 />
                 <span class="text-slate-400">〜</span>
                 <input
+                  id="hp-max"
+                  aria-label="HPの許容範囲（上限）"
                   type="text"
                   inputmode="numeric"
                   :value="hpMaxInput"
@@ -120,11 +134,12 @@
             <div
               class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
             >
-              <label class="block text-xs text-slate-400"
+              <label for="atk-min" class="block text-xs text-slate-400"
                 >攻撃力の許容範囲</label
               >
               <div class="flex items-center gap-2">
                 <input
+                  id="atk-min"
                   type="text"
                   inputmode="numeric"
                   :value="atkMinInput"
@@ -136,6 +151,8 @@
                 />
                 <span class="text-slate-400">〜</span>
                 <input
+                  id="atk-max"
+                  aria-label="攻撃力の許容範囲（上限）"
                   type="text"
                   inputmode="numeric"
                   :value="atkMaxInput"
@@ -175,11 +192,12 @@
             <div
               class="space-y-1.5 bg-slate-900/50 p-3 rounded-lg border border-slate-700/60"
             >
-              <label class="block text-xs text-slate-400"
+              <label for="spd-min" class="block text-xs text-slate-400"
                 >スピードの許容範囲</label
               >
               <div class="flex items-center gap-2">
                 <input
+                  id="spd-min"
                   type="text"
                   inputmode="decimal"
                   :value="spdMinInput"
@@ -191,6 +209,8 @@
                 />
                 <span class="text-slate-400">〜</span>
                 <input
+                  id="spd-max"
+                  aria-label="スピードの許容範囲（上限）"
                   type="text"
                   inputmode="decimal"
                   :value="spdMaxInput"
@@ -239,8 +259,11 @@
               </h2>
 
               <div>
-                <label class="block text-sm text-slate-400">モンスポット</label>
+                <label for="search-spot" class="block text-sm text-slate-400"
+                  >モンスポット</label
+                >
                 <select
+                  id="search-spot"
                   v-model="selectedSpotId"
                   class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
                 >
@@ -256,10 +279,13 @@
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-sm text-slate-400"
+                  <label
+                    for="search-use-count"
+                    class="block text-sm text-slate-400"
                     >使用回数（0〜1000）</label
                   >
                   <input
+                    id="search-use-count"
                     type="text"
                     inputmode="numeric"
                     :value="useCountInput"
@@ -283,8 +309,13 @@
                 </div>
 
                 <div>
-                  <label class="block text-sm text-slate-400">実の上限数</label>
+                  <label
+                    for="search-max-slots"
+                    class="block text-sm text-slate-400"
+                    >実の上限数</label
+                  >
                   <select
+                    id="search-max-slots"
                     v-model.number="maxSlots"
                     class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 mt-1"
                   >
@@ -511,6 +542,8 @@
               <div class="flex items-center gap-1">
                 <span class="text-slate-400">表示件数:</span>
                 <select
+                  id="result-page-size"
+                  aria-label="表示件数"
                   v-model.number="pageSize"
                   class="h-9 sm:h-8 bg-slate-900 border border-slate-700 rounded px-2 text-base sm:text-sm text-slate-200"
                 >
